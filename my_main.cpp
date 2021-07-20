@@ -3,11 +3,31 @@
 //
 
 #include <iostream>
-#include <vector>
-#include <algorithm>
-
+//#include <vector>
+//#include <algorithm>
+#include "iterator.hpp"
+#include "vector.hpp"
 int main() {
-	int my_int[] = {3, 6, 7, 7};
-	std::vector<int, std::allocator<int> > prova(std::begin(my_int), std::end(my_int));
-	return 0;
+//	ft::vector<int> pippo;
+//	for (int i = 0; i < 10; ++i)
+//		pippo.push_back(i);
+//
+//	for (
+//			ft::vector<int>::iterator \
+//				gino = pippo.begin(), \
+//				nino = pippo.end();
+//			nino != gino ;
+//			++gino)
+//	{
+//		std::cout << *gino << ' ';
+//	}
+//	return 0;
+	ft::vector<char> g;
+	g.push_back('a');
+	g.push_back('b');
+	ft::vector<char>::iterator it = g.begin();
+	ft::vector<char>::iterator it2 = it - 100000;
+	if (it2 == it)
+		std::cout << "pippo\n";
+	std::cout << &(it) << '\n' << &(it2) << '\n';
 }
