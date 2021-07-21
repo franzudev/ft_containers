@@ -11,7 +11,7 @@ namespace ft {
 		T*	p;
 	public:
 		VectorIterator() {
-			p = new T;
+			p = new T();
 		}
 		~VectorIterator() {delete p;}
 		VectorIterator(VectorIterator const& it){
@@ -27,8 +27,11 @@ namespace ft {
 			return *this;
 		}
 		VectorIterator&	operator=(T* it) {
-			if (p != it)
-				p = it;
+			*p = *it;
+			return *this;
+		}
+		VectorIterator&	operator=(T it) {
+			*p = it;
 			return *this;
 		}
 		VectorIterator&	operator++() {
@@ -135,8 +138,16 @@ namespace ft {
 
 		// --- Member Functions
 		void 	resize(size_t n) {
-			(void) n;
-			// ---
+			if (n < _size)
+				_size = n;
+			if (n > _capacity){
+				T* tmp = new T[n];
+				_capacity = n;
+				for (size_t i = 0; i < _size; i++)
+					tmp[i] = _vec[i];
+				delete[] _vec;
+				_vec = tmp;
+			}
 		}
 		void	reserve(size_t n) {
 			if (n <= _capacity)
@@ -144,9 +155,9 @@ namespace ft {
 			// ---
 		}
 		void 	push_back(T i){
-			if (_size + 1 < capacity()){
-				_vec[_size++] = i;
-			}
+			if (_size + 1 == _capacity)
+				resize(_capacity * 2);
+			_vec[_size++] = i;
 		}
 	};
 }
