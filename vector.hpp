@@ -75,6 +75,7 @@ namespace ft {
 	public:
 		typedef T													value_type;
 		typedef Allocator											allocator_type;
+		typedef std::allocator_traits<allocator_type>         		__alloc_traits;
 		typedef typename allocator_type::reference					reference;
 		typedef typename allocator_type::const_reference			const_reference;
 		typedef typename allocator_type::pointer					pointer;
@@ -89,13 +90,15 @@ namespace ft {
 
 		// --- Constructors && Destructors
 		vector() {
-			_vec = new value_type[1];
+			allocator_type allocator;
+			_vec = allocator.allocate(1);
 			_size = 0;
 			_capacity = 1;
 			_empty = true;
 		}
 		~vector() {
-			delete[] _vec;
+			allocator_type allocator;
+			allocator.deallocate(_vec, _size);
 		}
 		vector(vector<value_type> const &vec) {
 			*this = vec;
@@ -104,8 +107,8 @@ namespace ft {
 		// --- Operator Overloads
 		vector<value_type> &operator=(vector<value_type> const &vec) {
 			if (_capacity)
-				delete[] _vec;
-			_vec = new value_type[vec._capacity];
+				allocator_type::deallocate(_vec, _size);
+			_vec = allocator_type::allocate(vec._capacity);
 			for (iterator start = vec.begin(), end = vec.end(), copy = this->begin; start != end; ++start, ++copy) {
 				*copy = *start;
 			}
@@ -129,7 +132,7 @@ namespace ft {
 
 		// --- Getters
 		size_type 	size(void)		const {return _size;}
-		size_type 	max_size(void)	const {return std::allocator<T>::max_size();}
+		size_type 	max_size(void)	const {return allocator_type::max_size();}
 		size_type 	capacity(void)	const {return _capacity;}
 		bool		empty(void)		const {return _empty;}
 
@@ -137,10 +140,10 @@ namespace ft {
 		void 	resize(size_type n)
 		{
 			if (n < _size) {
-				T *tmp = new T[n + 1];
+				T *tmp = allocator_type().allocate(n + 1);
 				for (size_type i = 0; i < n; i++)
 					tmp[i] = _vec[i];
-				delete[] _vec;
+				allocator_type().deallocate(_vec, _size);
 				_vec = tmp;
 				_capacity = n + 1;
 				_size = n;
@@ -156,11 +159,11 @@ namespace ft {
 		void	reserve(size_type n) {
 			if (n <= _capacity)
 				return;
-			T* tmp = new T[n];
+			pointer tmp = allocator_type().allocate(n);
 			_capacity = n;
 			for (size_type i = 0; i < _size; i++)
 				tmp[i] = _vec[i];
-			delete[] _vec;
+			allocator_type().deallocate(_vec, _size);
 			_vec = tmp;
 		}
 		void 	push_back(T i){

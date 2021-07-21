@@ -87,17 +87,17 @@ int main() {
 		std::cout << "Size: " << g.size() << std::endl;
 		ft::vector<Bureaucrat>::iterator it = g.begin();
 
-		for (ft::vector<Bureaucrat>::iterator start = it; start != g.end(); ++start){
-			std::cout << "val : " << *start << std::endl;
+		for (ft::vector<Bureaucrat>::iterator start = it; start != g.end(); start++){
+			std::cout << *start << std::endl;
 		}
 		g.push_back(Bureaucrat(c, 3423));
-		for (ft::vector<Bureaucrat>::iterator start = it; start != g.end(); ++start)
-			std::cout << "val : " << *start << std::endl;
+		for (ft::vector<Bureaucrat>::iterator start = it; start != g.end(); start++)
+			std::cout << *start << std::endl;
 
 		std::cout << "  Resizing: " << std::endl;
 		g.resize(1);
-		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); ++start)
-			std::cout << "val : " << *start << std::endl;
+		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); start++)
+			std::cout << *start << std::endl;
 	}
 
 }
