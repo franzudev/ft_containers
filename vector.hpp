@@ -11,18 +11,19 @@ namespace ft {
 		T*	p;
 	public:
 		VectorIterator() {
-			p = nullptr;
+			p = new T;
 		}
-		~VectorIterator() {};
+		~VectorIterator() {delete p;}
 		VectorIterator(VectorIterator const& it){
-			p = it.p;
+			p = new T;
+			*p = *it.p;
 		}
-		VectorIterator(T * it){
-			p = it;
+		VectorIterator(T * ptr){
+			p = new T;
+			*p = *ptr;
 		}
 		VectorIterator&	operator=(VectorIterator& it) {
-			if (p != it.p)
-				p = it.p;
+			*p = *it.p;
 			return *this;
 		}
 		VectorIterator&	operator=(T* it) {
@@ -48,7 +49,7 @@ namespace ft {
 			--*this;
 			return temp;
 		}
-		VectorIterator operator-(T val) {
+		VectorIterator operator-(ptrdiff_t val) {
 			VectorIterator<T> nV;
 			p -= val;
 			return *this;
@@ -56,6 +57,9 @@ namespace ft {
 		VectorIterator&	operator+=(int n){
 			p += n;
 			return *this;
+		}
+		T&				operator*(void){
+			return *p;
 		}
 //		friend bool operator==(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs);
 	};
