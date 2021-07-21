@@ -8,20 +8,6 @@
 #include "iterator.hpp"
 #include "vector.hpp"
 int main() {
-//	ft::vector<int> pippo;
-//	for (int i = 0; i < 10; ++i)
-//		pippo.push_back(i);
-//
-//	for (
-//			ft::vector<int>::iterator \
-//				gino = pippo.begin(), \
-//				nino = pippo.end();
-//			nino != gino ;
-//			++gino)
-//	{
-//		std::cout << *gino << ' ';
-//	}
-//	return 0;
 	ft::vector<char> g;
 	std::vector<char> h;
 	g.push_back('a');

@@ -11,16 +11,14 @@ namespace ft {
 		T*	p;
 	public:
 		VectorIterator() {
-			p = new T();
+			p = nullptr;
 		}
-		~VectorIterator() {delete p;}
+		~VectorIterator() {};
 		VectorIterator(VectorIterator const& it){
-			p = new T;
-			*p = *it.p;
+			p = it.p;
 		}
-		VectorIterator(T * ptr){
-			p = new T;
-			*p = *ptr;
+		VectorIterator(T *ptr){
+			p = ptr;
 		}
 		VectorIterator&	operator=(VectorIterator& it) {
 			*p = *it.p;
@@ -121,7 +119,7 @@ namespace ft {
 		// --- Iterators
 		iterator	begin(void) {
 			if (_size)
-				return iterator(&_vec[0]);
+				return iterator(_vec);
 			return iterator();
 		}
 		iterator	end(void) {
