@@ -75,13 +75,12 @@ namespace ft {
 	public:
 		typedef T													value_type;
 		typedef Allocator											allocator_type;
-		typedef std::allocator_traits<allocator_type>         		__alloc_traits;
 		typedef typename allocator_type::reference					reference;
 		typedef typename allocator_type::const_reference			const_reference;
 		typedef typename allocator_type::pointer					pointer;
 		typedef typename allocator_type::const_pointer				const_pointer;
 		typedef VectorIterator<value_type>							iterator;
-		typedef const iterator_traits<value_type *>					const_iterator;
+		typedef const iterator										const_iterator;
 		// to implement
 		typedef reverse_iterator<iterator>							reverse_iterator;
 		typedef const reverse_iterator								const_reverse_iterator;
@@ -129,6 +128,36 @@ namespace ft {
 				return iterator(&_vec[_size]);
 			return iterator();
 		}
+		const_iterator 	begin(void) const{
+			if (_size)
+				return iterator(_vec);
+			return iterator();
+		}
+		const_iterator	end(void) const{
+			if (_size)
+				return iterator(&_vec[_size]);
+			return iterator();
+		}
+		reverse_iterator rbegin(void) {
+			if (_size)
+				return reverse_iterator(_vec);
+			return reverse_iterator();
+		}
+		reverse_iterator rend(void) {
+			if (_size)
+				return reverse_iterator(_vec);
+			return reverse_iterator();
+		}
+		const_reverse_iterator rbegin(void) const{
+			if (_size)
+				return reverse_iterator(_vec);
+			return reverse_iterator();
+		}
+		const_reverse_iterator rend(void) const{
+			if (_size)
+				return reverse_iterator(_vec);
+			return reverse_iterator();
+		}
 
 		// --- Getters
 		size_type 	size(void)		const {return _size;}
@@ -140,10 +169,10 @@ namespace ft {
 		void 	resize(size_type n)
 		{
 			if (n < _size) {
-				T *tmp = allocator_type().allocate(n + 1);
+				pointer tmp = get_allocator().allocate(n + 1);
 				for (size_type i = 0; i < n; i++)
 					tmp[i] = _vec[i];
-				allocator_type().deallocate(_vec, _size);
+				get_allocator().deallocate(_vec, _size);
 				_vec = tmp;
 				_capacity = n + 1;
 				_size = n;
@@ -159,17 +188,20 @@ namespace ft {
 		void	reserve(size_type n) {
 			if (n <= _capacity)
 				return;
-			pointer tmp = allocator_type().allocate(n);
+			pointer tmp = get_allocator().allocate(n);
 			_capacity = n;
 			for (size_type i = 0; i < _size; i++)
 				tmp[i] = _vec[i];
-			allocator_type().deallocate(_vec, _size);
+			get_allocator().deallocate(_vec, _size);
 			_vec = tmp;
 		}
 		void 	push_back(T i){
 			if (_size + 1 == _capacity)
 				reserve(_capacity * 2);
 			_vec[_size++] = i;
+		}
+		allocator_type get_allocator(void) const {
+			return allocator_type();
 		}
 	protected:
 		size_type 	_size;		// Elements

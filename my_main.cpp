@@ -154,7 +154,10 @@ int main() {
 		g.push_back(Bureaucrat(c, 3423));
 		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); start++)
 			std::cout << *start << std::endl;
-
+//		to try
+//		std::cout << std::endl << std::endl;
+//		ft::vector<Bureaucrat>::reverse_iterator rBegin = g.rbegin();
+//		std::cout << *rBegin << std::endl << std::endl;
 		std::cout << "  Resizing: " << std::endl;
 		g.resize(1);
 		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); start++)
