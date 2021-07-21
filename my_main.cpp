@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <iterator>
 #include "Bureaucrat.hpp"
 #include "iterator.hpp"
 #include "vector.hpp"
@@ -77,7 +78,7 @@ int main() {
 	}
 	// Bureaucreat
 	{
-		std::cout << " ************* Testing std::string ************* " << std::endl;
+		std::cout << " ************* Testing Bureaucrat ************* " << std::endl;
 		ft::vector<Bureaucrat> g;
 		std::string a = "Gianni", b = "Pinotto", c = "Non lo so";
 		g.push_back(Bureaucrat(a, 14500));

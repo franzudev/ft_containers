@@ -72,25 +72,24 @@ namespace ft {
 
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
-	protected:
-		size_t	_size;		// Elements
-		size_t	_capacity;	// Allocated Space
-		bool	_empty;
-		T*		_vec;
-
 	public:
-		typedef T											value_type;
-		typedef Allocator									allocator_type;
-		typedef typename allocator_type::reference			reference;
-		typedef typename allocator_type::const_reference	const_reference;
-		typedef typename allocator_type::pointer			pointer;
-		typedef typename allocator_type::const_pointer		const_pointer;
-		typedef VectorIterator<T>							iterator;
-		typedef const iterator_traits<T*>					const_iterator;
+		typedef T													value_type;
+		typedef Allocator											allocator_type;
+		typedef typename allocator_type::reference					reference;
+		typedef typename allocator_type::const_reference			const_reference;
+		typedef typename allocator_type::pointer					pointer;
+		typedef typename allocator_type::const_pointer				const_pointer;
+		typedef VectorIterator<value_type>							iterator;
+		typedef const iterator_traits<value_type *>					const_iterator;
+		// to implement
+		typedef reverse_iterator<iterator>							reverse_iterator;
+		typedef const reverse_iterator								const_reverse_iterator;
+		typedef typename iterator_traits<iterator>::difference_type	difference_type;
+		typedef size_t												size_type;
 
 		// --- Constructors && Destructors
 		vector() {
-			_vec = new T[1];
+			_vec = new value_type[1];
 			_size = 0;
 			_capacity = 1;
 			_empty = true;
@@ -98,15 +97,15 @@ namespace ft {
 		~vector() {
 			delete[] _vec;
 		}
-		vector(vector<T> const &vec) {
+		vector(vector<value_type> const &vec) {
 			*this = vec;
 		}
 
 		// --- Operator Overloads
-		vector<T> &operator=(vector<T> const &vec) {
+		vector<value_type> &operator=(vector<value_type> const &vec) {
 			if (_capacity)
 				delete[] _vec;
-			_vec = new T[vec._capacity];
+			_vec = new value_type[vec._capacity];
 			for (iterator start = vec.begin(), end = vec.end(), copy = this->begin; start != end; ++start, ++copy) {
 				*copy = *start;
 			}
@@ -129,17 +128,17 @@ namespace ft {
 		}
 
 		// --- Getters
-		size_t	size(void)		const {return _size;}
-		size_t	max_size(void)	const {return std::allocator<T>::max_size();}
-		size_t	capacity(void)	const {return _capacity;}
-		bool	empty(void)		const {return _empty;}
+		size_type 	size(void)		const {return _size;}
+		size_type 	max_size(void)	const {return std::allocator<T>::max_size();}
+		size_type 	capacity(void)	const {return _capacity;}
+		bool		empty(void)		const {return _empty;}
 
 		// --- Member Functions
-		void 	resize(size_t n)
+		void 	resize(size_type n)
 		{
 			if (n < _size) {
 				T *tmp = new T[n + 1];
-				for (size_t i = 0; i < n; i++)
+				for (size_type i = 0; i < n; i++)
 					tmp[i] = _vec[i];
 				delete[] _vec;
 				_vec = tmp;
@@ -149,17 +148,17 @@ namespace ft {
 			else if (n >= _size) {
 				if (n + 1 > _capacity)
 					reserve(n + 1);
-				for (size_t i = _size; i < n; i++)
+				for (size_type i = _size; i < n; i++)
 					_vec[_size] = T();
 				_size = n;
 			}
 		}
-		void	reserve(size_t n) {
+		void	reserve(size_type n) {
 			if (n <= _capacity)
 				return;
 			T* tmp = new T[n];
 			_capacity = n;
-			for (size_t i = 0; i < _size; i++)
+			for (size_type i = 0; i < _size; i++)
 				tmp[i] = _vec[i];
 			delete[] _vec;
 			_vec = tmp;
@@ -169,5 +168,10 @@ namespace ft {
 				reserve(_capacity * 2);
 			_vec[_size++] = i;
 		}
+	protected:
+		size_type 	_size;		// Elements
+		size_type 	_capacity;	// Allocated Space
+		bool		_empty;
+		value_type	*_vec;
 	};
 }
