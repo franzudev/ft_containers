@@ -5,6 +5,66 @@
 #include "iterator.hpp"
 
 namespace ft {
+	template <class T>
+	class VectorIterator : public iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&> {
+	private:
+		T*	p;
+	public:
+		VectorIterator() {
+			p = nullptr;
+		}
+		~VectorIterator() {};
+		VectorIterator(VectorIterator const& it){
+			p = it.p;
+		}
+		VectorIterator(T * it){
+			p = it;
+		}
+		VectorIterator&	operator=(VectorIterator& it) {
+			if (p != it.p)
+				p = it.p;
+			return *this;
+		}
+		VectorIterator&	operator=(T* it) {
+			if (p != it)
+				p = it;
+			return *this;
+		}
+		VectorIterator&	operator++() {
+			p++;
+			return *this;
+		}
+		VectorIterator&	operator++(int) {
+			VectorIterator<T> temp(*this);
+			++*this;
+			return temp;
+		}
+		VectorIterator&	operator--() {
+			p--;
+			return *this;
+		}
+		VectorIterator&	operator--(int) {
+			VectorIterator<T> temp(*this);
+			--*this;
+			return temp;
+		}
+		VectorIterator operator-(T val) {
+			VectorIterator<T> nV;
+			p -= val;
+			return *this;
+		}
+		VectorIterator&	operator+=(int n){
+			p += n;
+			return *this;
+		}
+//		friend bool operator==(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs);
+	};
+
+//	template <class T>
+//	bool operator==(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) {
+//		return lhs.p == rhs.p;
+//	}
+
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
 	protected:
@@ -20,55 +80,8 @@ namespace ft {
 		typedef typename allocator_type::const_reference	const_reference;
 		typedef typename allocator_type::pointer			pointer;
 		typedef typename allocator_type::const_pointer		const_pointer;
-//		typedef iterator_traits<T*>							iterator;
+		typedef VectorIterator<T>							iterator;
 		typedef const iterator_traits<T*>					const_iterator;
-
-		class iterator : public iterator_traits<T> {
-			private:
-				T*	p;
-			public:
-				iterator() {
-					p = nullptr;
-				}
-				~iterator();
-				iterator(iterator const& it){
-					p = it.p;
-				}
-				iterator(T * it){
-					p = it;
-				}
-				iterator&	operator=(iterator& it) {
-					if (p != it.p)
-						p = it.p;
-					return *this;
-				}
-				iterator&	operator=(T* it) {
-					if (p != it)
-						p = it;
-					return *this;
-				}
-				iterator&	operator++() {
-					p++;
-					return *this;
-				}
-				iterator&	operator++(int) {
-					iterator temp(*this);
-					++*this;
-					return temp;
-				}
-				iterator&	operator--() {
-					p--;
-					return *this;
-				}
-				iterator&	operator--(int) {
-					iterator temp(*this);
-					--*this;
-					return temp;
-				}
-				void	operator+=(int n){
-					p += n;
-				}
-		};
 
 		// --- Constructors && Destructors
 		vector() {
@@ -102,12 +115,12 @@ namespace ft {
 		iterator	begin(void) {
 			if (_size)
 				return iterator(&_vec[0]);
-			return nullptr;
+			return iterator();
 		}
 		iterator	end(void) {
 			if (_size)
 				return iterator(&_vec[_size]);
-			return nullptr;
+			return iterator();
 		}
 
 		// --- Getters
