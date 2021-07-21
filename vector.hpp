@@ -36,8 +36,8 @@ namespace ft {
 			p++;
 			return *this;
 		}
-		VectorIterator&	operator++(int) {
-			VectorIterator<T> temp(*this);
+		VectorIterator	operator++(int) {
+			VectorIterator<T> temp = *this;
 			++*this;
 			return temp;
 		}
@@ -45,8 +45,8 @@ namespace ft {
 			p--;
 			return *this;
 		}
-		VectorIterator&	operator--(int) {
-			VectorIterator<T> temp(*this);
+		VectorIterator	operator--(int) {
+			VectorIterator<T> temp = *this;
 			--*this;
 			return temp;
 		}

@@ -27,7 +27,7 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const Bureaucrat& bureaucrat){
-	os << "Name: " << bureaucrat.getName() << " | Grade: " << bureaucrat.getGrade() << std::endl;
+	os <<  bureaucrat.getName() << ", " << bureaucrat.getGrade() << std::endl;
 	return os;
 }
 
