@@ -6,6 +6,8 @@ CF_FT	=	-Wall -Wextra -Werror -std=c++98
 CF_STL	=	$(CF_FT) -D USE_STL
 CC		=	clang++
 
+all		:	ft
+
 stl		:
 	@$(CC) $(CF_STL) -o $(NAME_1) $(SRCS)
 ft		:
@@ -14,7 +16,6 @@ ft		:
 test	:
 	./$(NAME_1) $(RND)
 
-all		:	stl ft
 
 fclean	:
 	rm -rf $(NAME_1) $(NAME_2)

@@ -62,13 +62,13 @@ namespace ft {
 		T&				operator*(void){
 			return *p;
 		}
-//		friend bool operator==(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs);
+		bool operator==(const VectorIterator<T>& rhs) {
+			return p == rhs.p;
+		}
+		bool	operator!=(const VectorIterator<T> &rhs) {
+			return p != rhs.p;
+		}
 	};
-
-//	template <class T>
-//	bool operator==(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) {
-//		return lhs.p == rhs.p;
-//	}
 
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
@@ -90,7 +90,7 @@ namespace ft {
 
 		// --- Constructors && Destructors
 		vector() {
-			_vec = new T();
+			_vec = new T[1];
 			_size = 0;
 			_capacity = 1;
 			_empty = true;
@@ -135,26 +135,36 @@ namespace ft {
 		bool	empty(void)		const {return _empty;}
 
 		// --- Member Functions
-		void 	resize(size_t n) {
-			if (n < _size)
-				_size = n;
-			if (n > _capacity){
-				T* tmp = new T[n];
-				_capacity = n;
-				for (size_t i = 0; i < _size; i++)
+		void 	resize(size_t n)
+		{
+			if (n < _size) {
+				T *tmp = new T[n];
+				for (size_t i = 0; i < n; i++)
 					tmp[i] = _vec[i];
 				delete[] _vec;
 				_vec = tmp;
+			}
+			else if (n >= _size) {
+				if (n + 1 > _capacity)
+					reserve(n + 1);
+				for (size_t i = _size; i < n; i++)
+					_vec[_size] = (void)0;
+				_size = n;
 			}
 		}
 		void	reserve(size_t n) {
 			if (n <= _capacity)
 				return;
-			// ---
+			T* tmp = new T[n];
+			_capacity = n;
+			for (size_t i = 0; i < _size; i++)
+				tmp[i] = _vec[i];
+			delete[] _vec;
+			_vec = tmp;
 		}
 		void 	push_back(T i){
 			if (_size + 1 == _capacity)
-				resize(_capacity * 2);
+				reserve(_capacity * 2);
 			_vec[_size++] = i;
 		}
 	};
