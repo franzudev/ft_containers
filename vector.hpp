@@ -138,17 +138,19 @@ namespace ft {
 		void 	resize(size_t n)
 		{
 			if (n < _size) {
-				T *tmp = new T[n];
+				T *tmp = new T[n + 1];
 				for (size_t i = 0; i < n; i++)
 					tmp[i] = _vec[i];
 				delete[] _vec;
 				_vec = tmp;
+				_capacity = n + 1;
+				_size = n;
 			}
 			else if (n >= _size) {
 				if (n + 1 > _capacity)
 					reserve(n + 1);
 				for (size_t i = _size; i < n; i++)
-					_vec[_size] = (void)0;
+					_vec[_size] = T();
 				_size = n;
 			}
 		}
