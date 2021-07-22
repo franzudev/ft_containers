@@ -8,32 +8,32 @@ namespace ft {
 	template <class T>
 	class VectorIterator : public iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&> {
 	protected:
-		T*	p;
+		T*	current;
 	public:
 		VectorIterator() {
-			p = nullptr;
+			current = nullptr;
 		}
 		~VectorIterator() {};
-		VectorIterator(VectorIterator const& it){
-			p = it.p;
+		VectorIterator(VectorIterator const& it) {
+			current = it.current;
 		}
-		VectorIterator(T *ptr){
-			p = ptr;
+		VectorIterator(T *ptr) {
+			current = ptr;
 		}
 		VectorIterator&	operator=(VectorIterator& it) {
-			*p = *it.p;
+			current = it.current;
 			return *this;
 		}
 		VectorIterator&	operator=(T* it) {
-			*p = *it;
+			current = it;
 			return *this;
 		}
 		VectorIterator&	operator=(T it) {
-			*p = it;
+			current = it;
 			return *this;
 		}
 		VectorIterator&	operator++() {
-			p++;
+			current++;
 			return *this;
 		}
 		VectorIterator	operator++(int) {
@@ -42,7 +42,7 @@ namespace ft {
 			return temp;
 		}
 		VectorIterator&	operator--() {
-			p--;
+			current--;
 			return *this;
 		}
 		VectorIterator	operator--(int) {
@@ -50,26 +50,34 @@ namespace ft {
 			--*this;
 			return temp;
 		}
-		VectorIterator operator-(ptrdiff_t val) {
-			VectorIterator<T> nV;
-			p -= val;
+		ptrdiff_t operator-(size_t val) {
+			return current - val;
+		}
+		ptrdiff_t operator-(VectorIterator& val) {
+			return current - val.current;
+		}
+		VectorIterator&	operator+=(size_t n) {
+			current += n;
 			return *this;
 		}
-		VectorIterator&	operator+=(int n){
-			p += n;
+		VectorIterator&	operator-=(size_t n) {
+			current -= n;
 			return *this;
 		}
-		T&				operator*(void){
-			return *p;
+		T&				operator*(void) {
+			return *current;
 		}
-		bool operator==(const VectorIterator<T>& rhs) {
-			return p == rhs.p;
+		template <class Iterator>
+		bool operator==(const Iterator& rhs) {
+			return current == rhs.current;
 		}
-		bool	operator!=(const VectorIterator<T> &rhs) {
-			return p != rhs.p;
+
+		template <class Iterator>
+		bool	operator!=(const Iterator &rhs) {
+			return current != rhs.current;
 		}
 	};
-	template <class T>
+	/*template <class T>
 	class VectorReverseIterator : public iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&> {
 	protected:
 		T*	p;
@@ -132,7 +140,7 @@ namespace ft {
 		bool	operator!=(const VectorReverseIterator<T> &rhs) {
 			return p != rhs.p;
 		}
-	};
+	}*/
 
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
@@ -146,7 +154,7 @@ namespace ft {
 		typedef VectorIterator<value_type>							iterator;
 		typedef const iterator										const_iterator;
 		// to implement
-		typedef VectorReverseIterator<value_type>					reverse_iterator;
+		typedef reverse_iterator<iterator>							reverse_iterator;
 		typedef const reverse_iterator								const_reverse_iterator;
 		typedef typename iterator_traits<iterator>::difference_type	difference_type;
 		typedef size_t												size_type;
@@ -176,8 +184,9 @@ namespace ft {
 			if (_capacity)
 				allocator.deallocate(_vec, _size);
 			_vec = allocator.allocate(vec._capacity);
-			for (iterator start = vec.begin(), end = vec.end(), copy = this->begin; start != end; ++start, ++copy) {
-				*copy = *start;
+			size_type i = 0;
+			for (iterator start = vec.begin(), end = vec.end(), copy = this->begin; start != end; ++start, ++copy, i++) {
+				*copy = allocator.construct(_vec + i, *start);
 			}
 			_size = vec._size;
 			_capacity = vec._capacity;
@@ -227,7 +236,37 @@ namespace ft {
 		}
 
 		//Modifiers
+		template< bool CONDITION, typename TYPE = void >
+		struct enable_if{};
 
+		template< typename TYPE >
+		struct enable_if< true, TYPE > {
+			typedef TYPE type;
+		};
+
+		template <class InputIterator>
+		void assign (InputIterator first, InputIterator last, typename enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = 0) {
+			size_type new_size = std::abs(last - first);
+			clean_vector(new_size);
+			size_type i = 0;
+			for (InputIterator start = first; start != last; start++, i++) {
+				allocator.construct(_vec + i, *start);
+			}
+			_size = new_size;
+		}
+
+		void assign(size_type n, const value_type& val) {
+			clean_vector(n);
+			for (size_type i = 0; i < n; i++)
+				_vec[i] = val;
+			_size = n;
+		}
+
+		void 	push_back(value_type i){
+			if (_size + 1 == _capacity)
+				reserve(_capacity * 2);
+			_vec[_size++] = i;
+		}
 
 		// --- Getters
 		size_type 	size(void)		const {return _size;}
@@ -265,11 +304,6 @@ namespace ft {
 			allocator.deallocate(_vec, _size);
 			_vec = tmp;
 		}
-		void 	push_back(T i){
-			if (_size + 1 == _capacity)
-				reserve(_capacity * 2);
-			_vec[_size++] = i;
-		}
 		allocator_type get_allocator(void) const {
 			return allocator;
 		}
@@ -295,23 +329,15 @@ namespace ft {
 			return _vec[index];
 		}
 		reference front() {
-			if (empty())
-				return *end();
 			return *begin();
 		}
 		const_reference front() const {
-			if (empty())
-				return *end();
 			return *begin();
 		}
 		reference back() {
-			if (empty())
-				return *end();
 			return *rbegin();
 		}
 		const_reference back() const {
-			if (empty())
-				return *end();
 			return *rbegin();
 		}
 
@@ -322,5 +348,13 @@ namespace ft {
 	private:
 		// maybe static
 		allocator_type	allocator;
+
+		void	clean_vector(size_type new_size) {
+			for (size_type i = 0; i < _size; i++)
+				allocator.destroy(_vec + i);
+			allocator.deallocate(_vec, _size);
+			_vec = allocator.allocate(new_size + 1);
+			_capacity = new_size + 1;
+		}
 	};
 }

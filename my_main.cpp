@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include "Bureaucrat.hpp"
 #include "iterator.hpp"
@@ -87,8 +88,18 @@ int main() {
 		for (ft::vector<int>::iterator start = g.begin(); start != g.end(); ++start)
 			std::cout << "val : " << *start << std::endl;
 		std::cout << std::endl;
+		ft::vector<int> rvect;
+		rvect.push_back(10);
+		rvect.push_back(20);
+		rvect.push_back(40);
+		rvect.push_back(50);
+		g.assign(100, 10);
+		for (ft::vector<int>::iterator start = g.begin(); start != g.end(); ++start)
+			std::cout << "val : " << *start << std::endl;
+		g.assign(rvect.begin(), rvect.end());
+		for (ft::vector<int>::iterator start = g.begin(); start != g.end(); ++start)
+			std::cout << "val : " << *start << std::endl;
 	}
-
 	// std::string
 	/*{
 		std::cout << " ************* Testing std::string ************* " << std::endl;
@@ -196,5 +207,4 @@ int main() {
 			std::cout << *start << std::endl;
 		std::cout << std::endl;
 	}
-
 }
