@@ -164,6 +164,13 @@ namespace ft {
 			*this = vec;
 		}
 
+		// Exceptions
+		class out_of_range: public std::exception {
+			const char * what() const throw() {
+				return "Element out of bound";
+			}
+		};
+
 		// --- Operator Overloads
 		vector<value_type> &operator=(vector<value_type> const &vec) {
 			if (_capacity)
@@ -219,6 +226,9 @@ namespace ft {
 			return reverse_iterator();
 		}
 
+		//Modifiers
+
+
 		// --- Getters
 		size_type 	size(void)		const {return _size;}
 		size_type 	max_size(void)	const {return allocator_type::max_size();}
@@ -262,6 +272,47 @@ namespace ft {
 		}
 		allocator_type get_allocator(void) const {
 			return allocator;
+		}
+		// Element access
+		reference operator[](size_type index) {
+			if (index >= _size)
+				return *end();
+			return _vec[index];
+		}
+		const_reference operator[](size_type index) const {
+			if (index >= _size)
+				return *end();
+			return _vec[index];
+		}
+		reference at(size_type index) {
+			if (index >= _size)
+				throw out_of_range();
+			return _vec[index];
+		}
+		const_reference at(size_type index) const {
+			if (index >= _size)
+				throw out_of_range();
+			return _vec[index];
+		}
+		reference front() {
+			if (empty())
+				return *end();
+			return *begin();
+		}
+		const_reference front() const {
+			if (empty())
+				return *end();
+			return *begin();
+		}
+		reference back() {
+			if (empty())
+				return *end();
+			return *rbegin();
+		}
+		const_reference back() const {
+			if (empty())
+				return *end();
+			return *rbegin();
 		}
 
 	protected:

@@ -149,13 +149,33 @@ int main() {
 		ft::vector<Bureaucrat>::reverse_iterator rit = g.rbegin();
 
 		std::cout << std::endl << std::endl;
-		std::cout << " ***** Postfix operators ***** " << std::endl;
+		std::cout << " ***** Postfix operators reverse ***** " << std::endl;
 		std::cout << "rit++: " << *(rit++) << std::endl;
 		std::cout << "rit  : " << *rit << std::endl;
 		std::cout << "--rit: " << *(--rit) << std::endl;
 		std::cout << "++rit: " << *(++rit) << std::endl;
 		std::cout << "rit--: " << *(rit--) << std::endl;
 		std::cout << "rit  : " << *rit << std::endl;
+
+		std::cout << std::endl << std::endl;
+		std::cout << " ***** Vector accessors ***** " << std::endl;
+		std::cout << "operator[]" << std::endl;
+		std::cout << "Gianni == " << g[5] << std::endl;
+		std::cout << "Pinotto == " << g[1] << std::endl;
+		std::cout << "at()" << std::endl;
+		std::cout << "Gianni == " << g.at(0) << std::endl;
+		std::cout << "Pinotto == " << g.at(1) << std::endl;
+		try {
+			std::cout << "Out of range == " << g.at(235) << std::endl;
+		} catch (std::exception &e){
+			std::cout << e.what() << std::endl << std::endl;
+		}
+		std::cout << "front()" << std::endl;
+		std::cout << "Gianni == " << g.front() << std::endl;
+		std::cout << "back()" << std::endl;
+		std::cout << "Pinotto == " << g.back() << std::endl;
+		std::cout << std::endl << std::endl;
+
 
 		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); start++){
 			std::cout << *start << std::endl;
