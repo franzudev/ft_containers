@@ -90,7 +90,7 @@ int main() {
 	}
 
 	// std::string
-	{
+	/*{
 		std::cout << " ************* Testing std::string ************* " << std::endl;
 		ft::vector<std::string> g;
 		std::string a = "Ciao", b = "Programmatori", c = "fannulloni";
@@ -124,7 +124,7 @@ int main() {
 		for (ft::vector<std::string>::iterator start = g.begin(); start != g.end(); ++start)
 			std::cout << "val : " << *start << std::endl;
 		std::cout << std::endl;
-	}
+	}*/
 	// Bureaucreat
 	{
 		std::cout << " ************* Testing Bureaucrat ************* " << std::endl;
@@ -146,6 +146,16 @@ int main() {
 		std::cout << "++it: " << *(++it) << std::endl;
 		std::cout << "it--: " << *(it--) << std::endl;
 		std::cout << "it  : " << *it << std::endl;
+		ft::vector<Bureaucrat>::reverse_iterator rit = g.rbegin();
+
+		std::cout << std::endl << std::endl;
+		std::cout << " ***** Postfix operators ***** " << std::endl;
+		std::cout << "rit++: " << *(rit++) << std::endl;
+		std::cout << "rit  : " << *rit << std::endl;
+		std::cout << "--rit: " << *(--rit) << std::endl;
+		std::cout << "++rit: " << *(++rit) << std::endl;
+		std::cout << "rit--: " << *(rit--) << std::endl;
+		std::cout << "rit  : " << *rit << std::endl;
 
 		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); start++){
 			std::cout << *start << std::endl;
@@ -155,9 +165,11 @@ int main() {
 		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); start++)
 			std::cout << *start << std::endl;
 //		to try
-//		std::cout << std::endl << std::endl;
-//		ft::vector<Bureaucrat>::reverse_iterator rBegin = g.rbegin();
-//		std::cout << *rBegin << std::endl << std::endl;
+		std::cout << std::endl << std::endl;
+		std::cout << " Reverse iterators" << std::endl;
+		for (ft::vector<Bureaucrat>::reverse_iterator start = g.rbegin(); start != g.rend(); start++)
+			std::cout << *start << std::endl;
+		std::cout << std::endl << std::endl;
 		std::cout << "  Resizing: " << std::endl;
 		g.resize(1);
 		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); start++)

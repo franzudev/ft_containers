@@ -7,7 +7,7 @@
 namespace ft {
 	template <class T>
 	class VectorIterator : public iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&> {
-	private:
+	protected:
 		T*	p;
 	public:
 		VectorIterator() {
@@ -69,6 +69,70 @@ namespace ft {
 			return p != rhs.p;
 		}
 	};
+	template <class T>
+	class VectorReverseIterator : public iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&> {
+	protected:
+		T*	p;
+	public:
+		VectorReverseIterator() {
+			p = nullptr;
+		}
+		~VectorReverseIterator() {};
+		VectorReverseIterator(VectorReverseIterator const& it){
+			p = it.p;
+		}
+		VectorReverseIterator(T *ptr){
+			p = ptr;
+		}
+		VectorReverseIterator&	operator=(VectorReverseIterator& it) {
+			*p = *it.p;
+			return *this;
+		}
+		VectorReverseIterator&	operator=(T* it) {
+			*p = *it;
+			return *this;
+		}
+		VectorReverseIterator&	operator=(T it) {
+			*p = it;
+			return *this;
+		}
+		VectorReverseIterator&	operator++() {
+			p--;
+			return *this;
+		}
+		VectorReverseIterator	operator++(int) {
+			VectorReverseIterator<T> temp = *this;
+			++*this;
+			return temp;
+		}
+		VectorReverseIterator&	operator--() {
+			p++;
+			return *this;
+		}
+		VectorReverseIterator	operator--(int) {
+			VectorReverseIterator<T> temp = *this;
+			--*this;
+			return temp;
+		}
+		VectorReverseIterator operator-(ptrdiff_t val) {
+			VectorReverseIterator<T> nV;
+			p -= val;
+			return *this;
+		}
+		VectorReverseIterator&	operator+=(int n){
+			p += n;
+			return *this;
+		}
+		T&				operator*(void){
+			return *p;
+		}
+		bool operator==(const VectorReverseIterator<T>& rhs) {
+			return p == rhs.p;
+		}
+		bool	operator!=(const VectorReverseIterator<T> &rhs) {
+			return p != rhs.p;
+		}
+	};
 
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
@@ -82,21 +146,18 @@ namespace ft {
 		typedef VectorIterator<value_type>							iterator;
 		typedef const iterator										const_iterator;
 		// to implement
-		typedef reverse_iterator<iterator>							reverse_iterator;
+		typedef VectorReverseIterator<value_type>					reverse_iterator;
 		typedef const reverse_iterator								const_reverse_iterator;
 		typedef typename iterator_traits<iterator>::difference_type	difference_type;
 		typedef size_t												size_type;
 
 		// --- Constructors && Destructors
 		vector() {
-			allocator_type allocator;
 			_vec = allocator.allocate(1);
 			_size = 0;
 			_capacity = 1;
-			_empty = true;
 		}
 		~vector() {
-			allocator_type allocator;
 			allocator.deallocate(_vec, _size);
 		}
 		vector(vector<value_type> const &vec) {
@@ -106,14 +167,13 @@ namespace ft {
 		// --- Operator Overloads
 		vector<value_type> &operator=(vector<value_type> const &vec) {
 			if (_capacity)
-				allocator_type::deallocate(_vec, _size);
-			_vec = allocator_type::allocate(vec._capacity);
+				allocator.deallocate(_vec, _size);
+			_vec = allocator.allocate(vec._capacity);
 			for (iterator start = vec.begin(), end = vec.end(), copy = this->begin; start != end; ++start, ++copy) {
 				*copy = *start;
 			}
 			_size = vec._size;
 			_capacity = vec._capacity;
-			_empty = vec._empty;
 			return *this;
 		}
 
@@ -140,22 +200,22 @@ namespace ft {
 		}
 		reverse_iterator rbegin(void) {
 			if (_size)
-				return reverse_iterator(_vec);
+				return reverse_iterator(&_vec[_size - 1]);
 			return reverse_iterator();
 		}
 		reverse_iterator rend(void) {
 			if (_size)
-				return reverse_iterator(_vec);
+				return reverse_iterator(_vec - 1);
 			return reverse_iterator();
 		}
 		const_reverse_iterator rbegin(void) const{
 			if (_size)
-				return reverse_iterator(_vec);
+				return reverse_iterator(&_vec[_size - 1]);
 			return reverse_iterator();
 		}
 		const_reverse_iterator rend(void) const{
 			if (_size)
-				return reverse_iterator(_vec);
+				return reverse_iterator(_vec - 1);
 			return reverse_iterator();
 		}
 
@@ -163,16 +223,16 @@ namespace ft {
 		size_type 	size(void)		const {return _size;}
 		size_type 	max_size(void)	const {return allocator_type::max_size();}
 		size_type 	capacity(void)	const {return _capacity;}
-		bool		empty(void)		const {return _empty;}
+		bool		empty(void)		const {return !_size;}
 
 		// --- Member Functions
 		void 	resize(size_type n)
 		{
 			if (n < _size) {
-				pointer tmp = get_allocator().allocate(n + 1);
+				pointer tmp = allocator.allocate(n + 1);
 				for (size_type i = 0; i < n; i++)
 					tmp[i] = _vec[i];
-				get_allocator().deallocate(_vec, _size);
+				allocator.deallocate(_vec, _size);
 				_vec = tmp;
 				_capacity = n + 1;
 				_size = n;
@@ -188,11 +248,11 @@ namespace ft {
 		void	reserve(size_type n) {
 			if (n <= _capacity)
 				return;
-			pointer tmp = get_allocator().allocate(n);
+			pointer tmp = allocator.allocate(n);
 			_capacity = n;
 			for (size_type i = 0; i < _size; i++)
 				tmp[i] = _vec[i];
-			get_allocator().deallocate(_vec, _size);
+			allocator.deallocate(_vec, _size);
 			_vec = tmp;
 		}
 		void 	push_back(T i){
@@ -201,12 +261,15 @@ namespace ft {
 			_vec[_size++] = i;
 		}
 		allocator_type get_allocator(void) const {
-			return allocator_type();
+			return allocator;
 		}
+
 	protected:
 		size_type 	_size;		// Elements
 		size_type 	_capacity;	// Allocated Space
-		bool		_empty;
 		value_type	*_vec;
+	private:
+		// maybe static
+		allocator_type	allocator;
 	};
 }
