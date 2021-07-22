@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <algorithm>
+#include "enable_if.hpp"
+#include "is_integral.hpp"
 #include "iterator.hpp"
 
 namespace ft {
@@ -236,16 +238,8 @@ namespace ft {
 		}
 
 		//Modifiers
-		template< bool CONDITION, typename TYPE = void >
-		struct enable_if{};
-
-		template< typename TYPE >
-		struct enable_if< true, TYPE > {
-			typedef TYPE type;
-		};
-
 		template <class InputIterator>
-		void assign (InputIterator first, InputIterator last, typename enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = 0) {
+		void assign (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0) {
 			size_type new_size = std::abs(last - first);
 			clean_vector(new_size);
 			size_type i = 0;
