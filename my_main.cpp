@@ -19,7 +19,7 @@ void	testerfunction() {
 int main() {
 
 	// char
-	{
+	/*{
 		std::cout << " ************* Testing char ************* " << std::endl;
 		ft::vector<char> g;
 		char a = 'a', b = 'b', c = 't';
@@ -52,7 +52,7 @@ int main() {
 		for (ft::vector<char>::iterator start = g.begin(); start != g.end(); ++start)
 			std::cout << "val : " << *start << std::endl;
 		std::cout << std::endl;
-	}
+	}*/
 	// int
 	{
 		std::cout << " ************* Testing int ************* " << std::endl;
@@ -99,6 +99,12 @@ int main() {
 		g.assign(rvect.begin(), rvect.end());
 		for (ft::vector<int>::iterator start = g.begin(); start != g.end(); ++start)
 			std::cout << "val : " << *start << std::endl;
+		std::cout << "pop" << std::endl;
+		g.pop_back();
+		ft::vector<int>::iterator twenty = g.begin();
+		g.insert(twenty, 15);
+		for (ft::vector<int>::iterator start = g.begin(); start != g.end(); ++start)
+			std::cout << "val : " << *start << std::endl;
 	}
 	// std::string
 	/*{
@@ -137,7 +143,7 @@ int main() {
 		std::cout << std::endl;
 	}*/
 	// Bureaucreat
-	{
+	/*{
 		std::cout << " ************* Testing Bureaucrat ************* " << std::endl;
 		ft::vector<Bureaucrat> g;
 		std::string a = "Gianni", b = "Pinotto", c = "Non lo so";
@@ -206,5 +212,5 @@ int main() {
 		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); start++)
 			std::cout << *start << std::endl;
 		std::cout << std::endl;
-	}
+	}*/
 }

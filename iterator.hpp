@@ -173,8 +173,12 @@ namespace ft {
 			return temp;
 		}
 
-		ptrdiff_t operator-(ptrdiff_t val) {
-			return current - val;
+		reverse_iterator &operator-(ptrdiff_t val) {
+			while (val) {
+				current--;
+				val--;
+			}
+			return *this;
 		}
 
 		ptrdiff_t operator-(reverse_iterator& val) {

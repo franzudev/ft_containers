@@ -31,7 +31,7 @@ namespace ft {
 			return *this;
 		}
 		VectorIterator&	operator=(T it) {
-			current = it;
+			*current = it;
 			return *this;
 		}
 		VectorIterator&	operator++() {
@@ -52,18 +52,36 @@ namespace ft {
 			--*this;
 			return temp;
 		}
-		ptrdiff_t operator-(size_t val) {
-			return current - val;
+		VectorIterator& operator-(size_t val) {
+			while (val) {
+				current--;
+				val--;
+			}
+			return *this;
 		}
+		// to check
 		ptrdiff_t operator-(VectorIterator& val) {
 			return current - val.current;
 		}
-		VectorIterator&	operator+=(size_t n) {
-			current += n;
-			return *this;
-		}
 		VectorIterator&	operator-=(size_t n) {
 			current -= n;
+			return *this;
+		}
+		VectorIterator& operator+(size_t val) {
+//			VectorIterator tmp(*this);
+			size_t i = 0;
+			while (i < val) {
+				current++;
+				i++;
+			}
+			return *this;
+		}
+		// to check
+		ptrdiff_t operator+(VectorIterator& val) {
+			return current + val.current;
+		}
+		VectorIterator&	operator+=(size_t n) {
+			current += n;
 			return *this;
 		}
 		T&				operator*(void) {
@@ -256,12 +274,38 @@ namespace ft {
 			_size = n;
 		}
 
-		void 	push_back(value_type i){
+		void 	push_back(value_type i) {
 			if (_size + 1 == _capacity)
 				reserve(_capacity * 2);
 			_vec[_size++] = i;
 		}
 
+		void	pop_back(void) {
+			allocator.destroy(&_vec[_size - 1]);
+			_size -= 1;
+		}
+
+		iterator insert (iterator position, const value_type& val)
+		{
+			if (_size + 1 >= _capacity)
+				reserve(_capacity + 1);
+			traslate(position, 1);
+			*position = val;
+			_size += 1;
+			return position;
+		}
+		void	traslate(iterator begin, size_type dist) {
+			iterator enda = end();
+			iterator revEnd = begin - 1;
+			iterator newit;
+			enda--;
+			for (; enda != revEnd; enda--) {
+				newit = enda;
+				enda += dist;
+				*enda = *newit;
+				enda -= dist;
+			}
+		}
 		// --- Getters
 		size_type 	size(void)		const {return _size;}
 		size_type 	max_size(void)	const {return allocator_type::max_size();}
