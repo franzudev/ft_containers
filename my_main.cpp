@@ -111,7 +111,7 @@ int main() {
 		g.insert(fifteen, 15);
 		ft::vector<int>::iterator fift = g.begin();
 		g.insert(fift, 15);
-		ft::vector<int>::iterator sixt = g.end();
+		ft::vector<int>::iterator sixt = g.begin();
 		ft::vector<int> cvect;
 		cvect.push_back(1000);
 		cvect.push_back(2000);

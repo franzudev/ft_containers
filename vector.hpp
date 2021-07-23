@@ -84,7 +84,7 @@ namespace ft {
 			current += n;
 			return *this;
 		}
-		T&				operator*(void) {
+		T&				operator*() {
 			return *current;
 		}
 		template <class Iterator>
@@ -151,7 +151,7 @@ namespace ft {
 			p += n;
 			return *this;
 		}
-		T&				operator*(void){
+		T&				operator*(){
 			return *p;
 		}
 		bool operator==(const VectorReverseIterator<T>& rhs) {
@@ -214,41 +214,41 @@ namespace ft {
 		}
 
 		// --- Iterators
-		iterator				begin(void) {
+		iterator				begin() {
 			return iterator(_vec);
 		}
-		iterator				end(void) {
+		iterator				end() {
 			if (_size)
 				return iterator(&_vec[_size]);
 			return iterator();
 		}
-		// const_iterator			begin(void) const{
+		// const_iterator			begin() const{
 		// 	std::cout << "const" << std::endl;
 		// 	if (_size)
 		// 		return iterator(_vec);
 		// 	return iterator();
 		// }
-		// const_iterator			end(void) const{
+		// const_iterator			end() const{
 		// 	if (_size)
 		// 		return iterator(&_vec[_size]);
 		// 	return iterator();
 		// }
-		reverse_iterator		rbegin(void) {
+		reverse_iterator		rbegin() {
 			if (_size)
 				return reverse_iterator(&_vec[_size - 1]);
 			return reverse_iterator();
 		}
-		reverse_iterator		rend(void) {
+		reverse_iterator		rend() {
 			if (_size)
 				return reverse_iterator(_vec - 1);
 			return reverse_iterator();
 		}
-		// const_reverse_iterator	rbegin(void) const{
+		// const_reverse_iterator	rbegin() const{
 		// 	if (_size)
 		// 		return reverse_iterator(&_vec[_size - 1]);
 		// 	return reverse_iterator();
 		// }
-		// const_reverse_iterator	rend(void) const{
+		// const_reverse_iterator	rend() const{
 		// 	if (_size)
 		// 		return reverse_iterator(_vec - 1);
 		// 	return reverse_iterator();
@@ -279,7 +279,7 @@ namespace ft {
 			_vec[_size++] = i;
 		}
 
-		void	pop_back(void) {
+		void	pop_back() {
 			allocator.destroy(&_vec[_size - 1]);
 			_size -= 1;
 		}
@@ -320,24 +320,11 @@ namespace ft {
 				_vec[index++] = *start;
 		}
 
-		void	traslate(iterator begin, size_type dist) {
-			iterator enda = end();
-			iterator revEnd = begin - 1;
-			iterator newit;
-			enda--;
-			for (; enda != revEnd; enda--) {
-				newit = enda;
-				enda += dist;
-				*enda = *newit;
-				enda -= dist;
-			}
-		}
-
 		// --- Getters
-		size_type 	size(void)		const {return _size;}
-		size_type 	max_size(void)	const {return allocator_type::max_size();}
-		size_type 	capacity(void)	const {return _capacity;}
-		bool		empty(void)		const {return !_size;}
+		size_type 	size()		const {return _size;}
+		size_type 	max_size()	const {return allocator_type::max_size();}
+		size_type 	capacity()	const {return _capacity;}
+		bool		empty()		const {return !_size;}
 
 		// --- Member Functions
 		void 			resize(size_type n)
@@ -369,7 +356,7 @@ namespace ft {
 			allocator.deallocate(_vec, _size);
 			_vec = tmp;
 		}
-		allocator_type	get_allocator(void) const {
+		allocator_type	get_allocator() const {
 			return allocator;
 		}
 		// Element access
@@ -411,15 +398,42 @@ namespace ft {
 		size_type 	_capacity;	// Allocated Space
 		value_type	*_vec;
 	private:
-		// maybe static
 		allocator_type	allocator;
 
+		/**
+		 * Clean the vector before use ;)
+		 *
+		 * @param size_type new_size
+		 * @return void
+		 */
 		void	clean_vector(size_type new_size) {
 			for (size_type i = 0; i < _size; i++)
 				allocator.destroy(_vec + i);
 			allocator.deallocate(_vec, _size);
 			_vec = allocator.allocate(new_size + 1);
 			_capacity = new_size + 1;
+		}
+
+		/**
+		 * Translate element's in vectors by dist.
+		 *
+		 * Creates space for the new reserved vector
+		 *
+		 * @param iterator Iterator to start traslation
+		 * @param size_type distance to move the objects
+		 * @return void
+		 */
+		void	traslate(iterator begin, size_type dist) {
+			iterator enda = end();
+			iterator revEnd = begin - 1;
+			iterator newit;
+			enda--;
+			for (; enda != revEnd; enda--) {
+				newit = enda;
+				enda += dist;
+				*enda = *newit;
+				enda -= dist;
+			}
 		}
 	};
 
