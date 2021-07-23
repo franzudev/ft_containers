@@ -285,15 +285,25 @@ namespace ft {
 			_size -= 1;
 		}
 
+		/*
+		 * After reserve(), position lose the address
+		 * possible solutions:
+		 * - Convert "iterator position" to an "int index"
+		 * to take trace of the real position of the iterator
+		*/
 		iterator insert (iterator position, const value_type& val)
 		{
-			if (_size + 1 >= _capacity)
-				reserve(_capacity + 1);
 			traslate(position, 1);
 			*position = val;
 			_size += 1;
+			if (_size >= _capacity)
+				reserve(_capacity + 1);
 			return position;
 		}
+		/*void insert (iterator position, size_type n, const value_type& val) {
+			for (size_type i = 0; i < n; i++)
+				insert(position, val);
+		}*/
 		void	traslate(iterator begin, size_type dist) {
 			iterator enda = end();
 			iterator revEnd = begin - 1;

@@ -101,8 +101,17 @@ int main() {
 			std::cout << "val : " << *start << std::endl;
 		std::cout << "pop" << std::endl;
 		g.pop_back();
+
+
 		ft::vector<int>::iterator twenty = g.begin();
 		g.insert(twenty, 15);
+		ft::vector<int>::iterator fifteen = g.begin();
+		g.insert(fifteen, 15);
+		ft::vector<int>::iterator fift = g.begin();
+		g.insert(fift, 15);
+//		g.insert(fift, 10, 100);
+
+
 		for (ft::vector<int>::iterator start = g.begin(); start != g.end(); ++start)
 			std::cout << "val : " << *start << std::endl;
 	}
