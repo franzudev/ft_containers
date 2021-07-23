@@ -52,14 +52,14 @@ namespace ft {
 			--*this;
 			return temp;
 		}
-		VectorIterator& operator-(size_t val) {
+		VectorIterator operator-(size_t val) {
+			VectorIterator<T> temp = *this;
 			while (val) {
-				current--;
+				temp.current--;
 				val--;
 			}
-			return *this;
+			return temp;
 		}
-		// to check
 		ptrdiff_t operator-(VectorIterator& val) {
 			return current - val.current;
 		}
@@ -214,50 +214,49 @@ namespace ft {
 		}
 
 		// --- Iterators
-		iterator	begin(void) {
-			if (_size)
-				return iterator(_vec);
-			return iterator();
+		iterator				begin(void) {
+			return iterator(_vec);
 		}
-		iterator	end(void) {
+		iterator				end(void) {
 			if (_size)
 				return iterator(&_vec[_size]);
 			return iterator();
 		}
-		const_iterator 	begin(void) const{
-			if (_size)
-				return iterator(_vec);
-			return iterator();
-		}
-		const_iterator	end(void) const{
-			if (_size)
-				return iterator(&_vec[_size]);
-			return iterator();
-		}
-		reverse_iterator rbegin(void) {
-			if (_size)
-				return reverse_iterator(&_vec[_size - 1]);
-			return reverse_iterator();
-		}
-		reverse_iterator rend(void) {
-			if (_size)
-				return reverse_iterator(_vec - 1);
-			return reverse_iterator();
-		}
-		const_reverse_iterator rbegin(void) const{
+		// const_iterator			begin(void) const{
+		// 	std::cout << "const" << std::endl;
+		// 	if (_size)
+		// 		return iterator(_vec);
+		// 	return iterator();
+		// }
+		// const_iterator			end(void) const{
+		// 	if (_size)
+		// 		return iterator(&_vec[_size]);
+		// 	return iterator();
+		// }
+		reverse_iterator		rbegin(void) {
 			if (_size)
 				return reverse_iterator(&_vec[_size - 1]);
 			return reverse_iterator();
 		}
-		const_reverse_iterator rend(void) const{
+		reverse_iterator		rend(void) {
 			if (_size)
 				return reverse_iterator(_vec - 1);
 			return reverse_iterator();
 		}
+		// const_reverse_iterator	rbegin(void) const{
+		// 	if (_size)
+		// 		return reverse_iterator(&_vec[_size - 1]);
+		// 	return reverse_iterator();
+		// }
+		// const_reverse_iterator	rend(void) const{
+		// 	if (_size)
+		// 		return reverse_iterator(_vec - 1);
+		// 	return reverse_iterator();
+		// }
 
 		//Modifiers
 		template <class InputIterator>
-		void assign (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0) {
+		void	assign (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0) {
 			size_type new_size = std::abs(last - first);
 			clean_vector(new_size);
 			size_type i = 0;
@@ -267,7 +266,7 @@ namespace ft {
 			_size = new_size;
 		}
 
-		void assign(size_type n, const value_type& val) {
+		void	assign(size_type n, const value_type& val) {
 			clean_vector(n);
 			for (size_type i = 0; i < n; i++)
 				_vec[i] = val;
@@ -285,25 +284,42 @@ namespace ft {
 			_size -= 1;
 		}
 
-		/*
-		 * After reserve(), position lose the address
-		 * possible solutions:
-		 * - Convert "iterator position" to an "int index"
-		 * to take trace of the real position of the iterator
-		*/
 		iterator insert (iterator position, const value_type& val)
 		{
+			size_type index = position - begin();
 			traslate(position, 1);
 			*position = val;
 			_size += 1;
 			if (_size >= _capacity)
 				reserve(_capacity + 1);
-			return position;
+			return iterator(_vec + index);
 		}
-		/*void insert (iterator position, size_type n, const value_type& val) {
-			for (size_type i = 0; i < n; i++)
-				insert(position, val);
-		}*/
+
+		void insert (iterator position, size_type n, const value_type& val) {
+			size_type	index = position - begin();
+			if (_size + n >= _capacity)
+				reserve(_capacity + n + 1);
+			iterator newIt = iterator(&_vec[index]);
+			traslate(newIt, n);
+			_size += n;
+			size_type i = 0;
+			for (; i < n; i++)
+				_vec[index++] = val;
+		}
+
+		template <class InputIterator>
+    	void insert (iterator position, InputIterator first, InputIterator last) {
+			size_type index = position - begin();
+			size_type diff = last - first;
+			if (_size + diff >= _capacity)
+				reserve(_capacity + diff + 1);
+			iterator newIt = iterator(&_vec[index]);
+			traslate(newIt, diff);
+			_size += diff;
+			for (iterator start = first; start != last; start++)
+				_vec[index++] = *start;
+		}
+
 		void	traslate(iterator begin, size_type dist) {
 			iterator enda = end();
 			iterator revEnd = begin - 1;
@@ -316,6 +332,7 @@ namespace ft {
 				enda -= dist;
 			}
 		}
+
 		// --- Getters
 		size_type 	size(void)		const {return _size;}
 		size_type 	max_size(void)	const {return allocator_type::max_size();}
@@ -323,7 +340,7 @@ namespace ft {
 		bool		empty(void)		const {return !_size;}
 
 		// --- Member Functions
-		void 	resize(size_type n)
+		void 			resize(size_type n)
 		{
 			if (n < _size) {
 				pointer tmp = allocator.allocate(n + 1);
@@ -342,7 +359,7 @@ namespace ft {
 				_size = n;
 			}
 		}
-		void	reserve(size_type n) {
+		void			reserve(size_type n) {
 			if (n <= _capacity)
 				return;
 			pointer tmp = allocator.allocate(n);
@@ -352,40 +369,40 @@ namespace ft {
 			allocator.deallocate(_vec, _size);
 			_vec = tmp;
 		}
-		allocator_type get_allocator(void) const {
+		allocator_type	get_allocator(void) const {
 			return allocator;
 		}
 		// Element access
-		reference operator[](size_type index) {
+		reference		operator[](size_type index) {
 			if (index >= _size)
 				return *end();
 			return _vec[index];
 		}
-		const_reference operator[](size_type index) const {
+		const_reference	operator[](size_type index) const {
 			if (index >= _size)
 				return *end();
 			return _vec[index];
 		}
-		reference at(size_type index) {
+		reference		at(size_type index) {
 			if (index >= _size)
 				throw out_of_range();
 			return _vec[index];
 		}
-		const_reference at(size_type index) const {
+		const_reference	at(size_type index) const {
 			if (index >= _size)
 				throw out_of_range();
 			return _vec[index];
 		}
-		reference front() {
+		reference		front() {
 			return *begin();
 		}
-		const_reference front() const {
+		const_reference	front() const {
 			return *begin();
 		}
-		reference back() {
+		reference		back() {
 			return *rbegin();
 		}
-		const_reference back() const {
+		const_reference	back() const {
 			return *rbegin();
 		}
 
@@ -405,4 +422,9 @@ namespace ft {
 			_capacity = new_size + 1;
 		}
 	};
+
+	template <class T>
+	ptrdiff_t operator-(T t, T u) {
+		return t - u;
+	}
 }

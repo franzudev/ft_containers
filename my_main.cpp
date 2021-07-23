@@ -104,16 +104,27 @@ int main() {
 
 
 		ft::vector<int>::iterator twenty = g.begin();
+		twenty++;
+		twenty++;
 		g.insert(twenty, 15);
 		ft::vector<int>::iterator fifteen = g.begin();
 		g.insert(fifteen, 15);
 		ft::vector<int>::iterator fift = g.begin();
 		g.insert(fift, 15);
-//		g.insert(fift, 10, 100);
-
-
+		ft::vector<int>::iterator sixt = g.end();
+		ft::vector<int> cvect;
+		cvect.push_back(1000);
+		cvect.push_back(2000);
+		cvect.push_back(3000);
+		cvect.push_back(4000);
+		cvect.push_back(5000);
+		cvect.push_back(6000);
+		cvect.push_back(7000);
+		cvect.push_back(8000);
+		g.insert(sixt, cvect.begin(), cvect.end());
 		for (ft::vector<int>::iterator start = g.begin(); start != g.end(); ++start)
 			std::cout << "val : " << *start << std::endl;
+		std::cout << "diff:" << std::endl;
 	}
 	// std::string
 	/*{
