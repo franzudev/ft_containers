@@ -129,6 +129,7 @@ int main() {
 		cvect.clear();
 		for (ft::vector<int>::iterator start = cvect.begin(); start != cvect.end(); start++)
 			std::cout << "val : " << *start << std::endl;
+		std::cout << (g == cvect) << std::endl;
 //		std::cout << *prova << std::endl;
 	}
 	// std::string

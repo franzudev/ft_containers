@@ -7,7 +7,7 @@
 #include "iterator.hpp"
 
 namespace ft {
-	template <class T>
+	/*template <class T>
 	class VectorIterator : public iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&> {
 	protected:
 		T*	current;
@@ -96,82 +96,79 @@ namespace ft {
 		bool	operator!=(const Iterator &rhs) {
 			return current != rhs.current;
 		}
-	};
-	/*template <class T>
-	class VectorReverseIterator : public iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&> {
-	protected:
-		T*	p;
-	public:
-		VectorReverseIterator() {
-			p = nullptr;
-		}
-		~VectorReverseIterator() {};
-		VectorReverseIterator(VectorReverseIterator const& it){
-			p = it.p;
-		}
-		VectorReverseIterator(T *ptr){
-			p = ptr;
-		}
-		VectorReverseIterator&	operator=(VectorReverseIterator& it) {
-			*p = *it.p;
-			return *this;
-		}
-		VectorReverseIterator&	operator=(T* it) {
-			*p = *it;
-			return *this;
-		}
-		VectorReverseIterator&	operator=(T it) {
-			*p = it;
-			return *this;
-		}
-		VectorReverseIterator&	operator++() {
-			p--;
-			return *this;
-		}
-		VectorReverseIterator	operator++(int) {
-			VectorReverseIterator<T> temp = *this;
-			++*this;
-			return temp;
-		}
-		VectorReverseIterator&	operator--() {
-			p++;
-			return *this;
-		}
-		VectorReverseIterator	operator--(int) {
-			VectorReverseIterator<T> temp = *this;
-			--*this;
-			return temp;
-		}
-		VectorReverseIterator operator-(ptrdiff_t val) {
-			VectorReverseIterator<T> nV;
-			p -= val;
-			return *this;
-		}
-		VectorReverseIterator&	operator+=(int n){
-			p += n;
-			return *this;
-		}
-		T&				operator*(){
-			return *p;
-		}
-		bool operator==(const VectorReverseIterator<T>& rhs) {
-			return p == rhs.p;
-		}
-		bool	operator!=(const VectorReverseIterator<T> &rhs) {
-			return p != rhs.p;
-		}
-	}*/
+	};*/
 
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
 	public:
+		struct iterator {
+			typedef std::bidirectional_iterator_tag 	iterator_category;
+			typedef std::ptrdiff_t						difference_type;
+			typedef T									value_type;
+			typedef T*									pointer;
+			typedef T&									reference;
+			iterator(pointer ptr): m_ptr(ptr) {}
+
+			reference operator*() const { return *m_ptr; }
+			pointer operator->() { return m_ptr; }
+
+			// Prefix increment
+			iterator& operator++() { m_ptr++; return *this; }
+
+			// Postfix increment
+			iterator operator++(int) { iterator tmp = *this; ++(*this); return tmp; }
+
+			// Prefix decrement
+			iterator& operator--() { m_ptr--; return *this; }
+
+			// Postfix decrement
+			iterator operator--(int) { iterator tmp = *this; --(*this); return tmp; }
+
+			iterator operator-(size_t val) {
+				iterator temp = *this;
+				while (val) {
+					temp.m_ptr--;
+					val--;
+				}
+				return temp;
+			}
+			ptrdiff_t operator-(iterator& val) {
+				return m_ptr - val.m_ptr;
+			}
+			iterator&	operator-=(size_t n) {
+				m_ptr -= n;
+				return *this;
+			}
+			iterator operator+(size_t val) {
+				iterator tmp = *this;
+				size_t i = 0;
+				while (i < val) {
+					tmp.m_ptr++;
+					i++;
+				}
+				return tmp;
+			}
+			// to check
+			ptrdiff_t operator+(iterator& val) {
+				return m_ptr + val.m_ptr;
+			}
+			iterator&	operator+=(size_t n) {
+				m_ptr += n;
+				return *this;
+			}
+
+			friend bool operator== (const iterator& a, const iterator& b) { return a.m_ptr == b.m_ptr; };
+			friend bool operator!= (const iterator& a, const iterator& b) { return a.m_ptr != b.m_ptr; };
+		private:
+			pointer m_ptr;
+		};
+
 		typedef T													value_type;
 		typedef Allocator											allocator_type;
 		typedef typename allocator_type::reference					reference;
 		typedef typename allocator_type::const_reference			const_reference;
 		typedef typename allocator_type::pointer					pointer;
 		typedef typename allocator_type::const_pointer				const_pointer;
-		typedef VectorIterator<value_type>							iterator;
 		typedef const iterator										const_iterator;
 		// to implement
 		typedef reverse_iterator<iterator>							reverse_iterator;
@@ -449,7 +446,7 @@ namespace ft {
 		void	traslate(iterator begin, size_type dist) {
 			iterator enda = end();
 			iterator revEnd = begin - 1;
-			iterator newit;
+			iterator newit = enda;
 			enda--;
 			for (; enda != revEnd; enda--) {
 				newit = enda;
@@ -463,6 +460,12 @@ namespace ft {
 	template <class T>
 	ptrdiff_t operator-(T t, T u) {
 		return t - u;
+	}
+
+	template< class T, class Alloc >
+	bool operator==( const ft::vector<T,Alloc>& lhs,
+					 const ft::vector<T,Alloc>& rhs ) {
+		return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 
 }
