@@ -22,7 +22,7 @@ namespace ft {
 		VectorIterator(T *ptr) {
 			current = ptr;
 		}
-		VectorIterator&	operator=(VectorIterator& it) {
+		VectorIterator&	operator=(VectorIterator it) {
 			current = it.current;
 			return *this;
 		}
@@ -67,14 +67,14 @@ namespace ft {
 			current -= n;
 			return *this;
 		}
-		VectorIterator& operator+(size_t val) {
-//			VectorIterator tmp(*this);
+		VectorIterator operator+(size_t val) {
+			VectorIterator tmp = *this;
 			size_t i = 0;
 			while (i < val) {
-				current++;
+				tmp.current++;
 				i++;
 			}
-			return *this;
+			return tmp;
 		}
 		// to check
 		ptrdiff_t operator+(VectorIterator& val) {
@@ -218,9 +218,7 @@ namespace ft {
 			return iterator(_vec);
 		}
 		iterator				end() {
-			if (_size)
-				return iterator(&_vec[_size]);
-			return iterator();
+			return iterator(&_vec[_size]);
 		}
 		// const_iterator			begin() const{
 		// 	std::cout << "const" << std::endl;
@@ -318,6 +316,44 @@ namespace ft {
 			_size += diff;
 			for (iterator start = first; start != last; start++)
 				_vec[index++] = *start;
+		}
+
+		iterator erase (iterator position) {
+			size_type index = position - begin();
+			allocator.destroy(&_vec[index]);
+			for (size_type i = index; i < _size; i++)
+				_vec[i] = _vec[i + 1];
+			--_size;
+			return position;
+		}
+
+		// TODO to test very well
+		iterator erase (iterator first, iterator last) {
+			size_type diff = last - first;
+			for (iterator begin = first; begin != last; begin++)
+				allocator.destroy(&*begin);
+			for (iterator begin = first; begin != end(); begin++)
+				*begin = *(begin + diff);
+			_size -= diff;
+			return first;
+		}
+
+		void swap (vector& x) {
+			size_type tSize = _size;
+			size_type tCapacity = _capacity;
+			value_type *tVec = _vec;
+			_size = x.size();
+			_capacity = x.capacity();
+			_vec = x._vec;
+			x._size = tSize;
+			x._capacity = tCapacity;
+			x._vec = tVec;
+		}
+
+		void clear() {
+			for (iterator it = begin(); it != end(); it++)
+				allocator.destroy(&*it);
+			_size = 0;
 		}
 
 		// --- Getters

@@ -122,9 +122,14 @@ int main() {
 		cvect.push_back(7000);
 		cvect.push_back(8000);
 		g.insert(sixt, cvect.begin(), cvect.end());
-		for (ft::vector<int>::iterator start = g.begin(); start != g.end(); ++start)
+		ft::vector<int>::iterator iast = g.begin();
+		ft::vector<int>::iterator prova = g.erase((g.begin()));
+		g.erase(prova, prova + 3);
+		g.swap(cvect);
+		cvect.clear();
+		for (ft::vector<int>::iterator start = cvect.begin(); start != cvect.end(); start++)
 			std::cout << "val : " << *start << std::endl;
-		std::cout << "diff:" << std::endl;
+//		std::cout << *prova << std::endl;
 	}
 	// std::string
 	/*{
