@@ -214,47 +214,34 @@ namespace ft {
 		}
 
 		// --- Iterators
-		iterator				begin() {
+		iterator begin() {
 			return iterator(_vec);
 		}
 		iterator				end() {
 			return iterator(&_vec[_size]);
 		}
-		// const_iterator			begin() const{
-		// 	std::cout << "const" << std::endl;
-		// 	if (_size)
-		// 		return iterator(_vec);
-		// 	return iterator();
-		// }
-		// const_iterator			end() const{
-		// 	if (_size)
-		// 		return iterator(&_vec[_size]);
-		// 	return iterator();
-		// }
-		reverse_iterator		rbegin() {
-			if (_size)
-				return reverse_iterator(&_vec[_size - 1]);
-			return reverse_iterator();
+		const_iterator begin() const {
+			return iterator(_vec);
 		}
-		reverse_iterator		rend() {
-			if (_size)
-				return reverse_iterator(_vec - 1);
-			return reverse_iterator();
+		const_iterator end() const {
+				return iterator(&_vec[_size]);
 		}
-		// const_reverse_iterator	rbegin() const{
-		// 	if (_size)
-		// 		return reverse_iterator(&_vec[_size - 1]);
-		// 	return reverse_iterator();
-		// }
-		// const_reverse_iterator	rend() const{
-		// 	if (_size)
-		// 		return reverse_iterator(_vec - 1);
-		// 	return reverse_iterator();
-		// }
+		reverse_iterator rbegin() {
+			return reverse_iterator(&_vec[_size - 1]);
+		}
+		reverse_iterator rend() {
+			return reverse_iterator(_vec - 1);
+		}
+		 const_reverse_iterator	rbegin() const {
+			return reverse_iterator(&_vec[_size - 1]);
+		 }
+		 const_reverse_iterator	rend() const {
+			return reverse_iterator(_vec - 1);
+		 }
 
 		//Modifiers
 		template <class InputIterator>
-		void	assign (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0) {
+		void	assign(InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0) {
 			size_type new_size = std::abs(last - first);
 			clean_vector(new_size);
 			size_type i = 0;
@@ -477,4 +464,5 @@ namespace ft {
 	ptrdiff_t operator-(T t, T u) {
 		return t - u;
 	}
+
 }
