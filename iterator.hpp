@@ -122,19 +122,9 @@ namespace ft {
 	protected:
 		Iterator current;
 	public:
-		reverse_iterator() {
-			current = nullptr;
-		}
-
-		~reverse_iterator()
-		{};
-
-		reverse_iterator(Iterator &ptr) {
-			current = ptr;
-		}
-		reverse_iterator(typename Iterator::value_type *ptr) {
-			current = ptr;
-		}
+		reverse_iterator(): current(nullptr) {}
+		reverse_iterator(Iterator ptr): current(ptr) {}
+		~reverse_iterator(){};
 
 		reverse_iterator &operator=(reverse_iterator &it) {
 			current = it.current;

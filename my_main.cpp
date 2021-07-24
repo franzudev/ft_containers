@@ -111,7 +111,7 @@ int main() {
 		g.insert(fifteen, 15);
 		ft::vector<int>::iterator fift = g.begin();
 		g.insert(fift, 15);
-		ft::vector<int>::iterator sixt = g.begin();
+//		ft::vector<int>::iterator sixt = g.begin();
 		ft::vector<int> cvect;
 		cvect.push_back(1000);
 		cvect.push_back(2000);
@@ -121,15 +121,31 @@ int main() {
 		cvect.push_back(6000);
 		cvect.push_back(7000);
 		cvect.push_back(8000);
-		g.insert(sixt, cvect.begin(), cvect.end());
-		ft::vector<int>::iterator iast = g.begin();
-		ft::vector<int>::iterator prova = g.erase((g.begin()));
-		g.erase(prova, prova + 3);
+//		g.insert(sixt, cvect.begin(), cvect.end());
+//		ft::vector<int>::iterator iast = g.begin();
+//		ft::vector<int>::iterator prova = g.erase((g.begin()));
+//		g.erase(prova, prova + 3);
 		g.swap(cvect);
 		cvect.clear();
-		for (ft::vector<int>::iterator start = cvect.begin(); start != cvect.end(); start++)
+//		for (ft::vector<int>::reverse_iterator start = g.rbegin(); start != g.rend(); start++)
+//			std::cout << "val : " << *start << std::endl;
+		std::cout << (cvect == g) << std::endl;
+		std::cout << g.max_size() << std::endl;
+		std::vector<int> provaStd(g.begin(), g.end());
+		for (std::vector<int>::iterator start = provaStd.begin(); start != provaStd.end(); start++)
 			std::cout << "val : " << *start << std::endl;
-		std::cout << (g == cvect) << std::endl;
+//		ft::vector<int> provaFt(provaStd.begin(), provaStd.end());
+//		for (std::vector<int>::iterator start = provaStd.begin(); start != provaStd.end(); start++)
+//			std::cout << "val : " << *start << std::endl;
+		std::cout << std::endl << std::endl << std::endl;
+		// copy constructor and assignment operator
+		ft::vector<int> copy(g);
+		g.clear();
+		std::cout << (copy == g) << std::endl;
+		// end
+		std::cout << std::endl << std::endl << std::endl;
+		ft::vector<int> vec(10, g.begin());
+
 //		std::cout << *prova << std::endl;
 	}
 	// std::string

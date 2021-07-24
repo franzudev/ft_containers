@@ -7,96 +7,6 @@
 #include "iterator.hpp"
 
 namespace ft {
-	/*template <class T>
-	class VectorIterator : public iterator<bidirectional_iterator_tag, T, ptrdiff_t, T*, T&> {
-	protected:
-		T*	current;
-	public:
-		VectorIterator() {
-			current = nullptr;
-		}
-		~VectorIterator() {};
-		VectorIterator(VectorIterator const& it) {
-			current = it.current;
-		}
-		VectorIterator(T *ptr) {
-			current = ptr;
-		}
-		VectorIterator&	operator=(VectorIterator it) {
-			current = it.current;
-			return *this;
-		}
-		VectorIterator&	operator=(T* it) {
-			current = it;
-			return *this;
-		}
-		VectorIterator&	operator=(T it) {
-			*current = it;
-			return *this;
-		}
-		VectorIterator&	operator++() {
-			current++;
-			return *this;
-		}
-		VectorIterator	operator++(int) {
-			VectorIterator<T> temp = *this;
-			++*this;
-			return temp;
-		}
-		VectorIterator&	operator--() {
-			current--;
-			return *this;
-		}
-		VectorIterator	operator--(int) {
-			VectorIterator<T> temp = *this;
-			--*this;
-			return temp;
-		}
-		VectorIterator operator-(size_t val) {
-			VectorIterator<T> temp = *this;
-			while (val) {
-				temp.current--;
-				val--;
-			}
-			return temp;
-		}
-		ptrdiff_t operator-(VectorIterator& val) {
-			return current - val.current;
-		}
-		VectorIterator&	operator-=(size_t n) {
-			current -= n;
-			return *this;
-		}
-		VectorIterator operator+(size_t val) {
-			VectorIterator tmp = *this;
-			size_t i = 0;
-			while (i < val) {
-				tmp.current++;
-				i++;
-			}
-			return tmp;
-		}
-		// to check
-		ptrdiff_t operator+(VectorIterator& val) {
-			return current + val.current;
-		}
-		VectorIterator&	operator+=(size_t n) {
-			current += n;
-			return *this;
-		}
-		T&				operator*() {
-			return *current;
-		}
-		template <class Iterator>
-		bool operator==(const Iterator& rhs) {
-			return current == rhs.current;
-		}
-
-		template <class Iterator>
-		bool	operator!=(const Iterator &rhs) {
-			return current != rhs.current;
-		}
-	};*/
 
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
@@ -177,17 +87,31 @@ namespace ft {
 		typedef size_t												size_type;
 
 		// --- Constructors && Destructors
-		vector() {
-			_vec = allocator.allocate(1);
-			_size = 0;
-			_capacity = 1;
-		}
+		explicit vector (const allocator_type& alloc = allocator_type()):
+			allocator(alloc),
+			_size(0),
+			_capacity(1),
+			_vec(allocator.allocate(1)) {}
 		~vector() {
 			allocator.deallocate(_vec, _size);
 		}
-		vector(vector<value_type> const &vec) {
+		vector(vector const &vec) {
 			*this = vec;
 		}
+		explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):
+			_size(n),
+			allocator(alloc),
+			_capacity(n + 1),
+			_vec(allocator.allocate(n))
+		{
+			insert(begin(), n, val);
+
+		}
+		template <class InputIterator>
+		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()): allocator(alloc) {
+			insert(begin(), first, last);
+		}
+
 
 		// Exceptions
 		class out_of_range: public std::exception {
@@ -202,8 +126,8 @@ namespace ft {
 				allocator.deallocate(_vec, _size);
 			_vec = allocator.allocate(vec._capacity);
 			size_type i = 0;
-			for (iterator start = vec.begin(), end = vec.end(), copy = this->begin; start != end; ++start, ++copy, i++) {
-				*copy = allocator.construct(_vec + i, *start);
+			for (iterator start = vec.begin(), end = vec.end(), copy = begin(); start != end; start++, copy++, i++) {
+				allocator.construct(_vec + i, (value_type)*start);
 			}
 			_size = vec._size;
 			_capacity = vec._capacity;
@@ -342,7 +266,7 @@ namespace ft {
 
 		// --- Getters
 		size_type 	size()		const {return _size;}
-		size_type 	max_size()	const {return allocator_type::max_size();}
+		size_type 	max_size()	const {return allocator.max_size();}
 		size_type 	capacity()	const {return _capacity;}
 		bool		empty()		const {return !_size;}
 
@@ -413,10 +337,6 @@ namespace ft {
 			return *rbegin();
 		}
 
-	protected:
-		size_type 	_size;		// Elements
-		size_type 	_capacity;	// Allocated Space
-		value_type	*_vec;
 	private:
 		allocator_type	allocator;
 
@@ -455,6 +375,11 @@ namespace ft {
 				enda -= dist;
 			}
 		}
+
+	protected:
+		size_type 	_size;		// Elements
+		size_type 	_capacity;	// Allocated Space
+		value_type	*_vec;
 	};
 
 	template <class T>
@@ -465,7 +390,7 @@ namespace ft {
 	template< class T, class Alloc >
 	bool operator==( const ft::vector<T,Alloc>& lhs,
 					 const ft::vector<T,Alloc>& rhs ) {
-		return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+		return !std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) && !std::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
 	}
 
 }
