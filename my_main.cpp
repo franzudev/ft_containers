@@ -10,6 +10,7 @@
 #include "Bureaucrat.hpp"
 #include "iterator.hpp"
 #include "vector.hpp"
+#include <chrono>
 
 template <class T>
 void	testerfunction() {
@@ -140,13 +141,43 @@ int main() {
 		std::cout << std::endl << std::endl << std::endl;
 		// copy constructor and assignment operator
 		ft::vector<int> copy(g);
+		std::cout << (copy == g) << std::endl;
+		for (ft::vector<int>::iterator start = copy.begin(); start != copy.end(); start++)
+			std::cout << "val : " << *start << std::endl;
 		g.clear();
 		std::cout << (copy == g) << std::endl;
+		for (ft::vector<int>::iterator start = copy.begin(); start != copy.end(); start++)
+			std::cout << "val : " << *start << std::endl;
 		// end
 		std::cout << std::endl << std::endl << std::endl;
-		ft::vector<int> vec(10, g.begin());
+		ft::vector<int> vec(copy.begin(), copy.end());
+		std::cout << (vec == copy) << std::endl;
+		std::cout << "Copy" << std::endl;
+		for (ft::vector<int>::iterator start = vec.begin(); start != vec.end(); start++)
+			std::cout << "val : " << *start << std::endl;
+		std::cout << "G" << std::endl;
+		copy.clear();
+		for (ft::vector<int>::iterator start = copy.begin(); start != copy.end(); start++)
+			std::cout << "val : " << *start << std::endl;
+		g.clear();
+		std::cout << (copy == g) << std::endl;
 
-//		std::cout << *prova << std::endl;
+		int randArray[1000000];
+		for (int i = 0; i < 1000000; i++)
+			randArray[i]= rand() % 100;
+		auto start = std::chrono::high_resolution_clock::now();
+		ft::vector<int> testTime(std::begin(randArray), std::end(randArray));
+		auto stop = std::chrono::high_resolution_clock::now();
+		std::cout << "ft::vector<int> copy constructor with pointers" << std::endl;
+		auto duration = duration_cast<std::chrono::microseconds>(stop - start);
+		std::cout << "μs " << duration.count() << std::endl;
+
+		start = std::chrono::high_resolution_clock::now();
+		std::vector<int> testTimeStd(std::begin(randArray), std::end(randArray));
+		stop = std::chrono::high_resolution_clock::now();
+		std::cout << "ft::vector<int> copy constructor with pointers" << std::endl;
+		duration = duration_cast<std::chrono::microseconds>(stop - start);
+		std::cout << "μs " << duration.count() << std::endl;
 	}
 	// std::string
 	/*{

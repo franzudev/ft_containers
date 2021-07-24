@@ -99,16 +99,20 @@ namespace ft {
 			*this = vec;
 		}
 		explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):
-			_size(n),
 			allocator(alloc),
+			_size(n),
 			_capacity(n + 1),
 			_vec(allocator.allocate(n))
 		{
 			insert(begin(), n, val);
-
 		}
 		template <class InputIterator>
-		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()): allocator(alloc) {
+		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()):
+		allocator(alloc),
+		_size(0),
+		_capacity(1),
+		_vec(allocator.allocate(1))
+		{
 			insert(begin(), first, last);
 		}
 
@@ -216,7 +220,13 @@ namespace ft {
 		template <class InputIterator>
     	void insert (iterator position, InputIterator first, InputIterator last) {
 			size_type index = position - begin();
-			size_type diff = last - first;
+			// map friendly
+			size_type i = 0;
+			for (iterator beg = first; beg != last; beg++)
+				i++;
+			// dunno
+//			size_type diff = last - first;
+			size_type diff = i;
 			if (_size + diff >= _capacity)
 				reserve(_capacity + diff + 1);
 			iterator newIt = iterator(&_vec[index]);
