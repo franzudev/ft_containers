@@ -226,8 +226,25 @@ namespace ft {
 				_vec[index++] = val;
 		}
 
-		template <class InputIterator>
-    	void insert (iterator position, InputIterator first, InputIterator last) {
+// 		template <class InputIterator>
+//     	void insert (iterator position, InputIterator first, InputIterator last) {
+// 			size_type index = position - begin();
+// 			// map friendly
+// 			size_type i = 0;
+// 			for (iterator beg = first; beg != last; beg++)
+// 				i++;
+// 			// dunno
+// //			size_type diff = last - first;
+// 			size_type diff = i;
+// 			if (_size + diff >= _capacity)
+// 				reserve(_capacity + diff + 1);
+// 			iterator newIt = iterator(&_vec[index]);
+// 			traslate(newIt, diff);
+// 			_size += diff;
+// 			for (iterator start = first; start != last; start++)
+// 				_vec[index++] = *start;
+// 		}
+    	void insert (iterator position, iterator first, iterator last) {
 			size_type index = position - begin();
 			// map friendly
 			size_type i = 0;
