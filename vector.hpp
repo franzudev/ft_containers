@@ -108,12 +108,14 @@ namespace ft {
 		}
 		template <class InputIterator>
 		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()):
-		allocator(alloc),
-		_size(0),
-		_capacity(1),
-		_vec(allocator.allocate(1))
+		allocator(alloc)
 		{
-			insert(begin(), first, last);
+			size_type len = 0;
+			for (InputIterator beg = first; beg != last; beg++)
+				len++;
+			_vec = allocator.allocate(_size = _capacity = len);
+			std::copy(first, last, _vec);
+//			std::copy(first, last, begin());
 		}
 
 

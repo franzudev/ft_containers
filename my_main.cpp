@@ -6,16 +6,48 @@
 #include <vector>
 #include <algorithm>
 #include <array>
+#include <set>
 #include <iterator>
 #include "Bureaucrat.hpp"
 #include "iterator.hpp"
 #include "vector.hpp"
 #include <chrono>
 
-template <class T>
-void	testerfunction() {
+class Timer {
+	std::chrono::steady_clock::time_point start;
+	std::chrono::steady_clock::time_point end;
+	std::chrono::microseconds diff;
 
-}
+public:
+	Timer(std::string msg) {
+		std::cout << "< " << msg << " >" << std::endl;
+		start = std::chrono::steady_clock::now();
+	}
+	long long int getDiff() {
+		end = std::chrono::steady_clock::now();
+		diff = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+		std::cout << "Execution time: " << diff.count() << "[µs]" << std::endl;
+		return diff.count();
+	}
+};
+
+struct Result {
+	typedef long long int microseconds;
+	Result() {}
+	Result(microseconds ft, microseconds std) {
+		(*this)(ft, std);
+	}
+	void operator()(microseconds ft, microseconds std) {
+		bool res = ft < std;
+		std::string winner = res ? "ft " : "std ";
+		std::string loser = res ? "std" : "ft";
+		float quotient = res ? (float)std / ft : (float)ft/ std;
+
+		std::cout << winner << quotient << " times faster than " << loser << std::endl << std::endl;
+	}
+};
+
+
 
 int main() {
 
@@ -165,19 +197,39 @@ int main() {
 		int randArray[1000000];
 		for (int i = 0; i < 1000000; i++)
 			randArray[i]= rand() % 100;
-		auto start = std::chrono::high_resolution_clock::now();
-		ft::vector<int> testTime(std::begin(randArray), std::end(randArray));
-		auto stop = std::chrono::high_resolution_clock::now();
-		std::cout << "ft::vector<int> copy constructor with pointers" << std::endl;
-		auto duration = duration_cast<std::chrono::microseconds>(stop - start);
-		std::cout << "μs " << duration.count() << std::endl;
 
-		start = std::chrono::high_resolution_clock::now();
-		std::vector<int> testTimeStd(std::begin(randArray), std::end(randArray));
-		stop = std::chrono::high_resolution_clock::now();
-		std::cout << "ft::vector<int> copy constructor with pointers" << std::endl;
-		duration = duration_cast<std::chrono::microseconds>(stop - start);
-		std::cout << "μs " << duration.count() << std::endl;
+		// tester mock
+		long long int std;
+		long long int ft;
+		Result r;
+		{
+			Timer test("ft::vector constructor call with int *");
+			ft::vector<int> testTime(std::begin(randArray), std::end(randArray));
+			ft = test.getDiff();
+		}
+		{
+			Timer test("std::vector constructor call with int *");
+			std::vector<int> testTime(std::begin(randArray), std::end(randArray));
+			std = test.getDiff();
+		}
+		r(ft, std);
+
+		std::set<int> set;
+		for (size_t i = 0; i < 1000000; i++)
+			set.insert(i);
+		{
+			Timer test("ft::vector constructor call with std:set<int>::iterator");
+			ft::vector<int> f(std::begin(set), std::end(set));
+			ft = test.getDiff();
+		}
+		{
+			Timer test("std::vector constructor call with std:set<int>::iterator");
+			std::vector<int> f(std::begin(set), std::end(set));
+			std = test.getDiff();
+		}
+		r(ft, std);
+
+
 	}
 	// std::string
 	/*{
