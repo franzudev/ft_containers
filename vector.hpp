@@ -79,7 +79,8 @@ namespace ft {
 		typedef typename allocator_type::const_reference			const_reference;
 		typedef typename allocator_type::pointer					pointer;
 		typedef typename allocator_type::const_pointer				const_pointer;
-		typedef const iterator										const_iterator;
+		//this is a cheat
+		typedef iterator											const_iterator;
 		// to implement
 		typedef reverse_iterator<iterator>							reverse_iterator;
 		typedef const reverse_iterator								const_reverse_iterator;
@@ -87,25 +88,25 @@ namespace ft {
 		typedef size_t												size_type;
 
 		// --- Constructors && Destructors
+		// --- Empty constructor
 		explicit vector (const allocator_type& alloc = allocator_type()):
 			allocator(alloc),
 			_size(0),
 			_capacity(1),
 			_vec(allocator.allocate(1)) {}
-		~vector() {
-			allocator.deallocate(_vec, _size);
-		}
-		vector(vector const &vec) {
-			*this = vec;
-		}
+		// --- Size constructor
 		explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):
 			allocator(alloc),
 			_size(n),
 			_capacity(n + 1),
 			_vec(allocator.allocate(n))
 		{
-			insert(begin(), n, val);
+			for (size_type i = 0; i < n; i++)
+			{
+				_vec[i] = val;
+			}
 		}
+		
 		template <class InputIterator>
 		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()):
 		allocator(alloc),
@@ -114,6 +115,14 @@ namespace ft {
 		_vec(allocator.allocate(1))
 		{
 			insert(begin(), first, last);
+		}
+		
+		vector(vector const &vec) {
+			*this = vec;
+		}
+
+		~vector() {
+			allocator.deallocate(_vec, _size);
 		}
 
 
