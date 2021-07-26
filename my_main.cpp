@@ -3,14 +3,21 @@
 //
 
 #include <iostream>
-#include <vector>
 #include <algorithm>
-#include <array>
-#include <set>
-#include <iterator>
-#include "Bureaucrat.hpp"
-#include "iterator.hpp"
-#include "vector.hpp"
+
+#ifdef USE_STL
+# define STL "std: "
+# include <iterator>
+# include <vector>
+# include <array>
+# include <set>
+namespace ft = std;
+#else
+# define STL "ft: "
+# include "Bureaucrat.hpp"
+# include "iterator.hpp"
+# include "vector.hpp"
+#endif
 #include <chrono>
 
 class Timer {
@@ -26,7 +33,7 @@ public:
 	long long int getDiff() {
 		end = std::chrono::steady_clock::now();
 		diff = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-		std::cout << "Execution time: " << diff.count() << "[µs]" << std::endl;
+		std::cout << STL << "execution time: " << diff.count() << "[µs]" << std::endl;
 		return diff.count();
 	}
 };
@@ -47,47 +54,43 @@ struct Result {
 	}
 };
 
+template <class T>
+struct VectorTester {
+	ft::vector<T> vector;
+	VectorTester(std::string msg, ft::vector <T> &vector): vector(vector) {
+		std::cout << msg << std::endl;
+	};
 
+	template<class InputIterator>
+	void	testTemplatedAssign(InputIterator first, InputIterator last) {
+		std::cout << "Testing assign method with template iterators" << std::endl;
+		vector.assign(first, last);
+	}
+
+	void	testSizedAssign(size_t n, const T& val) {
+		std::cout << "Testing assign method with template iterators" << std::endl;
+		vector.assign(n, val);
+	}
+
+	void	testPushBack(T value) {
+		std::cout << "Testing push_back method" << std::endl;
+		vector.push_back(value);
+	}
+
+	void	testPopBack(T value) {
+		std::cout << "Testing pop_back method" << std::endl;
+		vector.pop_back(value);
+	}
+
+private:
+	VectorTester();
+};
 
 int main() {
-
-	// char
-	/*{
-		std::cout << " ************* Testing char ************* " << std::endl;
-		ft::vector<char> g;
-		char a = 'a', b = 'b', c = 't';
-		std::cout << "Push: char(" << a << ")" << std::endl;
-		g.push_back(a);
-		std::cout << "Size: " << g.size() << std::endl;
-		std::cout << "Push: char(" << b << ")" << std::endl;
-		g.push_back(b);
-		std::cout << "Size: " << g.size() << std::endl;
-		ft::vector<char>::iterator it = g.begin();
-
-		std::cout << std::endl << std::endl;
-		std::cout << " ***** Postfix operators ***** " << std::endl;
-		std::cout << "it++: " << *(it++) << std::endl << std::endl;
-		std::cout << "it  : " << *it << std::endl << std::endl;
-		std::cout << "--it: " << *(--it) << std::endl << std::endl;
-		std::cout << "++it: " << *(++it) << std::endl << std::endl;
-		std::cout << "it--: " << *(it--) << std::endl << std::endl;
-		std::cout << "it  : " << *it << std::endl << std::endl;
-
-		for (ft::vector<char>::iterator start = g.begin(); start != g.end(); ++start){
-			std::cout << "val : " << *start << std::endl;
-		}
-		std::cout << "Push: int(" << c << ")" << std::endl;
-		g.push_back(c);
-		for (ft::vector<char>::iterator start = g.begin(); start != g.end(); ++start)
-			std::cout << "val : " << *start << std::endl;
-		std::cout << "Resizing: " << std::endl;
-		g.resize(1);
-		for (ft::vector<char>::iterator start = g.begin(); start != g.end(); ++start)
-			std::cout << "val : " << *start << std::endl;
-		std::cout << std::endl;
-	}*/
+	Timer mainTest("Testing main");
 	// int
 	{
+
 		std::cout << " ************* Testing int ************* " << std::endl;
 		ft::vector<int> g;
 		int a = 1, b = 10, c = 100;
@@ -108,17 +111,21 @@ int main() {
 		std::cout << "it--: " << *(it--) << std::endl << std::endl;
 		std::cout << "it  : " << *it << std::endl << std::endl;
 
-		for (ft::vector<int>::iterator start = g.begin(); start != g.end(); ++start){
+		for (ft::vector<int>::iterator start = g.begin();
+			 start != g.end(); ++start)
+		{
 			std::cout << "val : " << *start << std::endl;
 		}
 		std::cout << "Push: int(" << c << ")" << std::endl;
 		g.push_back(c);
-		for (ft::vector<int>::iterator start = it; start != g.end(); ++start)
+		for (ft::vector<int>::iterator start = g.begin();
+			 start != g.end(); ++start)
 			std::cout << "val : " << *start << std::endl;
 
 		std::cout << "  Resizing: " << std::endl;
 		g.resize(1);
-		for (ft::vector<int>::iterator start = g.begin(); start != g.end(); ++start)
+		for (ft::vector<int>::iterator start = g.begin();
+			 start != g.end(); ++start)
 			std::cout << "val : " << *start << std::endl;
 		std::cout << std::endl;
 		ft::vector<int> rvect;
@@ -144,7 +151,6 @@ int main() {
 		g.insert(fifteen, 15);
 		ft::vector<int>::iterator fift = g.begin();
 		g.insert(fift, 15);
-//		ft::vector<int>::iterator sixt = g.begin();
 		ft::vector<int> cvect;
 		cvect.push_back(1000);
 		cvect.push_back(2000);
@@ -154,22 +160,13 @@ int main() {
 		cvect.push_back(6000);
 		cvect.push_back(7000);
 		cvect.push_back(8000);
-//		g.insert(sixt, cvect.begin(), cvect.end());
-//		ft::vector<int>::iterator iast = g.begin();
-//		ft::vector<int>::iterator prova = g.erase((g.begin()));
-//		g.erase(prova, prova + 3);
 		g.swap(cvect);
 		cvect.clear();
-//		for (ft::vector<int>::reverse_iterator start = g.rbegin(); start != g.rend(); start++)
-//			std::cout << "val : " << *start << std::endl;
 		std::cout << (cvect == g) << std::endl;
 		std::cout << g.max_size() << std::endl;
-		std::vector<int> provaStd(g.begin(), g.end());
-		for (std::vector<int>::iterator start = provaStd.begin(); start != provaStd.end(); start++)
+		ft::vector<int> provaStd(g.begin(), g.end());
+		for (ft::vector<int>::iterator start = provaStd.begin(); start != provaStd.end(); start++)
 			std::cout << "val : " << *start << std::endl;
-//		ft::vector<int> provaFt(provaStd.begin(), provaStd.end());
-//		for (std::vector<int>::iterator start = provaStd.begin(); start != provaStd.end(); start++)
-//			std::cout << "val : " << *start << std::endl;
 		std::cout << std::endl << std::endl << std::endl;
 		// copy constructor and assignment operator
 		ft::vector<int> copy(g);
@@ -196,146 +193,53 @@ int main() {
 
 		int randArray[1000000];
 		for (int i = 0; i < 1000000; i++)
-			randArray[i]= rand() % 100;
+			randArray[i]= rand() % 100000;
 
 		// tester mock
 		long long int std;
 		long long int ft;
 		Result r;
 		{
-			Timer test("ft::vector constructor call with int *");
+			Timer test("vector constructor call with int *");
 			ft::vector<int> testTime(std::begin(randArray), std::end(randArray));
-			ft = test.getDiff();
+		}
+
+		{
+			int cazzo = 10;
+			Timer test("vector constructor call with int *");
+			ft::vector<int> test5(100, cazzo);
 		}
 		{
-			Timer test("std::vector constructor call with int *");
-			std::vector<int> testTime(std::begin(randArray), std::end(randArray));
-			std = test.getDiff();
+			int cazzo = 10;
+			Timer test("vector constructor call with int *");
+			ft::vector<int> test5(100, cazzo);
 		}
 		r(ft, std);
 
-		std::set<int> set;
-		for (size_t i = 0; i < 1000000; i++)
+		/*std::set<int> set;
+		for (size_t i = 0; i < 100000; i++)
 			set.insert(i);
 		{
 			Timer test("ft::vector constructor call with std:set<int>::iterator");
 			ft::vector<int> f(std::begin(set), std::end(set));
-			ft = test.getDiff();
 		}
 		{
 			Timer test("std::vector constructor call with std:set<int>::iterator");
 			std::vector<int> f(std::begin(set), std::end(set));
-			std = test.getDiff();
 		}
 		r(ft, std);
 
-
+		{
+			Timer test("ft::vector insert with three iterators");
+			ft::vector<int> test345;
+			test345.insert(test345.begin(), set.begin(), set.end());
+		}
+		{
+			Timer test("std::vector insert with three iterators");
+			std::vector<int> test345;
+			test345.insert(test345.begin(), set.begin(), set.end());
+		}
+		r(ft, std);*/
+		mainTest.getDiff();
 	}
-	// std::string
-	/*{
-		std::cout << " ************* Testing std::string ************* " << std::endl;
-		ft::vector<std::string> g;
-		std::string a = "Ciao", b = "Programmatori", c = "fannulloni";
-		std::cout << "Push: std::string(\"" << a << "\")" << std::endl;
-		g.push_back(a);
-		std::cout << "Size: " << g.size() << std::endl;
-		std::cout << "Push: std::string(\"" << b << "\")" << std::endl;
-		g.push_back(b);
-		std::cout << "Size: " << g.size() << std::endl;
-		ft::vector<std::string>::iterator it = g.begin();
-
-		std::cout << std::endl << std::endl;
-		std::cout << " ***** Postfix operators ***** " << std::endl << std::endl;
-		std::cout << "it++: " << *(it++) << std::endl << std::endl;
-		std::cout << "it  : " << *it << std::endl << std::endl;
-		std::cout << "--it: " << *(--it) << std::endl << std::endl;
-		std::cout << "++it: " << *(++it) << std::endl << std::endl;
-		std::cout << "it--: " << *(it--) << std::endl << std::endl;
-		std::cout << "it  : " << *it << std::endl << std::endl;
-
-		for (ft::vector<std::string>::iterator start = g.begin(); start != g.end(); ++start){
-			std::cout << "val : " << *start << std::endl;
-		}
-		std::cout << "Push: std::string(\"" << c << "\")" << std::endl;
-		g.push_back(c);
-		for (ft::vector<std::string>::iterator start = g.begin(); start != g.end(); ++start)
-			std::cout << "val : " << *start << std::endl;
-
-		std::cout << "  Resizing: " << std::endl;
-		g.resize(1);
-		for (ft::vector<std::string>::iterator start = g.begin(); start != g.end(); ++start)
-			std::cout << "val : " << *start << std::endl;
-		std::cout << std::endl;
-	}*/
-	// Bureaucreat
-	/*{
-		std::cout << " ************* Testing Bureaucrat ************* " << std::endl;
-		ft::vector<Bureaucrat> g;
-		std::string a = "Gianni", b = "Pinotto", c = "Non lo so";
-		std::cout << "Push: Bureaucrat(\"" << a << "\", 14500)" << std::endl;
-		g.push_back(Bureaucrat(a, 14500));
-		std::cout << "Size: " << g.size() << std::endl;
-		std::cout << "Push: Bureaucrat(\"" << b << "\", 32555)" << std::endl;
-		g.push_back(Bureaucrat(b, 32555));
-		std::cout << "Size: " << g.size() << std::endl;
-		ft::vector<Bureaucrat>::iterator it = g.begin();
-
-		std::cout << std::endl << std::endl;
-		std::cout << " ***** Postfix operators ***** " << std::endl;
-		std::cout << "it++: " << *(it++) << std::endl;
-		std::cout << "it  : " << *it << std::endl;
-		std::cout << "--it: " << *(--it) << std::endl;
-		std::cout << "++it: " << *(++it) << std::endl;
-		std::cout << "it--: " << *(it--) << std::endl;
-		std::cout << "it  : " << *it << std::endl;
-		ft::vector<Bureaucrat>::reverse_iterator rit = g.rbegin();
-
-		std::cout << std::endl << std::endl;
-		std::cout << " ***** Postfix operators reverse ***** " << std::endl;
-		std::cout << "rit++: " << *(rit++) << std::endl;
-		std::cout << "rit  : " << *rit << std::endl;
-		std::cout << "--rit: " << *(--rit) << std::endl;
-		std::cout << "++rit: " << *(++rit) << std::endl;
-		std::cout << "rit--: " << *(rit--) << std::endl;
-		std::cout << "rit  : " << *rit << std::endl;
-
-		std::cout << std::endl << std::endl;
-		std::cout << " ***** Vector accessors ***** " << std::endl;
-		std::cout << "operator[]" << std::endl;
-		std::cout << "Gianni == " << g[5] << std::endl;
-		std::cout << "Pinotto == " << g[1] << std::endl;
-		std::cout << "at()" << std::endl;
-		std::cout << "Gianni == " << g.at(0) << std::endl;
-		std::cout << "Pinotto == " << g.at(1) << std::endl;
-		try {
-			std::cout << "Out of range == " << g.at(235) << std::endl;
-		} catch (std::exception &e){
-			std::cout << e.what() << std::endl << std::endl;
-		}
-		std::cout << "front()" << std::endl;
-		std::cout << "Gianni == " << g.front() << std::endl;
-		std::cout << "back()" << std::endl;
-		std::cout << "Pinotto == " << g.back() << std::endl;
-		std::cout << std::endl << std::endl;
-
-
-		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); start++){
-			std::cout << *start << std::endl;
-		}
-		std::cout << "Push: Bureaucrat(\"" << c << "\", 32555)" << std::endl;
-		g.push_back(Bureaucrat(c, 3423));
-		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); start++)
-			std::cout << *start << std::endl;
-//		to try
-		std::cout << std::endl << std::endl;
-		std::cout << " Reverse iterators" << std::endl;
-		for (ft::vector<Bureaucrat>::reverse_iterator start = g.rbegin(); start != g.rend(); start++)
-			std::cout << *start << std::endl;
-		std::cout << std::endl << std::endl;
-		std::cout << "  Resizing: " << std::endl;
-		g.resize(1);
-		for (ft::vector<Bureaucrat>::iterator start = g.begin(); start != g.end(); start++)
-			std::cout << *start << std::endl;
-		std::cout << std::endl;
-	}*/
 }
