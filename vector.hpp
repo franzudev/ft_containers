@@ -91,7 +91,7 @@ namespace ft {
 		explicit vector (const allocator_type& alloc = allocator_type()):
 			allocator(alloc),
 			_size(0),
-			_capacity(1),
+			_capacity(0),
 			_vec(allocator.allocate(1)) {}
 
 		~vector() {
@@ -105,7 +105,7 @@ namespace ft {
 		explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):
 			allocator(alloc),
 			_size(n),
-			_capacity(n + 1),
+			_capacity(n),
 			_vec(allocator.allocate(n))
 		{
 			for (size_type i = 0; i < n; i++)
@@ -176,20 +176,26 @@ namespace ft {
 			clean_vector(new_size);
 			size_type i = 0;
 			for (InputIterator start = first; start != last; start++, i++) {
+				if (i > _capacity)
+					reserve(_capacity * 2);
 				allocator.construct(_vec + i, *start);
 			}
 			_size = new_size;
 		}
 
 		void	assign(size_type n, const value_type& val) {
-			clean_vector(n);
+			for (size_type i = _size; i < n; i++) {
+				if (i > _capacity)
+					_capacity = (_capacity ? _capacity : 1) * 2;
+			}
+			clean_vector(_capacity);
 			for (size_type i = 0; i < n; i++)
 				_vec[i] = val;
 			_size = n;
 		}
 
 		void 	push_back(value_type i) {
-			if (_size + 1 == _capacity)
+			if (_size == _capacity)
 				reserve(_capacity * 2);
 			_vec[_size++] = i;
 		}
@@ -201,19 +207,27 @@ namespace ft {
 
 		iterator insert (iterator position, const value_type& val)
 		{
-			size_type index = position - begin();
+			if (_size == _capacity) {
+				size_type index = 0;
+				for (iterator start = begin(); start != position; start++)
+					index++;
+				reserve(_capacity * 2);
+				iterator newPosition = begin() + index;
+				traslate(newPosition, 1);
+				*newPosition = val;
+				_size += 1;
+				return newPosition;
+			}
 			traslate(position, 1);
 			*position = val;
 			_size += 1;
-			if (_size >= _capacity)
-				reserve(_capacity + 1);
-			return iterator(_vec + index);
+			return position;
 		}
 
 		void insert (iterator position, size_type n, const value_type& val) {
 			size_type	index = position - begin();
-			if (_size + n >= _capacity)
-				reserve(_capacity + n + 1);
+			if (_size + n > _capacity)
+				reserve(_capacity + n);
 			iterator newIt = iterator(&_vec[index]);
 			traslate(newIt, n);
 			_size += n;
@@ -228,8 +242,8 @@ namespace ft {
 			size_type len = 0;
 			for (InputIterator beg = first; beg != last; beg++)
 				len++;
-			if (_size + len >= _capacity)
-				reserve(_capacity + len + 1);
+			if (_size + len > _capacity)
+				reserve(_capacity + len);
 			iterator newIt = iterator(_vec + index);
 			traslate(newIt, len);
 			_size += len;
@@ -290,18 +304,20 @@ namespace ft {
 					tmp[i] = _vec[i];
 				allocator.deallocate(_vec, _size);
 				_vec = tmp;
-				_capacity = n + 1;
+				_capacity = n;
 				_size = n;
 			}
 			else if (n >= _size) {
-				if (n + 1 > _capacity)
-					reserve(n + 1);
+				if (n > _capacity)
+					reserve(n);
 				for (size_type i = _size; i < n; i++)
 					_vec[_size] = T();
 				_size = n;
 			}
 		}
 		void			reserve(size_type n) {
+			if (!n)
+				_capacity = 1;
 			if (n <= _capacity)
 				return;
 			pointer tmp = allocator.allocate(n);
@@ -361,8 +377,8 @@ namespace ft {
 			for (size_type i = 0; i < _size; i++)
 				allocator.destroy(_vec + i);
 			allocator.deallocate(_vec, _size);
-			_vec = allocator.allocate(new_size + 1);
-			_capacity = new_size + 1;
+			_vec = allocator.allocate(new_size);
+			_capacity = new_size;
 		}
 
 		/**
@@ -374,9 +390,9 @@ namespace ft {
 		 * @param size_type distance to move the objects
 		 * @return void
 		 */
-		void	traslate(iterator begin, size_type dist) {
+		void	traslate(iterator position, size_type dist) {
 			iterator enda = end() - 1;
-			iterator revEnd = begin - 1;
+			iterator revEnd = position - 1;
 			iterator newit = enda + dist;
 			for (; enda != revEnd; enda--, newit--)
 				*newit = *enda;

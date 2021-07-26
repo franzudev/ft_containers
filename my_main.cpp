@@ -27,7 +27,7 @@ class Timer {
 
 public:
 	Timer(std::string msg) {
-		std::cout << "< " << msg << " >" << std::endl;
+		std::cout <<  " < " << msg << " >" << std::endl;
 		start = std::chrono::steady_clock::now();
 	}
 	long long int getDiff() {
@@ -61,33 +61,116 @@ struct VectorTester {
 		std::cout << msg << std::endl;
 	};
 
-	template<class InputIterator>
-	void	testTemplatedAssign(InputIterator first, InputIterator last) {
-		std::cout << "Testing assign method with template iterators" << std::endl;
-		vector.assign(first, last);
+	void printVector() {
+		for (typename ft::vector<T>::iterator start = vector.begin(); start != vector.end(); start++)
+			std::cout << *start;
+		std::cout << std::endl;
 	}
 
-	void	testSizedAssign(size_t n, const T& val) {
-		std::cout << "Testing assign method with template iterators" << std::endl;
+	void	printSizes() {
+		std::cout << std::endl;
+		std::cout << "Size: 	" << vector.size() << std::endl;
+		std::cout << "Capacity: " << vector.capacity() << std::endl;
+		std::cout << "Max_size: " << vector.max_size() << std::endl;
+		std::cout << std::endl;
+	}
+
+	template<class InputIterator>
+	void	testTemplatedAssign(std::string msg, InputIterator first, InputIterator last) {
+		printSizes();
+		Timer test(std::string(STL) + "Testing templated assign(InputIterator, InputIterator) " + msg);
+		vector.assign(first, last);
+		test.getDiff();
+		for (InputIterator start = first; start != last; start++)
+			std::cout << *start << std::endl;
+		printSizes();
+		printVector();
+	}
+
+	void	testSizedAssign(std::string msg, size_t n, const T& val) {
+		printSizes();
+		Timer test(std::string(STL) +"Testing assign(size_t, const T&) " + msg);
 		vector.assign(n, val);
+		test.getDiff();
+		printSizes();
+		printVector();
 	}
 
 	void	testPushBack(T value) {
-		std::cout << "Testing push_back method" << std::endl;
+		printSizes();
+		Timer test(std::string(STL) +"Testing push_back(T value) single ");
 		vector.push_back(value);
+		test.getDiff();
+		printSizes();
+		printVector();
+
+		Timer test2(std::string(STL) +"Testing push_back(T value) with 1000 iterations ");
+		for (size_t i = 0; i < 1000; i++)
+			vector.push_back(value);
+		test2.getDiff();
+		printSizes();
+		printVector();
 	}
 
-	void	testPopBack(T value) {
-		std::cout << "Testing pop_back method" << std::endl;
-		vector.pop_back(value);
+	void	testPopBack() {
+		printSizes();
+		Timer test(std::string(STL) + "Testing pop_back(T value) single ");
+		vector.pop_back();
+		test.getDiff();
+		printSizes();
+		printVector();
+
+		Timer test2(std::string(STL) + "Testing pop_back(T value) with 1000 iterations ");
+		for (size_t i = 0; i < 1000; i++)
+			vector.pop_back();
+		test2.getDiff();
+		printSizes();
+		printVector();
+	}
+
+	void	testInsert(const T& value) {
+		printSizes();
+		Timer test(std::string(STL) + "Testing insert(iterator, T&) single ");
+		vector.insert(vector.begin(), value);
+		test.getDiff();
+		printSizes();
+
+		Timer test2(std::string(STL) + "Testing insert(iterator, T&) with 1000 iterations ");
+		ft::vector<int>::iterator it = vector.begin();
+		for (size_t i = 0; i < 1000; i++)
+			it = vector.insert(it, value);
+		test2.getDiff();
+		printSizes();
+		printVector();
+	}
+
+	void	clearVector() {
+		printSizes();
+		Timer test("Testing clear() ");
+		test.getDiff();
+		printSizes();
 	}
 
 private:
 	VectorTester();
 };
-
+#include <vector>
 int main() {
-	Timer mainTest("Testing main");
+	int randArray[100000];
+	for (int i = 0; i < 100000; i++)
+		randArray[i]= rand() % 100000;
+	ft::vector<int> g;
+	VectorTester<int> vectorTester("Testing vector with default constructor", g);
+	vectorTester.testTemplatedAssign("with 100000 int", std::begin(randArray), std::end(randArray));
+	vectorTester.clearVector();
+	vectorTester.testSizedAssign("with 100 values 10", 100, 10);
+	vectorTester.testPushBack(50);
+	vectorTester.clearVector();
+	vectorTester.testPushBack(25);
+	vectorTester.testPopBack();
+	vectorTester.testInsert(35);
+
+	/*Timer mainTest("Testing main");
 	// int
 	{
 
@@ -216,7 +299,7 @@ int main() {
 		}
 		r(ft, std);
 
-		/*std::set<int> set;
+		*//*std::set<int> set;
 		for (size_t i = 0; i < 100000; i++)
 			set.insert(i);
 		{
@@ -239,7 +322,7 @@ int main() {
 			std::vector<int> test345;
 			test345.insert(test345.begin(), set.begin(), set.end());
 		}
-		r(ft, std);*/
+		r(ft, std);*//*
 		mainTest.getDiff();
-	}
+	}*/
 }
