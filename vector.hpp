@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "enable_if.hpp"
 #include "is_integral.hpp"
+#include "lexicographical_compare.hpp"
 #include "iterator.hpp"
 
 namespace ft {
@@ -12,7 +13,7 @@ namespace ft {
 	class vector {
 	public:
 		struct iterator {
-			typedef std::bidirectional_iterator_tag 	iterator_category;
+			typedef std::random_access_iterator_tag 	iterator_category;
 			typedef std::ptrdiff_t						difference_type;
 			typedef T									value_type;
 			typedef T*									pointer;
@@ -92,22 +93,26 @@ namespace ft {
 			_size(0),
 			_capacity(1),
 			_vec(allocator.allocate(1)) {}
+
 		~vector() {
-			allocator.deallocate(_vec, _size);
+			allocator.deallocate(_vec, _capacity);
 		}
-		vector(vector const &vec) {
+
+		vector(vector const &vec): _size(0), _capacity(0), _vec(nullptr){
 			*this = vec;
 		}
+
 		explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):
 			allocator(alloc),
 			_size(n),
 			_capacity(n + 1),
 			_vec(allocator.allocate(n))
 		{
-			insert(begin(), n, val);
+			for (size_type i = 0; i < n; i++)
+				_vec[i] = val;
 		}
 		template <class InputIterator>
-		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()):
+		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0):
 		allocator(alloc)
 		{
 			size_type len = 0;
@@ -115,9 +120,7 @@ namespace ft {
 				len++;
 			_vec = allocator.allocate(_size = _capacity = len);
 			std::copy(first, last, _vec);
-//			std::copy(first, last, begin());
 		}
-
 
 		// Exceptions
 		class out_of_range: public std::exception {
@@ -129,7 +132,7 @@ namespace ft {
 		// --- Operator Overloads
 		vector<value_type> &operator=(vector<value_type> const &vec) {
 			if (_capacity)
-				allocator.deallocate(_vec, _size);
+				allocator.deallocate(_vec, _capacity);
 			_vec = allocator.allocate(vec._capacity);
 			size_type i = 0;
 			for (iterator start = vec.begin(), end = vec.end(), copy = begin(); start != end; start++, copy++, i++) {
@@ -222,19 +225,15 @@ namespace ft {
 		template <class InputIterator>
     	void insert (iterator position, InputIterator first, InputIterator last) {
 			size_type index = position - begin();
-			// map friendly
-			size_type i = 0;
-			for (iterator beg = first; beg != last; beg++)
-				i++;
-			// dunno
-//			size_type diff = last - first;
-			size_type diff = i;
-			if (_size + diff >= _capacity)
-				reserve(_capacity + diff + 1);
-			iterator newIt = iterator(&_vec[index]);
-			traslate(newIt, diff);
-			_size += diff;
-			for (iterator start = first; start != last; start++)
+			size_type len = 0;
+			for (InputIterator beg = first; beg != last; beg++)
+				len++;
+			if (_size + len >= _capacity)
+				reserve(_capacity + len + 1);
+			iterator newIt = iterator(_vec + index);
+			traslate(newIt, len);
+			_size += len;
+			for (InputIterator start = first; start != last; start++)
 				_vec[index++] = *start;
 		}
 
@@ -376,16 +375,11 @@ namespace ft {
 		 * @return void
 		 */
 		void	traslate(iterator begin, size_type dist) {
-			iterator enda = end();
+			iterator enda = end() - 1;
 			iterator revEnd = begin - 1;
-			iterator newit = enda;
-			enda--;
-			for (; enda != revEnd; enda--) {
-				newit = enda;
-				enda += dist;
-				*enda = *newit;
-				enda -= dist;
-			}
+			iterator newit = enda + dist;
+			for (; enda != revEnd; enda--, newit--)
+				*newit = *enda;
 		}
 
 	protected:
@@ -399,10 +393,40 @@ namespace ft {
 		return t - u;
 	}
 
+	template <class T, class Alloc>
+	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y){
+		x.swap(y);
+	}
+
 	template< class T, class Alloc >
 	bool operator==( const ft::vector<T,Alloc>& lhs,
 					 const ft::vector<T,Alloc>& rhs ) {
-		return !std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) && !std::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
+		return !ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) && !ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
+	}
+
+	template <class T, class Alloc>
+	bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return !(lhs == rhs);
+	}
+
+	template <class T, class Alloc>
+	bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+	}
+
+	template <class T, class Alloc>
+	bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+		return !ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+	}
+
+	template <class T, class Alloc>
+	bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
+	}
+
+	template <class T, class Alloc>
+	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return !ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
 	}
 
 }
