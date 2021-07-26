@@ -6,6 +6,7 @@
 #include "is_integral.hpp"
 #include "lexicographical_compare.hpp"
 #include "iterator.hpp"
+#include "Timer.hpp"
 
 namespace ft {
 
@@ -98,7 +99,7 @@ namespace ft {
 			allocator.deallocate(_vec, _capacity);
 		}
 
-		vector(vector const &vec): _size(0), _capacity(0), _vec(nullptr){
+		vector(vector const &vec): allocator(vec.get_allocator()), _size(0), _capacity(0), _vec(nullptr){
 			*this = vec;
 		}
 
@@ -109,7 +110,7 @@ namespace ft {
 			_vec(allocator.allocate(n))
 		{
 			for (size_type i = 0; i < n; i++)
-				_vec[i] = val;
+				allocator.construct(_vec + i, val);
 		}
 		template <class InputIterator>
 		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0):
@@ -190,7 +191,7 @@ namespace ft {
 			}
 			clean_vector(_capacity);
 			for (size_type i = 0; i < n; i++)
-				_vec[i] = val;
+				allocator.construct(_vec + i, val);
 			_size = n;
 		}
 
@@ -237,7 +238,7 @@ namespace ft {
 		}
 
 		template <class InputIterator>
-    	void insert (iterator position, InputIterator first, InputIterator last) {
+    	void insert (iterator position, InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0) {
 			size_type index = position - begin();
 			size_type len = 0;
 			for (InputIterator beg = first; beg != last; beg++)
