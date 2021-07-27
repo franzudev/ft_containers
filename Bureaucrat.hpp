@@ -16,7 +16,9 @@ public:
 		this->name = name;
 		this->grade = grade;
 	}
-	~Bureaucrat() {}
+	~Bureaucrat() {
+		std::cout << "destructor" << std::endl;
+	}
 	std::string getName() const {
 		return name;
 	}

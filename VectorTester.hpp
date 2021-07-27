@@ -31,8 +31,9 @@ struct VectorTester {
 	void	printSizes() {
 		std::cout << std::endl;
 		std::cout << "Size: 	" << vector.size() << std::endl;
-//		std::cout << "Capacity: " << vector.capacity() << std::endl;
+		std::cout << "Capacity: " << vector.capacity() << std::endl;
 		std::cout << "Max_size: " << vector.max_size() << std::endl;
+		std::cout << "Empty: " << vector.empty() << std::endl;
 		std::cout << std::endl;
 	}
 
@@ -57,7 +58,7 @@ struct VectorTester {
 		printVector();
 	}
 
-	void	testPushBack(T value) {
+	void	testPushBack(T &value) {
 		printSizes();
 		Timer test(std::string(STL) +"Testing push_back(T value) single ");
 		vector.push_back(value);
@@ -66,7 +67,7 @@ struct VectorTester {
 		printVector();
 
 		Timer test2(std::string(STL) +"Testing push_back(T value) with 1000 iterations ");
-		for (size_t i = 0; i < 1000; i++)
+		for (size_t i = 0; i < 5; i++)
 			vector.push_back(value);
 		test2.getDiff();
 		printSizes();
@@ -82,7 +83,7 @@ struct VectorTester {
 		printVector();
 
 		Timer test2(std::string(STL) + "Testing pop_back(T value) with 1000 iterations ");
-		for (size_t i = 0; i < 1000; i++)
+		for (size_t i = 0; i < 10; i++)
 			vector.pop_back();
 		test2.getDiff();
 		printSizes();
@@ -134,13 +135,31 @@ struct VectorTester {
 //		vector.erase(vector.begin() + 10);
 		test.getDiff();
 		printSizes();
-		printVector();
+//		printVector();
 	}
 
 	void	testEraseIterators() {
 		printSizes();
 		Timer test(std::string(STL) + "Testing erase(iterator, iterator)");
-		vector.erase(vector.begin() + 10, vector.begin() + 100);
+		vector.erase(vector.begin(), vector.begin() + 10);
+		test.getDiff();
+		printSizes();
+		printVector();
+	}
+
+	void	testSwap(ft::vector<T> second) {
+		printSizes();
+		Timer test(std::string(STL) + "Testing swap(ft::vector)");
+		vector.swap(second);
+		test.getDiff();
+		printSizes();
+		printVector();
+	}
+
+	void	testResize(size_t n) {
+		printSizes();
+		Timer test(std::string(STL) + "Testing resize(size_t)");
+		vector.resize(n);
 		test.getDiff();
 		printSizes();
 		printVector();

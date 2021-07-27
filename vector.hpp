@@ -85,6 +85,8 @@ namespace ft {
 			_vec(allocator.allocate(1)) {}
 
 		~vector() {
+			for (size_type i = 0; i < _size; i++)
+				allocator.destroy(&_vec[i]);
 			allocator.deallocate(_vec, _capacity);
 		}
 
@@ -182,10 +184,10 @@ namespace ft {
 			_size = n;
 		}
 
-		void 	push_back(value_type i) {
+		void push_back(const reference value) {
 			if (_size == _capacity)
 				reserve(_capacity * 2);
-			_vec[_size++] = i;
+			_vec[_size++] = value;
 		}
 
 		void	pop_back() {
@@ -196,9 +198,7 @@ namespace ft {
 		iterator insert (iterator position, const value_type& val)
 		{
 			if (_size == _capacity) {
-				size_type index = 0;
-				for (iterator start = begin(); start != position; start++)
-					index++;
+				size_type index = position - begin();
 				reserve(_capacity * 2);
 				iterator newPosition = begin() + index;
 				traslate(newPosition, 1);
@@ -243,9 +243,7 @@ namespace ft {
 		iterator erase (iterator const &position) {
 			size_type index = position - begin();
 			allocator.destroy(_vec + index);
-//			std::memmove(_vec + index, _vec + index + 1, (_size - index - 1) * sizeof(T));
-//			std::move(_vec + index + 1, _vec + _size, _vec + index);
-			std::copy(_vec + index + 1, _vec + _size, _vec + index);
+			std::move(_vec + index + 1, _vec + _size, _vec + index);
 			_size -= 1;
 			return position;
 		}
@@ -254,8 +252,10 @@ namespace ft {
 			size_type diff = last - first;
 			pointer it = end().operator->();
 			pointer nBegin = first.operator->() + diff;
-			for (pointer begin = first.operator->(); nBegin != it; ++begin, ++nBegin)
-				*begin = *nBegin;
+			pointer lastP = last.operator->();
+			for (pointer i = first.operator->(); i != lastP; i++)
+				allocator.destroy(i);
+			std::move(nBegin, end().operator->(), first.operator->());
 			_size -= diff;
 			return first;
 		}
@@ -293,7 +293,6 @@ namespace ft {
 					tmp[i] = _vec[i];
 				allocator.deallocate(_vec, _size);
 				_vec = tmp;
-				_capacity = n;
 				_size = n;
 			}
 			else if (n >= _size) {
@@ -304,16 +303,20 @@ namespace ft {
 				_size = n;
 			}
 		}
+
 		void			reserve(size_type n) {
 			if (!n)
 				_capacity = 1;
 			pointer tmp = allocator.allocate(n);
 			_capacity = n;
-			for (size_type i = 0; i < _size; i++)
+			for (size_type i = 0; i < _size; ++i) {
 				tmp[i] = _vec[i];
+				allocator.destroy(&_vec[i]);
+			}
 			allocator.deallocate(_vec, _size);
 			_vec = tmp;
 		}
+
 		allocator_type	get_allocator() const {
 			return allocator;
 		}
@@ -378,9 +381,9 @@ namespace ft {
 		 * @return void
 		 */
 		void	traslate(iterator position, size_type dist) {
-			iterator enda = end() - 1;
-			iterator revEnd = position - 1;
-			iterator newit = enda + dist;
+			pointer enda = end().operator->() - 1;
+			pointer revEnd = position.operator->() - 1;
+			pointer newit = enda + dist;
 			for (; enda != revEnd; enda--, newit--)
 				*newit = *enda;
 		}
