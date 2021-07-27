@@ -6,6 +6,8 @@
 #include "is_integral.hpp"
 #include "lexicographical_compare.hpp"
 #include "iterator.hpp"
+#include "Timer.hpp"
+#include <cstring>
 
 namespace ft {
 
@@ -24,24 +26,19 @@ namespace ft {
 			pointer operator->() { return m_ptr; }
 
 			// Prefix increment
-			iterator& operator++() { m_ptr++; return *this; }
+			iterator& operator++() { ++m_ptr; return *this; }
 
 			// Postfix increment
 			iterator operator++(int) { iterator tmp = *this; ++(*this); return tmp; }
 
 			// Prefix decrement
-			iterator& operator--() { m_ptr--; return *this; }
+			iterator& operator--() { --m_ptr; return *this; }
 
 			// Postfix decrement
 			iterator operator--(int) { iterator tmp = *this; --(*this); return tmp; }
 
 			iterator operator-(size_t val) {
-				iterator temp = *this;
-				while (val) {
-					temp.m_ptr--;
-					val--;
-				}
-				return temp;
+				return iterator(m_ptr - val);
 			}
 			ptrdiff_t operator-(iterator& val) {
 				return m_ptr - val.m_ptr;
@@ -50,17 +47,10 @@ namespace ft {
 				m_ptr -= n;
 				return *this;
 			}
-			iterator operator+(size_t val) {
-				iterator tmp = *this;
-				size_t i = 0;
-				while (i < val) {
-					tmp.m_ptr++;
-					i++;
-				}
-				return tmp;
+			iterator operator+(size_t val) const {
+				return iterator(m_ptr + val);
 			}
-			// to check
-			ptrdiff_t operator+(iterator& val) {
+			ptrdiff_t operator+(iterator& val) const {
 				return m_ptr + val.m_ptr;
 			}
 			iterator&	operator+=(size_t n) {
@@ -91,25 +81,27 @@ namespace ft {
 		explicit vector (const allocator_type& alloc = allocator_type()):
 			allocator(alloc),
 			_size(0),
-			_capacity(1),
+			_capacity(0),
 			_vec(allocator.allocate(1)) {}
 
 		~vector() {
+			for (size_type i = 0; i < _size; i++)
+				allocator.destroy(&_vec[i]);
 			allocator.deallocate(_vec, _capacity);
 		}
 
-		vector(vector const &vec): _size(0), _capacity(0), _vec(nullptr){
+		vector(vector const &vec): allocator(vec.get_allocator()), _size(0), _capacity(0), _vec(nullptr){
 			*this = vec;
 		}
 
 		explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):
 			allocator(alloc),
 			_size(n),
-			_capacity(n + 1),
+			_capacity(n),
 			_vec(allocator.allocate(n))
 		{
 			for (size_type i = 0; i < n; i++)
-				_vec[i] = val;
+				allocator.construct(_vec + i, val);
 		}
 		template <class InputIterator>
 		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0):
@@ -176,22 +168,26 @@ namespace ft {
 			clean_vector(new_size);
 			size_type i = 0;
 			for (InputIterator start = first; start != last; start++, i++) {
+				if (i > _capacity)
+					reserve(_capacity * 2);
 				allocator.construct(_vec + i, *start);
 			}
 			_size = new_size;
 		}
 
 		void	assign(size_type n, const value_type& val) {
-			clean_vector(n);
+			if (n > _capacity)
+				_capacity = n;
+			clean_vector(_capacity);
 			for (size_type i = 0; i < n; i++)
-				_vec[i] = val;
+				allocator.construct(_vec + i, val);
 			_size = n;
 		}
 
-		void 	push_back(value_type i) {
-			if (_size + 1 == _capacity)
+		void push_back(const reference value) {
+			if (_size == _capacity)
 				reserve(_capacity * 2);
-			_vec[_size++] = i;
+			_vec[_size++] = value;
 		}
 
 		void	pop_back() {
@@ -201,19 +197,25 @@ namespace ft {
 
 		iterator insert (iterator position, const value_type& val)
 		{
-			size_type index = position - begin();
+			if (_size == _capacity) {
+				size_type index = position - begin();
+				reserve(_capacity * 2);
+				iterator newPosition = begin() + index;
+				traslate(newPosition, 1);
+				*newPosition = val;
+				_size += 1;
+				return newPosition;
+			}
 			traslate(position, 1);
 			*position = val;
 			_size += 1;
-			if (_size >= _capacity)
-				reserve(_capacity + 1);
-			return iterator(_vec + index);
+			return position;
 		}
 
 		void insert (iterator position, size_type n, const value_type& val) {
 			size_type	index = position - begin();
-			if (_size + n >= _capacity)
-				reserve(_capacity + n + 1);
+			if (_size + n > _capacity)
+				reserve(_capacity + _size + n);
 			iterator newIt = iterator(&_vec[index]);
 			traslate(newIt, n);
 			_size += n;
@@ -223,13 +225,14 @@ namespace ft {
 		}
 
 		template <class InputIterator>
-    	void insert (iterator position, InputIterator first, InputIterator last) {
+    	void insert (iterator position, InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0) {
 			size_type index = position - begin();
 			size_type len = 0;
 			for (InputIterator beg = first; beg != last; beg++)
 				len++;
-			if (_size + len >= _capacity)
-				reserve(_capacity + len + 1);
+			if (_size + len > _capacity) {
+				reserve(_capacity + _size + len);
+			}
 			iterator newIt = iterator(_vec + index);
 			traslate(newIt, len);
 			_size += len;
@@ -237,22 +240,22 @@ namespace ft {
 				_vec[index++] = *start;
 		}
 
-		iterator erase (iterator position) {
+		iterator erase (iterator const &position) {
 			size_type index = position - begin();
-			allocator.destroy(&_vec[index]);
-			for (size_type i = index; i < _size; i++)
-				_vec[i] = _vec[i + 1];
-			--_size;
+			allocator.destroy(_vec + index);
+			std::move(_vec + index + 1, _vec + _size, _vec + index);
+			_size -= 1;
 			return position;
 		}
 
-		// TODO to test very well
 		iterator erase (iterator first, iterator last) {
 			size_type diff = last - first;
-			for (iterator begin = first; begin != last; begin++)
-				allocator.destroy(&*begin);
-			for (iterator begin = first; begin != end(); begin++)
-				*begin = *(begin + diff);
+			pointer it = end().operator->();
+			pointer nBegin = first.operator->() + diff;
+			pointer lastP = last.operator->();
+			for (pointer i = first.operator->(); i != lastP; i++)
+				allocator.destroy(i);
+			std::move(nBegin, end().operator->(), first.operator->());
 			_size -= diff;
 			return first;
 		}
@@ -290,27 +293,30 @@ namespace ft {
 					tmp[i] = _vec[i];
 				allocator.deallocate(_vec, _size);
 				_vec = tmp;
-				_capacity = n + 1;
 				_size = n;
 			}
 			else if (n >= _size) {
-				if (n + 1 > _capacity)
-					reserve(n + 1);
+				if (n > _capacity)
+					reserve(n);
 				for (size_type i = _size; i < n; i++)
 					_vec[_size] = T();
 				_size = n;
 			}
 		}
+
 		void			reserve(size_type n) {
-			if (n <= _capacity)
-				return;
+			if (!n)
+				_capacity = 1;
 			pointer tmp = allocator.allocate(n);
 			_capacity = n;
-			for (size_type i = 0; i < _size; i++)
+			for (size_type i = 0; i < _size; ++i) {
 				tmp[i] = _vec[i];
+				allocator.destroy(&_vec[i]);
+			}
 			allocator.deallocate(_vec, _size);
 			_vec = tmp;
 		}
+
 		allocator_type	get_allocator() const {
 			return allocator;
 		}
@@ -361,8 +367,8 @@ namespace ft {
 			for (size_type i = 0; i < _size; i++)
 				allocator.destroy(_vec + i);
 			allocator.deallocate(_vec, _size);
-			_vec = allocator.allocate(new_size + 1);
-			_capacity = new_size + 1;
+			_vec = allocator.allocate(new_size);
+			_capacity = new_size;
 		}
 
 		/**
@@ -374,10 +380,10 @@ namespace ft {
 		 * @param size_type distance to move the objects
 		 * @return void
 		 */
-		void	traslate(iterator begin, size_type dist) {
-			iterator enda = end() - 1;
-			iterator revEnd = begin - 1;
-			iterator newit = enda + dist;
+		void	traslate(iterator position, size_type dist) {
+			pointer enda = end().operator->() - 1;
+			pointer revEnd = position.operator->() - 1;
+			pointer newit = enda + dist;
 			for (; enda != revEnd; enda--, newit--)
 				*newit = *enda;
 		}

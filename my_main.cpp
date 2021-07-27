@@ -2,8 +2,8 @@
 // Created by Federico Francois on 7/19/21.
 //
 
-#include <iostream>
 #include <algorithm>
+#include "VectorTester.hpp"
 
 #ifdef USE_STL
 # define STL "std: "
@@ -14,80 +14,65 @@
 namespace ft = std;
 #else
 # define STL "ft: "
-# include "Bureaucrat.hpp"
 # include "iterator.hpp"
 # include "vector.hpp"
 #endif
-#include <chrono>
-
-class Timer {
-	std::chrono::steady_clock::time_point start;
-	std::chrono::steady_clock::time_point end;
-	std::chrono::microseconds diff;
-
-public:
-	Timer(std::string msg) {
-		std::cout << "< " << msg << " >" << std::endl;
-		start = std::chrono::steady_clock::now();
-	}
-	long long int getDiff() {
-		end = std::chrono::steady_clock::now();
-		diff = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-		std::cout << STL << "execution time: " << diff.count() << "[µs]" << std::endl;
-		return diff.count();
-	}
-};
-
-struct Result {
-	typedef long long int microseconds;
-	Result() {}
-	Result(microseconds ft, microseconds std) {
-		(*this)(ft, std);
-	}
-	void operator()(microseconds ft, microseconds std) {
-		bool res = ft < std;
-		std::string winner = res ? "ft " : "std ";
-		std::string loser = res ? "std" : "ft";
-		float quotient = res ? (float)std / ft : (float)ft/ std;
-
-		std::cout << winner << quotient << " times faster than " << loser << std::endl << std::endl;
-	}
-};
-
-template <class T>
-struct VectorTester {
-	ft::vector<T> vector;
-	VectorTester(std::string msg, ft::vector <T> &vector): vector(vector) {
-		std::cout << msg << std::endl;
-	};
-
-	template<class InputIterator>
-	void	testTemplatedAssign(InputIterator first, InputIterator last) {
-		std::cout << "Testing assign method with template iterators" << std::endl;
-		vector.assign(first, last);
-	}
-
-	void	testSizedAssign(size_t n, const T& val) {
-		std::cout << "Testing assign method with template iterators" << std::endl;
-		vector.assign(n, val);
-	}
-
-	void	testPushBack(T value) {
-		std::cout << "Testing push_back method" << std::endl;
-		vector.push_back(value);
-	}
-
-	void	testPopBack(T value) {
-		std::cout << "Testing pop_back method" << std::endl;
-		vector.pop_back(value);
-	}
-
-private:
-	VectorTester();
-};
+# include "Bureaucrat.hpp"
 
 int main() {
-	Timer mainTest("Testing main");
+//	int randArray[100000];
+//	int bureaucrat = 42534;
+//	int bureaucrat2 = 453445;
+//	int bureaucrat3 = 453445;
+//	int bureaucrat4 = 45344445;
+//	int bureaucrat5 = 45364445;
+//	for (int i = 0; i < 100000; i++)
+//		randArray[i]= rand() % 1000;
+//	ft::vector<int> vectorItTest(std::begin(randArray), std::end(randArray));
+//	ft::vector<int> g;
+//	VectorTester<int> vectorTester("Testing vector with default constructor", g);
+//	vectorTester.testTemplatedAssign("with 100000 int", std::begin(randArray), std::end(randArray));
+//	vectorTester.clearVector();
+//	vectorTester.testSizedAssign("with 100 values 10", 100, bureaucrat);
+//	vectorTester.testPushBack(bureaucrat2);
+//	vectorTester.clearVector();
+//	vectorTester.testPushBack(bureaucrat3);
+//	vectorTester.testPopBack();
+//	vectorTester.testSingleInsert(bureaucrat4);
+//	vectorTester.testSizedInsert(10, bureaucrat5);
+//	vectorTester.testIteratorsInsert(vectorItTest.begin(), vectorItTest.end());
+//	vectorTester.testErase();
+//	vectorTester.testEraseIterators();
+//	ft::vector<int> swapper(std::begin(randArray), std::end(randArray));
+//	vectorTester.testSwap(swapper);
+//	vectorTester.testResize(10);
+//	vectorTester.testResize(1000000);
+
+	Bureaucrat randArray[10];
+	Bureaucrat bureaucrat("to push", 42534);
+	Bureaucrat bureaucrat2("to push", 453445);
+	Bureaucrat bureaucrat3("to insert", 453445);
+	Bureaucrat bureaucrat4("to sized insert", 45344445);
+	Bureaucrat bureaucrat5("to sized insert", 45364445);
+	for (int i = 0; i < 10; i++)
+		randArray[i]= Bureaucrat("a", rand() % 1000);
+	ft::vector<Bureaucrat> vectorItTest(std::begin(randArray), std::end(randArray));
+	ft::vector<Bureaucrat> g;
+	VectorTester<Bureaucrat> vectorTester("Testing vector with default constructor", g);
+	vectorTester.testTemplatedAssign("with 100000 int", std::begin(randArray), std::end(randArray));
+	vectorTester.clearVector();
+	vectorTester.testSizedAssign("with 100 values 10", 100, bureaucrat);
+	vectorTester.testPushBack(bureaucrat2);
+	vectorTester.clearVector();
+	vectorTester.testPushBack(bureaucrat3);
+	vectorTester.testPopBack();
+	vectorTester.testSingleInsert(bureaucrat4);
+	vectorTester.testSizedInsert(10, bureaucrat5);
+	vectorTester.testIteratorsInsert(vectorItTest.begin(), vectorItTest.end());
+	vectorTester.testErase();
+	vectorTester.testEraseIterators();
+
+	/*Timer mainTest("Testing main");
 	// int
 	{
 
@@ -216,7 +201,7 @@ int main() {
 		}
 		r(ft, std);
 
-		/*std::set<int> set;
+		*//*std::set<int> set;
 		for (size_t i = 0; i < 100000; i++)
 			set.insert(i);
 		{
@@ -239,7 +224,7 @@ int main() {
 			std::vector<int> test345;
 			test345.insert(test345.begin(), set.begin(), set.end());
 		}
-		r(ft, std);*/
+		r(ft, std);*//*
 		mainTest.getDiff();
-	}
+	}*/
 }
