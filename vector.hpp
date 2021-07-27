@@ -104,7 +104,7 @@ namespace ft {
 				allocator.construct(_vec + i, val);
 		}
 		template <class InputIterator>
-		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0):
+		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0):
 		allocator(alloc)
 		{
 			size_type len = 0;
@@ -163,7 +163,7 @@ namespace ft {
 
 		//Modifiers
 		template <class InputIterator>
-		void	assign(InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0) {
+		void	assign(InputIterator first, InputIterator last, typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0) {
 			size_type new_size = std::abs(last - first);
 			clean_vector(new_size);
 			size_type i = 0;
@@ -225,7 +225,7 @@ namespace ft {
 		}
 
 		template <class InputIterator>
-    	void insert (iterator position, InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, InputIterator>::type* = 0) {
+    	void insert (iterator position, InputIterator first, InputIterator last, typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0) {
 			size_type index = position - begin();
 			size_type len = 0;
 			for (InputIterator beg = first; beg != last; beg++)

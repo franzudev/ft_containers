@@ -12,13 +12,8 @@ class Bureaucrat {
 	unsigned int		grade;
 public:
 	Bureaucrat() {};
-	Bureaucrat(std::string name, unsigned grade){
-		this->name = name;
-		this->grade = grade;
-	}
-	~Bureaucrat() {
-		std::cout << "destructor" << std::endl;
-	}
+	Bureaucrat(unsigned grade): name("Bureaucrat"), grade(grade) {}
+	~Bureaucrat() {}
 	std::string getName() const {
 		return name;
 	}
