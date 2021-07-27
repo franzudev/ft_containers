@@ -7,6 +7,7 @@
 #include "lexicographical_compare.hpp"
 #include "iterator.hpp"
 #include "Timer.hpp"
+#include <cstring>
 
 namespace ft {
 
@@ -25,24 +26,19 @@ namespace ft {
 			pointer operator->() { return m_ptr; }
 
 			// Prefix increment
-			iterator& operator++() { m_ptr++; return *this; }
+			iterator& operator++() { ++m_ptr; return *this; }
 
 			// Postfix increment
 			iterator operator++(int) { iterator tmp = *this; ++(*this); return tmp; }
 
 			// Prefix decrement
-			iterator& operator--() { m_ptr--; return *this; }
+			iterator& operator--() { --m_ptr; return *this; }
 
 			// Postfix decrement
 			iterator operator--(int) { iterator tmp = *this; --(*this); return tmp; }
 
 			iterator operator-(size_t val) {
-				iterator temp = *this;
-				while (val) {
-					temp.m_ptr--;
-					val--;
-				}
-				return temp;
+				return iterator(m_ptr - val);
 			}
 			ptrdiff_t operator-(iterator& val) {
 				return m_ptr - val.m_ptr;
@@ -51,17 +47,10 @@ namespace ft {
 				m_ptr -= n;
 				return *this;
 			}
-			iterator operator+(size_t val) {
-				iterator tmp = *this;
-				size_t i = 0;
-				while (i < val) {
-					tmp.m_ptr++;
-					i++;
-				}
-				return tmp;
+			iterator operator+(size_t val) const {
+				return iterator(m_ptr + val);
 			}
-			// to check
-			ptrdiff_t operator+(iterator& val) {
+			ptrdiff_t operator+(iterator& val) const {
 				return m_ptr + val.m_ptr;
 			}
 			iterator&	operator+=(size_t n) {
@@ -185,10 +174,8 @@ namespace ft {
 		}
 
 		void	assign(size_type n, const value_type& val) {
-			for (size_type i = _size; i < n; i++) {
-				if (i > _capacity)
-					_capacity = (_capacity ? _capacity : 1) * 2;
-			}
+			if (n > _capacity)
+				_capacity = n;
 			clean_vector(_capacity);
 			for (size_type i = 0; i < n; i++)
 				allocator.construct(_vec + i, val);
@@ -228,7 +215,7 @@ namespace ft {
 		void insert (iterator position, size_type n, const value_type& val) {
 			size_type	index = position - begin();
 			if (_size + n > _capacity)
-				reserve(_capacity + n);
+				reserve(_capacity + _size + n);
 			iterator newIt = iterator(&_vec[index]);
 			traslate(newIt, n);
 			_size += n;
@@ -243,8 +230,9 @@ namespace ft {
 			size_type len = 0;
 			for (InputIterator beg = first; beg != last; beg++)
 				len++;
-			if (_size + len > _capacity)
-				reserve(_capacity + len);
+			if (_size + len > _capacity) {
+				reserve(_capacity + _size + len);
+			}
 			iterator newIt = iterator(_vec + index);
 			traslate(newIt, len);
 			_size += len;
@@ -252,22 +240,22 @@ namespace ft {
 				_vec[index++] = *start;
 		}
 
-		iterator erase (iterator position) {
+		iterator erase (iterator const &position) {
 			size_type index = position - begin();
-			allocator.destroy(&_vec[index]);
-			for (size_type i = index; i < _size; i++)
-				_vec[i] = _vec[i + 1];
-			--_size;
+			allocator.destroy(_vec + index);
+//			std::memmove(_vec + index, _vec + index + 1, (_size - index - 1) * sizeof(T));
+//			std::move(_vec + index + 1, _vec + _size, _vec + index);
+			std::copy(_vec + index + 1, _vec + _size, _vec + index);
+			_size -= 1;
 			return position;
 		}
 
-		// TODO to test very well
 		iterator erase (iterator first, iterator last) {
 			size_type diff = last - first;
-			for (iterator begin = first; begin != last; begin++)
-				allocator.destroy(&*begin);
-			for (iterator begin = first; begin != end(); begin++)
-				*begin = *(begin + diff);
+			pointer it = end().operator->();
+			pointer nBegin = first.operator->() + diff;
+			for (pointer begin = first.operator->(); nBegin != it; ++begin, ++nBegin)
+				*begin = *nBegin;
 			_size -= diff;
 			return first;
 		}
@@ -319,8 +307,6 @@ namespace ft {
 		void			reserve(size_type n) {
 			if (!n)
 				_capacity = 1;
-			if (n <= _capacity)
-				return;
 			pointer tmp = allocator.allocate(n);
 			_capacity = n;
 			for (size_type i = 0; i < _size; i++)

@@ -14,25 +14,35 @@
 namespace ft = std;
 #else
 # define STL "ft: "
-# include "Bureaucrat.hpp"
 # include "iterator.hpp"
 # include "vector.hpp"
 #endif
+# include "Bureaucrat.hpp"
 
 int main() {
-	int randArray[1000];
-	for (int i = 0; i < 1000; i++)
-		randArray[i]= rand() % 1000;
-	ft::vector<int> g;
-	VectorTester<int> vectorTester("Testing vector with default constructor", g);
+	Bureaucrat randArray[10];
+	Bureaucrat bureaucrat("to push", 42534);
+	Bureaucrat bureaucrat2("to push", 453445);
+	Bureaucrat bureaucrat3("to insert", 453445);
+	Bureaucrat bureaucrat4("to sized insert", 45344445);
+	Bureaucrat bureaucrat5("to sized insert", 45364445);
+	for (int i = 0; i < 10; i++)
+		randArray[i]= Bureaucrat("a", rand() % 1000);
+	ft::vector<Bureaucrat> vectorItTest(std::begin(randArray), std::end(randArray));
+	ft::vector<Bureaucrat> g;
+	VectorTester<Bureaucrat> vectorTester("Testing vector with default constructor", g);
 	vectorTester.testTemplatedAssign("with 100000 int", std::begin(randArray), std::end(randArray));
-	vectorTester.clearVector();
-	vectorTester.testSizedAssign("with 100 values 10", 100, 10);
-	vectorTester.testPushBack(50);
-	vectorTester.clearVector();
-	vectorTester.testPushBack(25);
-	vectorTester.testPopBack();
-	vectorTester.testInsert(35);
+//	vectorTester.clearVector();
+//	vectorTester.testSizedAssign("with 100 values 10", 100, bureaucrat);
+//	vectorTester.testPushBack(bureaucrat2);
+//	vectorTester.clearVector();
+//	vectorTester.testPushBack(bureaucrat3);
+//	vectorTester.testPopBack();
+	vectorTester.testSingleInsert(bureaucrat4);
+//	vectorTester.testSizedInsert(10, bureaucrat5);
+//	vectorTester.testIteratorsInsert(vectorItTest.begin(), vectorItTest.end());
+//	vectorTester.testErase();
+//	vectorTester.testEraseIterators();
 
 	/*Timer mainTest("Testing main");
 	// int

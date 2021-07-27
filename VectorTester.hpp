@@ -31,7 +31,7 @@ struct VectorTester {
 	void	printSizes() {
 		std::cout << std::endl;
 		std::cout << "Size: 	" << vector.size() << std::endl;
-		std::cout << "Capacity: " << vector.capacity() << std::endl;
+//		std::cout << "Capacity: " << vector.capacity() << std::endl;
 		std::cout << "Max_size: " << vector.max_size() << std::endl;
 		std::cout << std::endl;
 	}
@@ -89,7 +89,7 @@ struct VectorTester {
 		printVector();
 	}
 
-	void	testInsert(const T& value) {
+	void	testSingleInsert(const T& value) {
 		printSizes();
 		Timer test(std::string(STL) + "Testing insert(iterator, T&) single ");
 		vector.insert(vector.begin(), value);
@@ -97,10 +97,51 @@ struct VectorTester {
 		printSizes();
 
 		Timer test2(std::string(STL) + "Testing insert(iterator, T&) with 1000 iterations ");
-		ft::vector<int>::iterator it = vector.begin();
-		for (size_t i = 0; i < 1000; i++)
+		std::cout << "here" << std::endl;
+		typename ft::vector<T>::iterator it = vector.begin();
+		std::cout << "there" << std::endl;
+		for (size_t i = 0; i < 10; i++)
 			it = vector.insert(it, value);
+		std::cout << "and there" << std::endl;
 		test2.getDiff();
+		printSizes();
+		printVector();
+	}
+
+	void	testSizedInsert(size_t n, const T& val) {
+		printSizes();
+		Timer test(std::string(STL) + "Testing insert(iterator, size_t, const T&");
+		vector.insert(vector.end() - 1, n, val);
+		test.getDiff();
+		printSizes();
+		printVector();
+	}
+
+	template<class InputIterator>
+	void	testIteratorsInsert(InputIterator first, InputIterator last) {
+		printSizes();
+		Timer test(std::string(STL) + "Testing insert(iterator, inputIterator, inputIterator)");
+		vector.insert(vector.begin(), first, last);
+		test.getDiff();
+		printSizes();
+		printVector();
+	}
+
+	void	testErase() {
+		printSizes();
+		Timer test(std::string(STL) + "Testing erase(iterator)");
+		vector.erase(vector.begin());
+//		vector.erase(vector.begin() + 10);
+		test.getDiff();
+		printSizes();
+		printVector();
+	}
+
+	void	testEraseIterators() {
+		printSizes();
+		Timer test(std::string(STL) + "Testing erase(iterator, iterator)");
+		vector.erase(vector.begin() + 10, vector.begin() + 100);
+		test.getDiff();
 		printSizes();
 		printVector();
 	}
