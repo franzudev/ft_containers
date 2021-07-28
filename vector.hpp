@@ -192,8 +192,8 @@ namespace ft {
 			_size = n;
 		}
 
-		void push_back(const_reference value) {
-			if (_size == _capacity)
+		void push_back(const T& value) {
+			if (_size >= _capacity)
 				reserve(_capacity * 2);
 			_vec[_size++] = value;
 		}
@@ -258,7 +258,6 @@ namespace ft {
 
 		iterator erase (iterator first, iterator last) {
 			size_type diff = last - first;
-			pointer it = end().operator->();
 			pointer nBegin = first.operator->() + diff;
 			pointer lastP = last.operator->();
 			for (pointer i = first.operator->(); i != lastP; i++)
@@ -314,12 +313,12 @@ namespace ft {
 
 		void			reserve(size_type n) {
 			if (!n)
-				_capacity = 1;
+				n++;
 			pointer tmp = allocator.allocate(n);
 			_capacity = n;
 			for (size_type i = 0; i < _size; ++i) {
 				tmp[i] = _vec[i];
-				allocator.destroy(&_vec[i]);
+//				allocator.destroy(_vec + i);
 			}
 			allocator.deallocate(_vec, _size);
 			_vec = tmp;
@@ -430,7 +429,7 @@ namespace ft {
 
 	template <class T, class Alloc>
 	bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
-		return !ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 
 	template <class T, class Alloc>
@@ -440,7 +439,7 @@ namespace ft {
 
 	template <class T, class Alloc>
 	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-		return !ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
+		return ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
 	}
 
 }
