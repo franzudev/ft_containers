@@ -187,6 +187,11 @@ T	generateVal(unsigned int index) {
 	return T(index);
 }
 
+template<typename T>
+T	*generateValHeap(unsigned int index) {
+	return new T(index);
+}
+
 template <typename T>
 void	testFunctions(std::string  msg, ft::vector<T> &toTest)
 {

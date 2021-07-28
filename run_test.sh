@@ -3,3 +3,4 @@ make
 make stl
 ./cont_stl > stl_out
 diff ft_out stl_out
+rm ft_out stl_out

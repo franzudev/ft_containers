@@ -12,7 +12,7 @@ class Bureaucrat {
 	unsigned int		grade;
 public:
 	Bureaucrat() {};
-	Bureaucrat(unsigned grade): name("Bureaucrat"), grade(grade) {}
+	Bureaucrat(unsigned int grade): name("Bureaucrat"), grade(grade) {}
 	~Bureaucrat() {}
 	std::string getName() const {
 		return name;
