@@ -22,7 +22,7 @@ namespace ft = std;
 
 template <class T>
 struct VectorTester {
-	ft::vector<T> vector;
+	ft::vector<T> &vector;
 
 	VectorTester(std::string msg, ft::vector <T> &vector): vector(vector) {
 		std::cout << msg << std::endl;
@@ -208,6 +208,11 @@ void	testFunctions(std::string  msg, ft::vector<T> &toTest)
 	tester.testIteratorsInsert(vectorItTest.begin(), vectorItTest.end());
 	tester.testErase();
 	tester.testEraseIterators();
+	std::cout << "Is == " << (toTest == vectorItTest) << std::endl;
+	std::cout << "Is <  " << (toTest < vectorItTest) << std::endl;
+	std::cout << "Is <= " << (toTest <= vectorItTest) << std::endl;
+	std::cout << "Is >  " << (toTest > vectorItTest) << std::endl;
+	std::cout << "Is >= " << (toTest >= vectorItTest) << std::endl;
 }
 
 void	stringTestFunctions(std::string  msg, ft::vector<std::string> &toTest)
@@ -230,5 +235,10 @@ void	stringTestFunctions(std::string  msg, ft::vector<std::string> &toTest)
 	tester.testIteratorsInsert(vectorItTest.begin(), vectorItTest.end());
 	tester.testErase();
 	tester.testEraseIterators();
+	std::cout << "Is == " << (toTest == vectorItTest) << std::endl;
+	std::cout << "Is <  " << (toTest < vectorItTest) << std::endl;
+	std::cout << "Is <= " << (toTest <= vectorItTest) << std::endl;
+	std::cout << "Is >  " << (toTest > vectorItTest) << std::endl;
+	std::cout << "Is >= " << (toTest >= vectorItTest) << std::endl;
 }
 
