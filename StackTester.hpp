@@ -2,7 +2,7 @@
 
 #pragma once
 
-#define TEST_ARR_SIZE 1000
+#define TEST_ARR_SIZE 10
 
 #ifdef USE_STL
 # define STL "std: "

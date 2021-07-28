@@ -2,7 +2,7 @@ NAME_1	=	cont_stl
 NAME_2	=	cont_ft
 RND		:=	$(shell echo $$RANDOM)
 SRCS	=	my_main.cpp
-CF_FT	=	#-Wall -Wextra -Werror -std=c++98
+CF_FT	=	-Wall -Wextra -Werror -std=c++98 -g
 CF_STL	=	$(CF_FT) -D USE_STL
 CC		=	clang++
 

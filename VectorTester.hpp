@@ -1,6 +1,6 @@
 #pragma once
 
-#define TEST_ARR_SIZE 1000
+#define TEST_ARR_SIZE 10
 
 #ifdef USE_STL
 # define STL "std: "
@@ -22,7 +22,7 @@ namespace ft = std;
 
 template <class T>
 struct VectorTester {
-	ft::vector<T> vector;
+	ft::vector<T> &vector;
 
 	VectorTester(std::string msg, ft::vector <T> &vector): vector(vector) {
 		std::cout << msg << std::endl;
@@ -37,7 +37,7 @@ struct VectorTester {
 	void	printSizes() {
 		std::cout << std::endl;
 		std::cout << "Size: 	" << vector.size() << std::endl;
-//		std::cout << "Capacity: " << vector.capacity() << std::endl;
+		std::cout << "Capacity: " << vector.capacity() << std::endl;
 		std::cout << "Max_size: " << vector.max_size() << std::endl;
 		std::cout << "Empty: " << vector.empty() << std::endl;
 		std::cout << std::endl;
@@ -64,7 +64,7 @@ struct VectorTester {
 		printVector();
 	}
 
-	void	testPushBack(T &value) {
+	void	testPushBack(T value) {
 		printSizes();
 		Timer test(std::string(STL) +"Testing push_back(T value) single ");
 		vector.push_back(value);
@@ -182,9 +182,26 @@ private:
 	VectorTester();
 };
 
+
+template<class Tp>
+struct is_string : public std::false_type {};
+template<>
+struct is_string<std::string> : public std::true_type {};
+
 template<typename T>
-T	generateVal(unsigned int index) {
+T	generateVal(unsigned int index, typename ft::enable_if<ft::is_integral<T>::value, T>::type* = 0) {
 	return T(index);
+}
+
+template<typename T>
+T	generateVal(unsigned int index, typename ft::enable_if<!ft::is_integral<T>::value && !is_string<T>::value, T>::type* = 0) {
+	return T(index);
+}
+
+template<typename T>
+std::string	generateVal(unsigned int index, typename ft::enable_if<is_string<T>::value, T>::type* = 0) {
+	std::string arr[] = {"aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii"};	
+	return T(arr[index % 9]);
 }
 
 template <typename T>
@@ -199,9 +216,9 @@ void	testFunctions(std::string  msg, ft::vector<T> &toTest)
 	tester.testTemplatedAssign("Templated Assign", std::begin(randArray), std::end(randArray));
 	tester.clearVector();
 	tester.testSizedAssign("Sized Assign", 100, generateVal<T>(1));
-	tester.testPushBack(*(vectorItTest.begin() + 5));
+	tester.testPushBack(generateVal<T>(10));
 	tester.clearVector();
-	tester.testPushBack(*(vectorItTest.begin() + 10));
+	tester.testPushBack(generateVal<T>(10));
 	tester.testPopBack();
 	tester.testSingleInsert(generateVal<T>(4));
 	tester.testSizedInsert(10, generateVal<T>(5));
@@ -210,25 +227,26 @@ void	testFunctions(std::string  msg, ft::vector<T> &toTest)
 	tester.testEraseIterators();
 }
 
-void	stringTestFunctions(std::string  msg, ft::vector<std::string> &toTest)
-{
-	VectorTester<std::string>	tester(std::string(STL) + msg, toTest);
-	std::string randArray[TEST_ARR_SIZE];
-	for (unsigned int i = 0; i < TEST_ARR_SIZE; ++i)
-		randArray[i] = std::to_string(i);
-	ft::vector<std::string> vectorItTest(std::begin(randArray), std::end(randArray));
-
-	tester.testTemplatedAssign("Templated Assign", std::begin(randArray), std::end(randArray));
-	tester.clearVector();
-	tester.testSizedAssign("Sized Assign", 100, std::to_string(1));
-	tester.testPushBack(*(vectorItTest.begin() + 5));
-	tester.clearVector();
-	tester.testPushBack(*(vectorItTest.begin() + 10));
-	tester.testPopBack();
-	tester.testSingleInsert(std::to_string(4));
-	tester.testSizedInsert(10, std::to_string(5));
-	tester.testIteratorsInsert(vectorItTest.begin(), vectorItTest.end());
-	tester.testErase();
-	tester.testEraseIterators();
-}
-
+template <class T>
+void	testConstructors(std::string msg)
+ {
+ 	ft::vector<T> toTest;
+ 	VectorTester<T>	tester(std::string(STL) + msg, toTest);
+ 	T randArray[TEST_ARR_SIZE];
+ 	for (unsigned int i = 0; i < TEST_ARR_SIZE; ++i)
+ 		randArray[i] = generateVal<T>(i);
+ 	ft::vector<T> vectorItTest(std::begin(randArray), std::end(randArray));
+	// testFunctions(msg, toTest);
+ 	ft::vector<T>	vec0;
+ 	ft::vector<T>	stdVec1;
+ 	ft::vector<T>	stdVec2;
+ 	testFunctions<T>(msg, vec0);
+ 	ft::vector<T>	vec1(stdVec1);
+ 	testFunctions<T>(msg, vec1);
+ 	ft::vector<T>	vec2 = stdVec2;
+ 	testFunctions<T>(msg, vec2);
+ 	// vec2 = vec0;
+ 	// testFunctions<T>(msg, vec2);
+ 	// vec2 = stdVec2;
+ 	// testFunctions<T>(msg, vec2);
+ }

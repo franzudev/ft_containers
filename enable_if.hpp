@@ -1,9 +1,11 @@
 #pragma once
 
-template< bool CONDITION, typename TYPE = void >
-struct enable_if{};
+namespace ft{
+	template< bool CONDITION, typename TYPE = void >
+	struct enable_if{};
 
-template< typename TYPE >
-struct enable_if< true, TYPE > {
-	typedef TYPE type;
-};
+	template< typename TYPE >
+	struct enable_if< true, TYPE > {
+		typedef TYPE type;
+	};
+}
