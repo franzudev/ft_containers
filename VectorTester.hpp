@@ -188,9 +188,8 @@ T	generateVal(unsigned int index) {
 }
 
 template <typename T>
-void	testFunctions(std::string  msg)
+void	testFunctions(std::string  msg, ft::vector<T> &toTest)
 {
-	ft::vector<T> toTest;
 	VectorTester<T>	tester(std::string(STL) + msg, toTest);
 	T randArray[TEST_ARR_SIZE];
 	for (unsigned int i = 0; i < TEST_ARR_SIZE; ++i)
@@ -211,9 +210,8 @@ void	testFunctions(std::string  msg)
 	tester.testEraseIterators();
 }
 
-void	stringTestFunctions(std::string  msg)
+void	stringTestFunctions(std::string  msg, ft::vector<std::string> toTest)
 {
-	ft::vector<std::string> toTest;
 	VectorTester<std::string>	tester(std::string(STL) + msg, toTest);
 	std::string randArray[TEST_ARR_SIZE];
 	for (unsigned int i = 0; i < TEST_ARR_SIZE; ++i)
