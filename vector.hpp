@@ -251,8 +251,6 @@ namespace ft {
 
 		iterator erase (iterator first, iterator last) {
 			size_type diff = last - first;
-			//AAA
-			// pointer it = end().operator->();
 			pointer nBegin = first.operator->() + diff;
 			pointer lastP = last.operator->();
 			for (pointer i = first.operator->(); i != lastP; i++)
