@@ -13,7 +13,7 @@ int main() {
 		ft::vector<int>::const_iterator cIt = cIntVector.begin();
 		for (; cIt != cIntVector.end(); cIt++)
 			std::cout << *cIt << std::endl;
-//		testFunctions<Bureaucrat>("Testing Bureaucrat", bureaucratVector);
+		testFunctions<Bureaucrat>("Testing Bureaucrat", bureaucratVector);
 	}
 
 //	ft::stack<int, ft::vector<int> > intStack;

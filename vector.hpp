@@ -124,14 +124,16 @@ namespace ft {
 		};
 
 		// --- Operator Overloads
-		vector<value_type> &operator=(vector<value_type> &vec) {
+		vector &operator=(vector<value_type> const &vec) {
 			if (_capacity)
 				allocator.deallocate(_vec, _capacity);
 			_vec = allocator.allocate(vec._capacity);
-			size_type i = 0;
-			for (iterator start = vec.begin(), end = vec.end(), copy = begin(); start != end; start++, copy++, i++) {
-				allocator.construct(_vec + i, (value_type)*start);
+			for (size_type i = 0; i < vec._size; ++i) {
+				allocator.construct(_vec + i, vec[i]);
 			}
+//			for (iterator start = vec.begin(), end = vec.end(), copy = begin(); start != end; start++, copy++, i++) {
+//				allocator.construct(_vec + i, (value_type)*start);
+//			}
 			_size = vec._size;
 			_capacity = vec._capacity;
 			return *this;
@@ -152,19 +154,19 @@ namespace ft {
 		}
 		reverse_iterator rbegin() {
 			if (!_size)
-				return reverse_iterator(NULL);
-			return reverse_iterator(&_vec[_size - 1]);
+				return reverse_iterator(iterator(NULL));							// BUG_FIX
+			return reverse_iterator(iterator(&_vec[_size - 1]));					// BUG_FIX
 		}
 		reverse_iterator rend() {
 			if (!_size)
-				return reverse_iterator(NULL);
-			return reverse_iterator(_vec - 1);
+				return reverse_iterator(iterator(NULL));							// BUG_FIX
+			return reverse_iterator(iterator(_vec - 1));							// BUG_FIX
 		}
 		 const_reverse_iterator	rbegin() const {
-			return const_reverse_iterator(&_vec[_size - 1]);
+			return const_reverse_iterator(const_iterator(&_vec[_size - 1]));		// BUG_FIX
 		 }
 		 const_reverse_iterator	rend() const {
-			return const_reverse_iterator(_vec - 1);
+			return const_reverse_iterator(const_iterator(_vec - 1));				// BUG_FIX
 		 }
 
 		//Modifiers
