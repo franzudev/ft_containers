@@ -14,55 +14,56 @@ namespace ft {
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
 	public:
-		struct iterator {
-			typedef std::random_access_iterator_tag 	iterator_category;
+		template<class it, class C>
+		struct iter {
+			typedef ft::random_access_iterator_tag 		iterator_category;
 			typedef std::ptrdiff_t						difference_type;
-			typedef T									value_type;
-			typedef T*									pointer;
-			typedef T&									reference;
-			iterator(pointer ptr): m_ptr(ptr) {}
+			typedef C									value_type;
+			typedef C*									pointer;
+			typedef C&									reference;
+			explicit iter(it ptr): m_ptr(ptr) {}
 
-			reference operator*() const { return *m_ptr; }
-			pointer operator->() { return m_ptr; }
+			reference& operator*() const { return *m_ptr; }
+			it operator->() { return m_ptr; }
 
 			// Prefix increment
-			iterator& operator++() { ++m_ptr; return *this; }
+			iter& operator++() { ++m_ptr; return *this; }
 
 			// Postfix increment
-			iterator operator++(int) { iterator tmp = *this; ++(*this); return tmp; }
+			iter operator++(int) { iter tmp = *this; ++(*this); return tmp; }
 
 			// Prefix decrement
-			iterator& operator--() { --m_ptr; return *this; }
+			iter& operator--() { --m_ptr; return *this; }
 
 			// Postfix decrement
-			iterator operator--(int) { iterator tmp = *this; --(*this); return tmp; }
+			iter operator--(int) { iter tmp = *this; --(*this); return tmp; }
 
-			iterator operator-(size_t val) {
-				return iterator(m_ptr - val);
+			iter operator-(size_t val) {
+				return iter(m_ptr - val);
 			}
-			ptrdiff_t operator-(iterator& val) {
+			ptrdiff_t operator-(iter& val) {
 				return m_ptr - val.m_ptr;
 			}
-			iterator&	operator-=(size_t n) {
+			iter&	operator-=(size_t n) {
 				m_ptr -= n;
 				return *this;
 			}
-			iterator operator+(size_t val) const {
-				return iterator(m_ptr + val);
+			iter operator+(size_t val) const {
+				return iter(m_ptr + val);
 			}
-			ptrdiff_t operator+(iterator& val) const {
+			ptrdiff_t operator+(iter& val) const {
 				return m_ptr + val.m_ptr;
 			}
-			iterator&	operator+=(size_t n) {
+			iter&	operator+=(size_t n) {
 				m_ptr += n;
 				return *this;
 			}
 
-			friend bool operator== (const iterator& a, const iterator& b) { return a.m_ptr == b.m_ptr; };
-			friend bool operator!= (const iterator& a, const iterator& b) { return a.m_ptr != b.m_ptr; };
+			friend bool operator== (const iter& a, const iter& b) { return a.m_ptr == b.m_ptr; };
+			friend bool operator!= (const iter& a, const iter& b) { return a.m_ptr != b.m_ptr; };
 		private:
-			pointer m_ptr;
-		};
+			it m_ptr;
+		}; //iter<>
 
 		typedef T													value_type;
 		typedef Allocator											allocator_type;
@@ -70,10 +71,11 @@ namespace ft {
 		typedef typename allocator_type::const_reference			const_reference;
 		typedef typename allocator_type::pointer					pointer;
 		typedef typename allocator_type::const_pointer				const_pointer;
-		typedef const iterator										const_iterator;
+		typedef iter<pointer, T>									iterator;
+		typedef iter<const_pointer, const T>						const_iterator;
 		// to implement
+		typedef reverse_iterator<const_iterator>					const_reverse_iterator;
 		typedef reverse_iterator<iterator>							reverse_iterator;
-		typedef const reverse_iterator								const_reverse_iterator;
 		typedef typename iterator_traits<iterator>::difference_type	difference_type;
 		typedef size_t												size_type;
 
@@ -90,7 +92,7 @@ namespace ft {
 			allocator.deallocate(_vec, _capacity);
 		}
 
-		vector(vector const &vec): allocator(vec.get_allocator()), _size(0), _capacity(0), _vec(nullptr){
+		vector(vector &vec): allocator(vec.get_allocator()), _size(0), _capacity(0), _vec(nullptr){
 			*this = vec;
 		}
 
@@ -122,7 +124,7 @@ namespace ft {
 		};
 
 		// --- Operator Overloads
-		vector<value_type> &operator=(vector<value_type> const &vec) {
+		vector<value_type> &operator=(vector<value_type> &vec) {
 			if (_capacity)
 				allocator.deallocate(_vec, _capacity);
 			_vec = allocator.allocate(vec._capacity);
@@ -139,14 +141,14 @@ namespace ft {
 		iterator begin() {
 			return iterator(_vec);
 		}
-		iterator				end() {
+		iterator end() {
 			return iterator(&_vec[_size]);
 		}
 		const_iterator begin() const {
-			return iterator(_vec);
+			return const_iterator(_vec);
 		}
 		const_iterator end() const {
-				return iterator(&_vec[_size]);
+				return const_iterator(&_vec[_size]);
 		}
 		reverse_iterator rbegin() {
 			if (!_size)
@@ -159,10 +161,10 @@ namespace ft {
 			return reverse_iterator(_vec - 1);
 		}
 		 const_reverse_iterator	rbegin() const {
-			return reverse_iterator(&_vec[_size - 1]);
+			return const_reverse_iterator(&_vec[_size - 1]);
 		 }
 		 const_reverse_iterator	rend() const {
-			return reverse_iterator(_vec - 1);
+			return const_reverse_iterator(_vec - 1);
 		 }
 
 		//Modifiers
