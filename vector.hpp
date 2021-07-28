@@ -87,7 +87,8 @@ namespace ft {
 		~vector() {
 			for (size_type i = 0; i < _size; i++)
 				allocator.destroy(&_vec[i]);
-			allocator.deallocate(_vec, _capacity);
+			if (_capacity)
+				allocator.deallocate(_vec, _capacity);
 		}
 
 		vector(vector const &vec): allocator(vec.get_allocator()), _size(0), _capacity(0), _vec(nullptr){
@@ -250,7 +251,8 @@ namespace ft {
 
 		iterator erase (iterator first, iterator last) {
 			size_type diff = last - first;
-			pointer it = end().operator->();
+			//AAA
+			// pointer it = end().operator->();
 			pointer nBegin = first.operator->() + diff;
 			pointer lastP = last.operator->();
 			for (pointer i = first.operator->(); i != lastP; i++)
