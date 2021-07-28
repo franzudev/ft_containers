@@ -24,9 +24,9 @@ namespace ft = std;
 
 template <class T, class Container>
 struct StackTester {
-	typedef Container	stack_t;
+	typedef ft::stack<T, Container>	stack_t;
 
-	stack_t stack;
+	stack_t &stack;
 
 	StackTester(std::string msg, stack_t &stack): stack(stack) {
 		std::cout << msg << std::endl;
@@ -45,10 +45,26 @@ struct StackTester {
 		std::cout << std::endl;
 	}
 
-	void	testTop(std::string msg) {
+	void	testTop() {
 		printSizes();
-		Timer test(std::string(STL) + "Testing top() " + msg);
+		Timer test(std::string(STL) + "Testing top() ");
 		std::cout << stack.top() << std::endl;
+		test.getDiff();
+		printSizes();
+//		printStack();
+	}
+	void	testPush(const T& value) {
+		printSizes();
+		Timer test(std::string(STL) + "Testing push(const T& value) ");
+		stack.push(value);
+		test.getDiff();
+		printSizes();
+//		printStack();
+	}
+	void	testPop() {
+		printSizes();
+		Timer test(std::string(STL) + "Testing pop() ");
+		stack.pop();
 		test.getDiff();
 		printSizes();
 //		printStack();
@@ -60,11 +76,23 @@ private:
 
 
 template <typename T, typename Container>
-void	testStackFunctions(std::string  msg, Container &toTest)
+void	testStackFunctions(std::string  msg, ft::stack<T, Container> &toTest)
 {
 	StackTester<T, Container>	tester(std::string(STL) + msg, toTest);
+	ft::stack<T, Container> toTest2(toTest);
+	StackTester<T, Container>	tester2(std::string(STL) + msg, toTest2);
 
-	tester.testTop("Top");
+	tester.testTop();
+	tester.testPush(toTest.top());
+	tester.testPop();
+	tester2.testTop();
+	tester2.testPush(toTest2.top());
+	tester2.testPop();
+	std::cout << "Is == " << (toTest == toTest2) << std::endl;
+	std::cout << "Is <  " << (toTest < toTest2) << std::endl;
+	std::cout << "Is <= " << (toTest <= toTest2) << std::endl;
+	std::cout << "Is >  " << (toTest > toTest2) << std::endl;
+	std::cout << "Is >= " << (toTest >= toTest2) << std::endl;
 }
 
 /*void	testStringStackFunctions(std::string  msg, ft::stack<T> &toTest)
