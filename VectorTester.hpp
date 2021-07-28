@@ -210,7 +210,7 @@ void	testFunctions(std::string  msg, ft::vector<T> &toTest)
 	tester.testEraseIterators();
 }
 
-void	stringTestFunctions(std::string  msg, ft::vector<std::string> toTest)
+void	stringTestFunctions(std::string  msg, ft::vector<std::string> &toTest)
 {
 	VectorTester<std::string>	tester(std::string(STL) + msg, toTest);
 	std::string randArray[TEST_ARR_SIZE];

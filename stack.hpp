@@ -29,11 +29,10 @@ namespace ft {
 		}
 		stack& operator=(stack const& q) {
 			c = q.c;
+			return *this;
 		}
 
-		explicit stack(const container_type& c) {
-			this->c = c;
-		}
+		explicit stack(const container_type& c): c(c) {}
 
 		bool empty() const {
 			return c.empty();

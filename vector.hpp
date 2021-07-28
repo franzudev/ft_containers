@@ -82,7 +82,7 @@ namespace ft {
 			allocator(alloc),
 			_size(0),
 			_capacity(0),
-			_vec(allocator.allocate(1)) {}
+			_vec(nullptr) {}
 
 		~vector() {
 			for (size_type i = 0; i < _size; i++)
@@ -149,9 +149,13 @@ namespace ft {
 				return iterator(&_vec[_size]);
 		}
 		reverse_iterator rbegin() {
+			if (!_size)
+				return reverse_iterator(NULL);
 			return reverse_iterator(&_vec[_size - 1]);
 		}
 		reverse_iterator rend() {
+			if (!_size)
+				return reverse_iterator(NULL);
 			return reverse_iterator(_vec - 1);
 		}
 		 const_reverse_iterator	rbegin() const {
@@ -184,7 +188,7 @@ namespace ft {
 			_size = n;
 		}
 
-		void push_back(const reference value) {
+		void push_back(const_reference value) {
 			if (_size == _capacity)
 				reserve(_capacity * 2);
 			_vec[_size++] = value;
