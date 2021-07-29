@@ -26,13 +26,13 @@ namespace ft {
 			explicit iter(): m_ptr(nullptr){};
 
 			explicit iter(iterator_type ptr): m_ptr(ptr) {}
-			
+
 			// explicit iter(pointer ptr): m_ptr(ptr) {}
 
 			iter(iter const & other) : m_ptr(other.m_ptr) {}
 
 			reference operator*() const { return *m_ptr; }
-			
+
 			pointer operator->() const { return m_ptr; }
 
 			// Prefix increment
@@ -67,7 +67,7 @@ namespace ft {
 				m_ptr += n;
 				return *m_ptr;
 			}
-			
+
 			pointer	base() const{
 				return m_ptr;
 			}
@@ -104,10 +104,10 @@ namespace ft {
 
 		// --- Constructors && Destructors
 		explicit vector (const allocator_type& alloc = allocator_type()):
-			allocator(alloc),
-			_size(0),
-			_capacity(0),
-			_vec(nullptr) {}
+				allocator(alloc),
+				_size(0),
+				_capacity(0),
+				_vec(nullptr) {}
 
 		~vector() {
 			// for (size_type i = 0; i < _size; i++)
@@ -120,17 +120,17 @@ namespace ft {
 		}
 
 		explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):
-			allocator(alloc),
-			_size(n),
-			_capacity(n),
-			_vec(allocator.allocate(n))
+				allocator(alloc),
+				_size(n),
+				_capacity(n),
+				_vec(allocator.allocate(n))
 		{
 			for (size_type i = 0; i < n; i++)
 				allocator.construct(_vec + i, val);
 		}
 		template <class InputIterator>
 		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0):
-		allocator(alloc)
+				allocator(alloc)
 		{
 			size_type len = 0;
 			for (InputIterator beg = first; beg != last; beg++)
@@ -173,7 +173,7 @@ namespace ft {
 			return const_iterator(_vec);
 		}
 		const_iterator end() const {
-				return const_iterator(&_vec[_size]);
+			return const_iterator(&_vec[_size]);
 		}
 		reverse_iterator rbegin() {
 			if (!_size)
@@ -185,12 +185,12 @@ namespace ft {
 				return reverse_iterator(iterator(NULL));							// BUG_FIX
 			return reverse_iterator(iterator(_vec - 1));							// BUG_FIX
 		}
-		 const_reverse_iterator	rbegin() const {
+		const_reverse_iterator	rbegin() const {
 			return const_reverse_iterator(const_iterator(&_vec[_size - 1]));		// BUG_FIX
-		 }
-		 const_reverse_iterator	rend() const {
+		}
+		const_reverse_iterator	rend() const {
 			return const_reverse_iterator(const_iterator(_vec - 1));				// BUG_FIX
-		 }
+		}
 
 		//Modifiers
 		template <class InputIterator>
@@ -256,7 +256,7 @@ namespace ft {
 		}
 
 		template <class InputIterator>
-    	void insert (iterator position, InputIterator first, InputIterator last, typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0) {
+		void insert (iterator position, InputIterator first, InputIterator last, typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0) {
 			size_type index = position - begin();
 			size_type len = 0;
 			for (InputIterator beg = first; beg != last; beg++)
@@ -452,7 +452,7 @@ namespace ft {
 	}
 
 	template <class T, class Alloc>
-	bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
 		return !ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 
@@ -462,7 +462,8 @@ namespace ft {
 	}
 
 	template <class T, class Alloc>
-	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+	bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
 		return !ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
 	}
+
 }
