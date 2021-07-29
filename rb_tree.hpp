@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 namespace ft {
 
 	template<class K, class T>
@@ -9,23 +11,23 @@ namespace ft {
 			class node {
 
 				public:
-					typedef	node*		nodeptr;
-					typedef	T			value_type;
-					typedef K			key_type;
-					typedef bool		color;
-					typedef true		red;
-					typedef false		black;
+					typedef	node*			nodeptr;
+					typedef	T				value_type;
+					typedef K				key_type;
+					typedef bool			color;
+					typedef std::true_type 	red;
+					typedef std::false_type black;
 
 					node() {};
 					~node() {};
 					node(key_type k, value_type v) : _k(k), _v(v), _parent(nullptr), _left(nullptr), _right(nullptr) {};
-					node(key_type k, value_type v, nodeptr * parent) : _k(k), _v(v), _parent(nodeptr), _left(nullptr), _right(nullptr) {};
-					node(nodeptr n) { this = n }
+					node(key_type k, value_type v, nodeptr * parent) : _k(k), _v(v), _parent(parent), _left(nullptr), _right(nullptr) {};
+					node(nodeptr n) {this = n;}
 
-					T&			value() { return _v }
-					T const &	value() const { return _v }
-					K&			key() { return _k}
-					K const &	key() const { return _k}
+					T&			value() {return _v;}
+					T const &	value() const {return _v;}
+					K&			key() {return _k;}
+					K const &	key() const {return _k;}
 
 				private:
 					color		_c;
@@ -41,8 +43,10 @@ namespace ft {
 			rb_tree() : root(NULL) {};
 
 			node&		find(key_type const & _k) {
-				if (!root)
+				if (!root || root->key() == _k)
 					return root;
+				if (_k < root->key()) root = root->_left;
+				else if ()
 			}
 			const node&	find(key_type const & _k) const;
 			void 		insert(key_type const & _k, value_type const & _v);
@@ -50,6 +54,7 @@ namespace ft {
 
 		private:
 			node *root;
+
 
 	}; // rb_tree
 
