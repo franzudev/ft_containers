@@ -43,6 +43,91 @@ struct VectorTester {
 		std::cout << std::endl;
 	}
 
+	void testIterators()
+	{
+		Timer	test("IterTest");
+		typename ft::vector<T>::iterator			it;
+		typename ft::vector<T>::reverse_iterator	rit;
+
+
+		it = vector.begin();
+		rit = vector.rbegin();
+		typename ft::vector<T>::iterator			itCp(it);
+		if (it == itCp)
+			std::cout << "equal" << std::endl;
+		typename ft::vector<T>::reverse_iterator	ritCp(rit);
+		if (rit == ritCp)
+			std::cout << "equal" << std::endl;
+		// --- Iterations
+		while (it != vector.end())
+		{
+			std::cout << *it << std::endl;
+			it++;
+		}
+		while (rit != vector.rend())
+		{
+			std::cout << *rit << std::endl;
+			rit++;
+		}
+		it = vector.end();
+		rit = vector.rend();
+		while (it != vector.begin())
+		{
+			if (it != vector.end())
+				std::cout << *it << std::endl;
+			it--;
+		}
+		while (rit != vector.rbegin())
+		{
+			if (rit != vector.rend())
+				std::cout << *rit << std::endl;
+			rit--;
+		}
+		// --- operations
+		it = vector.end();
+		rit = vector.rend();
+		it--;
+		rit--;
+		it += 1;
+		rit += 1;
+		it -= 1;
+		rit -= 1;
+		it + 1;
+		it - 1;
+		rit + 1;
+		rit - 1;
+		typename ft::vector<T>::iterator			*itPointer;
+		it = vector.begin();
+		itPointer = &it;
+		if (vector.size())
+			std::cout << **itPointer << std::endl;
+		// --- ConstIterators
+		if (vector.size())
+		{
+			it = vector.begin();
+			rit = vector.rbegin();
+
+			typename ft::vector<T>::const_iterator cit;
+			typename ft::vector<T>::const_reverse_iterator rcit;
+
+			
+			cit = vector.begin();
+			rcit = vector.rbegin();
+			*it = *cit;
+			*rit = *rcit;
+			std::cout << *it << *rit << std::endl;
+			std::cout << *cit << *rcit << std::endl;
+			while (cit != vector.end())
+			{
+				cit++;
+			}
+			while (rcit != vector.rend())
+			{
+				rcit++;
+			}
+		}
+		test.getDiff();
+	}
 	template<class InputIterator>
 	void	testTemplatedAssign(std::string msg, InputIterator first, InputIterator last) {
 		printSizes();
@@ -179,67 +264,73 @@ private:
 	VectorTester();
 };
 
+template<class Tp>
+struct is_string : public std::false_type {};
+template<>
+struct is_string<std::string> : public std::true_type {};
+
 template<typename T>
-T	generateVal(unsigned int index) {
+T	generateVal(unsigned int index, typename ft::enable_if<ft::is_integral<T>::value, T>::type* = 0) {
 	return T(index);
 }
 
 template<typename T>
-T	*generateValHeap(unsigned int index) {
-	return new T(index);
+T	generateVal(unsigned int index, typename ft::enable_if<!ft::is_integral<T>::value && !is_string<T>::value, T>::type* = 0) {
+	return T(index);
+}
+
+template<typename T>
+std::string	generateVal(unsigned int index, typename ft::enable_if<is_string<T>::value, T>::type* = 0) {
+	std::string arr[] = {"aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii"};	
+	return T(arr[index % 9]);
 }
 
 template <typename T>
 void	testFunctions(std::string  msg, ft::vector<T> &toTest)
 {
 	VectorTester<T>	tester(std::string(STL) + msg, toTest);
+	tester.testIterators();
 	T randArray[TEST_ARR_SIZE];
 	for (unsigned int i = 0; i < TEST_ARR_SIZE; ++i)
 		randArray[i] = generateVal<T>(i);
 	ft::vector<T> vectorItTest(std::begin(randArray), std::end(randArray));
 
-	tester.testTemplatedAssign("Templated Assign", std::begin(randArray), std::end(randArray));
+	tester.testTemplatedAssign(std::begin(randArray), std::end(randArray));
 	tester.clearVector();
-	tester.testSizedAssign("Sized Assign", 100, generateVal<T>(1));
-	tester.testPushBack(*(vectorItTest.begin() + 5));
+	tester.testSizedAssign(100, generateVal<T>(1));
+	tester.testPushBack(generateVal<T>(10));
 	tester.clearVector();
-	tester.testPushBack(*(vectorItTest.begin() + 10));
+	tester.testPushBack(generateVal<T>(10));
 	tester.testPopBack();
 	tester.testSingleInsert(generateVal<T>(4));
 	tester.testSizedInsert(10, generateVal<T>(5));
 	tester.testIteratorsInsert(vectorItTest.begin(), vectorItTest.end());
 	tester.testErase();
 	tester.testEraseIterators();
-	std::cout << "Is == " << (toTest == vectorItTest) << std::endl;
-	std::cout << "Is <  " << (toTest < vectorItTest) << std::endl;
-	std::cout << "Is <= " << (toTest <= vectorItTest) << std::endl;
-	std::cout << "Is >  " << (toTest > vectorItTest) << std::endl;
-	std::cout << "Is >= " << (toTest >= vectorItTest) << std::endl;
 }
 
-void	stringTestFunctions(std::string  msg, ft::vector<std::string> &toTest)
-{
-	VectorTester<std::string>	tester(std::string(STL) + msg, toTest);
-	std::string randArray[TEST_ARR_SIZE];
-	for (unsigned int i = 0; i < TEST_ARR_SIZE; ++i)
-		randArray[i] = std::to_string(i);
-	ft::vector<std::string> vectorItTest(std::begin(randArray), std::end(randArray));
-
-	tester.testTemplatedAssign("Templated Assign", std::begin(randArray), std::end(randArray));
-	tester.clearVector();
-	tester.testSizedAssign("Sized Assign", 100, std::to_string(1));
-	tester.testPushBack(*(vectorItTest.begin() + 5));
-	tester.clearVector();
-	tester.testPushBack(*(vectorItTest.begin() + 10));
-	tester.testPopBack();
-	tester.testSingleInsert(std::to_string(4));
-	tester.testSizedInsert(10, std::to_string(5));
-	tester.testIteratorsInsert(vectorItTest.begin(), vectorItTest.end());
-	tester.testErase();
-	tester.testEraseIterators();
-	std::cout << "Is == " << (toTest == vectorItTest) << std::endl;
-	std::cout << "Is <  " << (toTest < vectorItTest) << std::endl;
-	std::cout << "Is <= " << (toTest <= vectorItTest) << std::endl;
-	std::cout << "Is >  " << (toTest > vectorItTest) << std::endl;
-	std::cout << "Is >= " << (toTest >= vectorItTest) << std::endl;
-}
+template <class T>
+void	testConstructors(std::string msg)
+ {
+ 	ft::vector<T> toTest;
+ 	VectorTester<T>	tester(std::string(STL) + msg, toTest);
+ 	T randArray[TEST_ARR_SIZE];
+ 	for (unsigned int i = 0; i < TEST_ARR_SIZE; ++i)
+ 		randArray[i] = generateVal<T>(i);
+	for (size_t i = 0; i < TEST_ARR_SIZE; i++)
+		toTest.push_back(generateVal<T>(i));
+	testFunctions(msg, toTest);
+ 	ft::vector<T> vectorItTest(std::begin(randArray), std::end(randArray));
+ 	ft::vector<T>	vec0;
+ 	ft::vector<T>	stdVec1;
+ 	ft::vector<T>	stdVec2;
+ 	testFunctions<T>(msg, vec0);
+ 	ft::vector<T>	vec1(stdVec1);
+ 	testFunctions<T>(msg, vec1);
+ 	ft::vector<T>	vec2 = stdVec2;
+ 	testFunctions<T>(msg, vec2);
+ 	vec2 = vec0;
+ 	testFunctions<T>(msg, vec2);
+ 	vec2 = stdVec2;
+ 	testFunctions<T>(msg, vec2);
+ }

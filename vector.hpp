@@ -79,11 +79,14 @@ namespace ft {
 				return *this;
 			}
 
-			friend bool operator== (const iter& a, const iter& b) { return a.m_ptr == b.m_ptr; };
-			friend bool operator!= (const iter& a, const iter& b) { return a.m_ptr != b.m_ptr; };
 		private:
 			iterator_type m_ptr;
 		}; //iter<>
+
+		template <class T1, class T2>
+		friend bool operator== (const iter<T1>& a, const iter<T2>& b) { return a.base() == b.base(); };
+		template <class T1, class T2>
+		friend bool operator!= (const iter<T1>& a, const iter<T2>& b) { return a.base() != b.base(); };
 
 		typedef T													value_type;
 		typedef Allocator											allocator_type;
