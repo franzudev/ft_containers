@@ -2,8 +2,6 @@
 
 #pragma once
 
-#define TEST_ARR_SIZE 10
-
 #ifdef USE_STL
 # define STL "std: "
 # include <iterator>
@@ -60,9 +58,9 @@ private:
 
 
 template <typename T, typename Container>
-void	testStackFunctions(std::string  msg, Container &toTest)
+void	testStackFunctions(std::string  msg, ft::stack<T, Container> &toTest)
 {
-	StackTester<T, Container>	tester(std::string(STL) + msg, toTest);
+	StackTester<T, ft::stack<T, Container> >	tester(std::string(STL) + msg, toTest);
 
 	tester.testTop("Top");
 }

@@ -110,9 +110,9 @@ namespace ft {
 				_vec(nullptr) {}
 
 		~vector() {
-			// for (size_type i = 0; i < _size; i++)
-			// 	allocator.destroy(&_vec[i]);
-			// allocator.deallocate(_vec, _capacity);
+			 for (size_type i = 0; i < _size; i++)
+			 	allocator.destroy(&_vec[i]);
+			 allocator.deallocate(_vec, _capacity);
 		}
 
 		vector(vector &vec): allocator(vec.get_allocator()), _size(0), _capacity(0), _vec(nullptr){
@@ -136,7 +136,8 @@ namespace ft {
 			for (InputIterator beg = first; beg != last; beg++)
 				len++;
 			_vec = allocator.allocate(_size = _capacity = len);
-			std::copy(first, last, _vec);
+			for (size_type i = 0; i < _size; ++i, ++first)
+				allocator.construct(_vec + i, *first);
 		}
 
 		// Exceptions
@@ -252,7 +253,7 @@ namespace ft {
 			_size += n;
 			size_type i = 0;
 			for (; i < n; i++)
-				_vec[index++] = val;
+				allocator.construct(_vec + index++, val);
 		}
 
 		template <class InputIterator>
@@ -268,7 +269,7 @@ namespace ft {
 			traslate(newIt, len);
 			_size += len;
 			for (InputIterator start = first; start != last; start++)
-				_vec[index++] = *start;
+				allocator.construct(_vec + index++, *start);
 		}
 
 		iterator erase (iterator const &position) {

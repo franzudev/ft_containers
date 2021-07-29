@@ -1,6 +1,6 @@
 #pragma once
 
-#define TEST_ARR_SIZE 1000
+#define TEST_ARR_SIZE 10
 
 #ifdef USE_STL
 # define STL "std: "
@@ -300,11 +300,16 @@ void	testFunctions(std::string  msg, ft::vector<T> &toTest)
 	tester.testSizedAssign(100, generateVal<T>(1));
 	tester.testPushBack(generateVal<T>(10));
 	tester.clearVector();
-	tester.testPushBack(generateVal<T>(10));
+	tester.testPushBack(*(vectorItTest.begin() + 6));
 	tester.testPopBack();
 	tester.testSingleInsert(generateVal<T>(4));
 	tester.testSizedInsert(10, generateVal<T>(5));
 	tester.testIteratorsInsert(vectorItTest.begin(), vectorItTest.end());
+	std::cout << "Is == " << (toTest == vectorItTest) << std::endl;
+	std::cout << "Is <  " << (toTest < vectorItTest) << std::endl;
+	std::cout << "Is <= " << (toTest <= vectorItTest) << std::endl;
+	std::cout << "Is >  " << (toTest > vectorItTest) << std::endl;
+	std::cout << "Is >= " << (toTest >= vectorItTest) << std::endl;
 	tester.testErase();
 	tester.testEraseIterators();
 }
