@@ -47,8 +47,8 @@ namespace ft {
 			// Postfix decrement
 			iterator_type operator--(int) { iterator_type tmp = m_ptr; --m_ptr; return tmp; }
 
-			iterator_type operator-(difference_type val) {
-				return iterator_type(m_ptr - val);
+			iter operator-(difference_type val) {
+				return iter(m_ptr - val);
 			}
 			difference_type operator-(reference val) {
 				return m_ptr - val.m_ptr;
@@ -57,8 +57,8 @@ namespace ft {
 				m_ptr -= n;
 				return *m_ptr;
 			}
-			iterator_type operator+(difference_type val) const {
-				return iterator_type(m_ptr + val);
+			iter operator+(difference_type val) const {
+				return iter(m_ptr + val);
 			}
 			difference_type operator+(reference val) const {
 				return m_ptr + val.m_ptr;
@@ -226,7 +226,7 @@ namespace ft {
 		iterator insert (iterator position, const value_type& val)
 		{
 			if (_size == _capacity) {
-				size_type index = position - begin();
+				difference_type index = position - begin();
 				reserve(_capacity * 2);
 				iterator newPosition = begin() + index;
 				traslate(newPosition, 1);
@@ -422,9 +422,9 @@ namespace ft {
 		T*			_vec;
 	};
 
-	template <class T>
-	ptrdiff_t operator-(T t, T u) {
-		return t - u;
+	template <class Iter>
+	ptrdiff_t operator-(Iter t, Iter u) {
+		return t.base() - u.base();
 	}
 
 	template <class T, class Alloc>
