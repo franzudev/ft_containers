@@ -14,55 +14,75 @@ namespace ft {
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
 	public:
-		template<class it, class C>
+		template<class Pointer>
 		struct iter {
-			typedef ft::random_access_iterator_tag 		iterator_category;
-			typedef std::ptrdiff_t						difference_type;
-			typedef C									value_type;
-			typedef C*									pointer;
-			typedef C&									reference;
-			explicit iter(it ptr): m_ptr(ptr) {}
+			typedef Pointer                                                     iterator_type;
+			typedef typename iterator_traits<iterator_type>::iterator_category	iterator_category;
+			typedef typename iterator_traits<iterator_type>::value_type        	value_type;
+			typedef typename iterator_traits<iterator_type>::difference_type   	difference_type;
+			typedef typename iterator_traits<iterator_type>::pointer           	pointer;
+			typedef typename iterator_traits<iterator_type>::reference         	reference;
 
-			reference& operator*() const { return *m_ptr; }
-			it operator->() { return m_ptr; }
+			explicit iter(): m_ptr(nullptr){};
+
+			explicit iter(iterator_type ptr): m_ptr(ptr) {}
+			
+			// explicit iter(pointer ptr): m_ptr(ptr) {}
+
+			iter(iter const & other) : m_ptr(other.m_ptr) {}
+
+			reference operator*() const { return *m_ptr; }
+			
+			pointer operator->() const { return m_ptr; }
 
 			// Prefix increment
-			iter& operator++() { ++m_ptr; return *this; }
+			reference operator++() { ++m_ptr; return *m_ptr; }
 
 			// Postfix increment
-			iter operator++(int) { iter tmp = *this; ++(*this); return tmp; }
+			iterator_type operator++(int) { iterator_type tmp = m_ptr; ++m_ptr; return tmp; }
 
 			// Prefix decrement
-			iter& operator--() { --m_ptr; return *this; }
+			reference operator--() { --m_ptr; return *m_ptr; }
 
 			// Postfix decrement
-			iter operator--(int) { iter tmp = *this; --(*this); return tmp; }
+			iterator_type operator--(int) { iterator_type tmp = m_ptr; --m_ptr; return tmp; }
 
-			iter operator-(size_t val) {
-				return iter(m_ptr - val);
+			iterator_type operator-(difference_type val) {
+				return iterator_type(m_ptr - val);
 			}
-			ptrdiff_t operator-(iter& val) {
+			difference_type operator-(reference val) {
 				return m_ptr - val.m_ptr;
 			}
-			iter&	operator-=(size_t n) {
+			reference	operator-=(difference_type n) {
 				m_ptr -= n;
-				return *this;
+				return *m_ptr;
 			}
-			iter operator+(size_t val) const {
-				return iter(m_ptr + val);
+			iterator_type operator+(difference_type val) const {
+				return iterator_type(m_ptr + val);
 			}
-			ptrdiff_t operator+(iter& val) const {
+			difference_type operator+(reference val) const {
 				return m_ptr + val.m_ptr;
 			}
-			iter&	operator+=(size_t n) {
+			reference	operator+=(difference_type n) {
 				m_ptr += n;
+				return *m_ptr;
+			}
+			
+			pointer	base() const{
+				return m_ptr;
+			}
+
+			template <class Iter>
+			iter&	operator=(iter<Iter> const & other)
+			{
+				m_ptr = other.base();
 				return *this;
 			}
 
 			friend bool operator== (const iter& a, const iter& b) { return a.m_ptr == b.m_ptr; };
 			friend bool operator!= (const iter& a, const iter& b) { return a.m_ptr != b.m_ptr; };
 		private:
-			it m_ptr;
+			iterator_type m_ptr;
 		}; //iter<>
 
 		typedef T													value_type;
@@ -71,8 +91,8 @@ namespace ft {
 		typedef typename allocator_type::const_reference			const_reference;
 		typedef typename allocator_type::pointer					pointer;
 		typedef typename allocator_type::const_pointer				const_pointer;
-		typedef iter<pointer, T>									iterator;
-		typedef iter<const_pointer, const T>						const_iterator;
+		typedef iter<pointer>										iterator;
+		typedef iter<const_pointer>									const_iterator;
 		// to implement
 		typedef reverse_iterator<const_iterator>					const_reverse_iterator;
 		typedef reverse_iterator<iterator>							reverse_iterator;
@@ -399,7 +419,7 @@ namespace ft {
 	protected:
 		size_type 	_size;		// Elements
 		size_type 	_capacity;	// Allocated Space
-		value_type	*_vec;
+		T*			_vec;
 	};
 
 	template <class T>
