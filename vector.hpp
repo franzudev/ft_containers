@@ -6,7 +6,6 @@
 #include "is_integral.hpp"
 #include "lexicographical_compare.hpp"
 #include "iterator.hpp"
-#include "Timer.hpp"
 #include <cstring>
 #include <list>
 
@@ -27,20 +26,23 @@ namespace ft {
 
 		// explicit vector_iterator(pointer ptr): m_ptr(ptr) {}
 
-		vector_iterator(vector_iterator const & other) : m_ptr(other.m_ptr) {}
+		template<class Itter>
+		vector_iterator(vector_iterator<Itter> const & other) {
+			*this = other;
+		}
 
 		reference operator*() const { return *m_ptr; }
 
 		pointer operator->() const { return m_ptr; }
 
 		// Prefix increment
-		vector_iterator operator++() { ++m_ptr; return *this; }
+		vector_iterator &operator++() { ++m_ptr; return *this; }
 
 		// Postfix increment
 		vector_iterator operator++(int) { vector_iterator tmp = *this; ++m_ptr; return tmp; }
 
 		// Prefix decrement
-		vector_iterator operator--() { --m_ptr; return *this; }
+		vector_iterator &operator--() { --m_ptr; return *this; }
 
 		// Postfix decrement
 		vector_iterator operator--(int) { vector_iterator tmp = *this; --m_ptr; return tmp; }
@@ -51,22 +53,26 @@ namespace ft {
 		difference_type operator-(reference val) {
 			return m_ptr - val.m_ptr;
 		}
-		size_t operator-(vector_iterator val) {
-			return m_ptr - val.m_ptr;
-		}
-		reference	operator-=(difference_type n) {
+//		size_t operator-(vector_iterator val) {
+//			return m_ptr - val.m_ptr;
+//		}
+		pointer	operator-=(difference_type n) {
 			m_ptr -= n;
-			return *m_ptr;
+			return m_ptr;
 		}
 		vector_iterator operator+(difference_type val) const {
 			return vector_iterator(m_ptr + val);
 		}
-		difference_type operator+(reference val) const {
-			return m_ptr + val.m_ptr;
+		vector_iterator& operator+(vector_iterator<Pointer> &val) const {
+			return vector_iterator(m_ptr + val.m_ptr);
 		}
-		reference	operator+=(difference_type n) {
+		pointer	operator+=(difference_type n) {
 			m_ptr += n;
-			return *m_ptr;
+			return m_ptr;
+		}
+
+		reference	operator[](size_t index) {
+			return *(m_ptr + index);
 		}
 
 		pointer	base() const{
@@ -94,6 +100,11 @@ namespace ft {
 	}
 
 	template <class T, class U>
+	vector_iterator<U> operator+(T lhs, const vector_iterator<U> &rhs) {
+		return rhs + lhs;
+	}
+
+	template <class T, class U>
 	bool operator== (const vector_iterator<T> &lhs,const vector_iterator<U> &rhs) {
 		return (lhs.base() == rhs.base());
 	}
@@ -101,6 +112,26 @@ namespace ft {
 	template <class T, class U>
 	bool operator!= (const vector_iterator<T> &lhs,const vector_iterator<U> &rhs) {
 		return !(lhs == rhs);
+	}
+
+	template <class T, class U>
+	bool operator< (const vector_iterator<T> &lhs,const vector_iterator<U> &rhs) {
+		return (lhs.base() < rhs.base());
+	}
+
+	template <class T, class U>
+	bool operator<= (const vector_iterator<T> &lhs,const vector_iterator<U> &rhs) {
+		return lhs.base() <= rhs.base();
+	}
+
+	template <class T, class U>
+	bool operator> (const vector_iterator<T> &lhs,const vector_iterator<U> &rhs) {
+		return (lhs.base() > rhs.base());
+	}
+
+	template <class T, class U>
+	bool operator>= (const vector_iterator<T> &lhs,const vector_iterator<U> &rhs) {
+		return (lhs.base() >= rhs.base());
 	}
 
 
@@ -114,11 +145,11 @@ namespace ft {
 		typedef typename allocator_type::const_reference			const_reference;
 		typedef typename allocator_type::pointer					pointer;
 		typedef typename allocator_type::const_pointer				const_pointer;
-		typedef vector_iterator<pointer>										iterator;
-		typedef vector_iterator<const_pointer>									const_iterator;
+		typedef vector_iterator<pointer>							iterator;
+		typedef vector_iterator<const_pointer>						const_iterator;
 		// to implement
-		typedef reverse_iterator<const_iterator>					const_reverse_iterator;
-		typedef reverse_iterator<iterator>							reverse_iterator;
+		typedef reverse_iter<iterator>								reverse_iterator;
+		typedef reverse_iter<const_iterator>						const_reverse_iterator;
 		typedef typename iterator_traits<iterator>::difference_type	difference_type;
 		typedef size_t												size_type;
 
@@ -171,14 +202,13 @@ namespace ft {
 
 		// --- Operator Overloads
 		vector &operator=(vector<value_type> const &vec) {
-			if (_capacity)
+			if (_capacity <= vec.capacity()) {
 				allocator.deallocate(_vec, _capacity);
-			if (vec.capacity())
-				_vec = allocator.allocate(vec.capacity());
+				_vec = allocator.allocate(_capacity = vec.size());
+			}
 			for (size_type i = 0; i < vec.size(); ++i)
 				allocator.construct(_vec + i, vec[i]);
 			_size = vec._size;
-			_capacity = vec._capacity;
 			return *this;
 		}
 
@@ -216,13 +246,15 @@ namespace ft {
 		template <class InputIterator>
 		void	assign(InputIterator first, InputIterator last, typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0) {
 			size_t new_size = 0;
-			for (InputIterator i = first; i != last; i++)
+			for (InputIterator i = first; i != last; ++i)
 				new_size++;
-			clean_vector(new_size);
+			if (new_size > _capacity)
+				_capacity = new_size;
+			clean_vector(_capacity);
+//			if (new_size > _capacity)
+//				reserve(_capacity * 2);
 			size_type i = 0;
-			for (InputIterator start = first; start != last; start++, i++) {
-				if (i > _capacity)
-					reserve(_capacity * 2);
+			for (InputIterator start = first; start != last; ++start, ++i) {
 				allocator.construct(_vec + i, *start);
 			}
 			_size = new_size;
@@ -267,8 +299,12 @@ namespace ft {
 
 		void insert (iterator position, size_type n, const value_type& val) {
 			size_type	index = position - begin();
-			if (_size + n > _capacity)
-				reserve(_capacity + _size + n);
+			if (_size + n > _capacity) {
+				if (n >= size())
+					reserve(_size + n);
+				else
+					reserve(size() * 2);
+			}
 			iterator newIt = iterator(&_vec[index]);
 			traslate(newIt, n);
 			_size += n;
@@ -284,7 +320,10 @@ namespace ft {
 			for (InputIterator beg = first; beg != last; beg++)
 				len++;
 			if (_size + len > _capacity) {
-				reserve(_capacity + _size + len);
+				if (len >= size())
+					reserve(_size + len);
+				else
+					reserve(size() * 2);
 			}
 			iterator newIt = iterator(_vec + index);
 			traslate(newIt, len);
@@ -421,7 +460,6 @@ namespace ft {
 				allocator.destroy(_vec + i);
 			allocator.deallocate(_vec, _size);
 			_vec = allocator.allocate(new_size);
-			_capacity = new_size;
 		}
 
 		/**

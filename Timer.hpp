@@ -8,7 +8,7 @@
 # include <vector>
 # include <array>
 # include <set>
-namespace ft = std;
+//namespace ft = std;
 #else
 # define STL "ft: "
 # include "Bureaucrat.hpp"

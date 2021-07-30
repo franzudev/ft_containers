@@ -47,7 +47,7 @@ namespace ft {
 
 
 	template<class Iterator>
-	class reverse_iterator
+	class reverse_iter
 			: public iterator<typename iterator_traits<Iterator>::iterator_category,
 					typename iterator_traits<Iterator>::value_type,
 					typename iterator_traits<Iterator>::difference_type,
@@ -61,60 +61,54 @@ namespace ft {
 		typedef typename iterator_traits<Iterator>::reference       reference;
 		typedef typename iterator_traits<Iterator>::pointer         pointer;
 
-		reverse_iterator(): current(nullptr) {}
-		reverse_iterator(Iterator ptr): current(ptr) {}
-		template <class U> reverse_iterator(const reverse_iterator<U>& it) { *this = it;}
-		~reverse_iterator(){};
-		
-					// reverse_iterator  operator+ (difference_type n) const;
-					// reverse_iterator& operator+=(difference_type n);
-					// reverse_iterator  operator- (difference_type n) const;
-					// reverse_iterator& operator-=(difference_type n);
-					// reference         operator[](difference_type n) const;
+		reverse_iter(): current(nullptr) {}
+		reverse_iter(Iterator ptr): current(ptr) {}
+		template <class U> reverse_iter(const reverse_iter<U>& it) { *this = it;}
+		~reverse_iter() {};
 
 		Iterator	base() const {
 			return current;
 		}
 
-		template <class U> reverse_iterator& operator=(const reverse_iterator<U>& it) {
+		template <class U> reverse_iter& operator=(const reverse_iter<U>& it) {
 			current = it.base();
 			return *this;
 		}
 
 		template <class Iter>
-		reverse_iterator &operator=(Iter const & rit) {
+		reverse_iter &operator=(Iter const & rit) {
 			current = rit.base();
 			return *this;
 		}
 
-		reverse_iterator &operator=(Iterator it) {
+		reverse_iter &operator=(Iterator it) {
 			current = it;
 			return *this;
 		}
 
-		reverse_iterator &operator++() {
+		reverse_iter &operator++() {
 			current--;
 			return *this;
 		}
 
-		reverse_iterator operator++(int) {
-			reverse_iterator temp = *this;
+		reverse_iter operator++(int) {
+			reverse_iter temp = *this;
 			++*this;
 			return temp;
 		}
 
-		reverse_iterator &operator--() {
+		reverse_iter &operator--() {
 			current++;
 			return *this;
 		}
 
-		reverse_iterator operator--(int) {
-			reverse_iterator temp = *this;
+		reverse_iter operator--(int) {
+			reverse_iter temp = *this;
 			--*this;
 			return temp;
 		}
 
-		reverse_iterator &operator-(ptrdiff_t val) {
+		reverse_iter &operator-(ptrdiff_t val) {
 			while (val) {
 				current--;
 				val--;
@@ -122,11 +116,11 @@ namespace ft {
 			return *this;
 		}
 
-		ptrdiff_t operator-(reverse_iterator& val) {
+		reverse_iter operator-(reverse_iter& val) {
 			return current - val.current;
 		}
 
-		reverse_iterator &operator+(ptrdiff_t val) {
+		reverse_iter &operator+(ptrdiff_t val) {
 			while (val) {
 				current++;
 				val--;
@@ -134,16 +128,16 @@ namespace ft {
 			return *this;
 		}
 
-		ptrdiff_t operator+(reverse_iterator& val) {
+		reverse_iter operator+(reverse_iter& val) {
 			return current + val.current;
 		}
 
-		reverse_iterator &operator+=(int n) {
+		reverse_iter &operator+=(int n) {
 			current += n;
 			return *this;
 		}
 
-		reverse_iterator &operator-=(int n) {
+		reverse_iter &operator-=(int n) {
 			current -= n;
 			return *this;
 		}
@@ -152,14 +146,14 @@ namespace ft {
 			return *current;
 		}
 		pointer   operator->() const {
-			return std::addressof(operator*());
+			return current;
 		}
 
-		bool operator==(const reverse_iterator &rhs) {
+		bool operator==(const reverse_iter &rhs) {
 			return current == rhs.current;
 		}
 
-		bool operator!=(const reverse_iterator &rhs) {
+		bool operator!=(const reverse_iter &rhs) {
 			return current != rhs.current;
 		}
 	};
