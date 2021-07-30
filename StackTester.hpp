@@ -44,8 +44,9 @@ struct StackTester {
 	}
 
 	void	testTop(std::string msg) {
+		(void)msg;
 		printSizes();
-		Timer test(std::string(STL) + "Testing top() " + msg);
+		Timer test;
 		std::cout << stack.top() << std::endl;
 		test.getDiff();
 		printSizes();

@@ -11,77 +11,86 @@
 
 namespace ft {
 
+	template<class Pointer>
+	struct iter {
+		typedef Pointer                                                     iterator_type;
+		typedef typename iterator_traits<iterator_type>::iterator_category	iterator_category;
+		typedef typename iterator_traits<iterator_type>::value_type        	value_type;
+		typedef typename iterator_traits<iterator_type>::difference_type   	difference_type;
+		typedef typename iterator_traits<iterator_type>::pointer           	pointer;
+		typedef typename iterator_traits<iterator_type>::reference         	reference;
+
+		explicit iter(): m_ptr(nullptr){};
+
+		explicit iter(iterator_type ptr): m_ptr(ptr) {}
+
+		// explicit iter(pointer ptr): m_ptr(ptr) {}
+
+		iter(iter const & other) : m_ptr(other.m_ptr) {}
+
+		reference operator*() const { return *m_ptr; }
+
+		pointer operator->() const { return m_ptr; }
+
+		// Prefix increment
+		iter operator++() { ++m_ptr; return *this; }
+
+		// Postfix increment
+		iter operator++(int) { iter tmp = *this; ++m_ptr; return tmp; }
+
+		// Prefix decrement
+		iter operator--() { --m_ptr; return *this; }
+
+		// Postfix decrement
+		iter operator--(int) { iter tmp = *this; --m_ptr; return tmp; }
+
+		iter operator-(difference_type val) {
+			return iter(m_ptr - val);
+		}
+		difference_type operator-(reference val) {
+			return m_ptr - val.m_ptr;
+		}
+		size_t operator-(iter val) {
+			return m_ptr - val.m_ptr;
+		}
+		reference	operator-=(difference_type n) {
+			m_ptr -= n;
+			return *m_ptr;
+		}
+		iter operator+(difference_type val) const {
+			return iter(m_ptr + val);
+		}
+		difference_type operator+(reference val) const {
+			return m_ptr + val.m_ptr;
+		}
+		reference	operator+=(difference_type n) {
+			m_ptr += n;
+			return *m_ptr;
+		}
+
+		pointer	base() const{
+			return m_ptr;
+		}
+
+		template <class Iter>
+				iter&	operator=(iter<Iter> const & other)
+						{
+			m_ptr = other.base();
+			return *this;
+						}
+
+
+	private:
+		iterator_type m_ptr;
+	};
+
+
+
+
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
 	public:
-		template<class Pointer>
-		struct iter {
-			typedef Pointer                                                     iterator_type;
-			typedef typename iterator_traits<iterator_type>::iterator_category	iterator_category;
-			typedef typename iterator_traits<iterator_type>::value_type        	value_type;
-			typedef typename iterator_traits<iterator_type>::difference_type   	difference_type;
-			typedef typename iterator_traits<iterator_type>::pointer           	pointer;
-			typedef typename iterator_traits<iterator_type>::reference         	reference;
-
-			explicit iter(): m_ptr(nullptr){};
-
-			explicit iter(iterator_type ptr): m_ptr(ptr) {}
-
-			// explicit iter(pointer ptr): m_ptr(ptr) {}
-
-			iter(iter const & other) : m_ptr(other.m_ptr) {}
-
-			reference operator*() const { return *m_ptr; }
-
-			pointer operator->() const { return m_ptr; }
-
-			// Prefix increment
-			reference operator++() { ++m_ptr; return *m_ptr; }
-
-			// Postfix increment
-			iterator_type operator++(int) { iterator_type tmp = m_ptr; ++m_ptr; return tmp; }
-
-			// Prefix decrement
-			reference operator--() { --m_ptr; return *m_ptr; }
-
-			// Postfix decrement
-			iterator_type operator--(int) { iterator_type tmp = m_ptr; --m_ptr; return tmp; }
-
-			iter operator-(difference_type val) {
-				return iter(m_ptr - val);
-			}
-			difference_type operator-(reference val) {
-				return m_ptr - val.m_ptr;
-			}
-			reference	operator-=(difference_type n) {
-				m_ptr -= n;
-				return *m_ptr;
-			}
-			iter operator+(difference_type val) const {
-				return iter(m_ptr + val);
-			}
-			difference_type operator+(reference val) const {
-				return m_ptr + val.m_ptr;
-			}
-			reference	operator+=(difference_type n) {
-				m_ptr += n;
-				return *m_ptr;
-			}
-
-			pointer	base() const{
-				return m_ptr;
-			}
-
-			template <class Iter>
-			iter&	operator=(iter<Iter> const & other)
-			{
-				m_ptr = other.base();
-				return *this;
-			}
-
-		private:
-			iterator_type m_ptr;
-		}; //iter<>
+		 //iter<>
 
 		template <class T1, class T2>
 		friend bool operator== (const iter<T1>& a, const iter<T2>& b) { return a.base() == b.base(); };
@@ -129,7 +138,7 @@ namespace ft {
 			for (size_type i = 0; i < n; i++)
 				allocator.construct(_vec + i, val);
 		}
-		
+
 		template <class InputIterator>
 		vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0):
 				allocator(alloc)
@@ -153,13 +162,10 @@ namespace ft {
 		vector &operator=(vector<value_type> const &vec) {
 			if (_capacity)
 				allocator.deallocate(_vec, _capacity);
-			_vec = allocator.allocate(vec._capacity);
-			for (size_type i = 0; i < vec._size; ++i) {
+			if (vec.capacity())
+				_vec = allocator.allocate(vec.capacity());
+			for (size_type i = 0; i < vec.size(); ++i)
 				allocator.construct(_vec + i, vec[i]);
-			}
-//			for (iterator start = vec.begin(), end = vec.end(), copy = begin(); start != end; start++, copy++, i++) {
-//				allocator.construct(_vec + i, (value_type)*start);
-//			}
 			_size = vec._size;
 			_capacity = vec._capacity;
 			return *this;
@@ -198,7 +204,7 @@ namespace ft {
 		//Modifiers
 		template <class InputIterator>
 		void	assign(InputIterator first, InputIterator last, typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0) {
-			size_type new_size = std::abs(last - first);
+			size_t new_size = last - first;
 			clean_vector(new_size);
 			size_type i = 0;
 			for (InputIterator start = first; start != last; start++, i++) {
@@ -231,7 +237,7 @@ namespace ft {
 
 		iterator insert (iterator position, const value_type& val)
 		{
-			if (_size == _capacity) {
+			if (_size >= _capacity) {
 				difference_type index = position - begin();
 				reserve(_capacity * 2);
 				iterator newPosition = begin() + index;
@@ -319,10 +325,10 @@ namespace ft {
 		bool		empty()		const {return !_size;}
 
 		// --- Member Functions
-		void 			resize(size_type n)
+		void resize( size_type n, T value = T() )
 		{
 			if (n < _size) {
-				pointer tmp = allocator.allocate(n + 1);
+				pointer tmp = allocator.allocate(n);
 				for (size_type i = 0; i < n; i++)
 					tmp[i] = _vec[i];
 				allocator.deallocate(_vec, _size);
@@ -333,7 +339,7 @@ namespace ft {
 				if (n > _capacity)
 					reserve(n);
 				for (size_type i = _size; i < n; i++)
-					_vec[_size] = T();
+					allocator.construct(_vec + i, value);
 				_size = n;
 			}
 		}

@@ -45,7 +45,7 @@ struct VectorTester {
 
 	void testIterators()
 	{
-		Timer	test("IterTest");
+		Timer	test;
 		typename ft::vector<T>::iterator			it;
 		typename ft::vector<T>::reverse_iterator	rit;
 
@@ -110,7 +110,6 @@ struct VectorTester {
 			typename ft::vector<T>::const_iterator cit;
 			typename ft::vector<T>::const_reverse_iterator rcit;
 
-			
 			cit = vector.begin();
 			rcit = vector.rbegin();
 			*it = *cit;
@@ -131,7 +130,8 @@ struct VectorTester {
 	template<class InputIterator>
 	void	testTemplatedAssign(InputIterator first, InputIterator last) {
 		printSizes();
-		Timer test(std::string(STL) + "Testing templated assign(InputIterator, InputIterator) ");
+		Timer test;
+		std::cout << "Testing templated assign(InputIterator, InputIterator) " << std::endl;
 		vector.assign(first, last);
 		test.getDiff();
 		for (InputIterator start = first; start != last; start++)
@@ -142,7 +142,8 @@ struct VectorTester {
 
 	void	testSizedAssign(size_t n, const T& val) {
 		printSizes();
-		Timer test(std::string(STL) +"Testing assign(size_t, const T&) ");
+		Timer test;
+		std::cout << "Testing assign(size_t, const T&) " << std::endl;
 		vector.assign(n, val);
 		test.getDiff();
 		printSizes();
@@ -151,13 +152,13 @@ struct VectorTester {
 
 	void	testPushBack(T &value) {
 		printSizes();
-		Timer test(std::string(STL) +"Testing push_back(T value) single ");
+		Timer test;
 		vector.push_back(value);
 		test.getDiff();
 		printSizes();
 		printVector();
 
-		Timer test2(std::string(STL) +"Testing push_back(T value) with 1000 iterations ");
+		Timer test2;
 		for (size_t i = 0; i < 5; i++)
 			vector.push_back(value);
 		test2.getDiff();
@@ -167,14 +168,14 @@ struct VectorTester {
 
 	void	testPopBack() {
 		printSizes();
-		Timer test(std::string(STL) + "Testing pop_back(T value) single ");
+		Timer test;
 		vector.pop_back();
 		test.getDiff();
 		printSizes();
 		printVector();
 
-		Timer test2(std::string(STL) + "Testing pop_back(T value) with 1000 iterations ");
-		for (size_t i = 0; i < 10; i++)
+		Timer test2;
+		for (size_t i = 0; i < 5; i++)
 			vector.pop_back();
 		test2.getDiff();
 		printSizes();
@@ -183,12 +184,12 @@ struct VectorTester {
 
 	void	testSingleInsert(const T& value) {
 		printSizes();
-		Timer test(std::string(STL) + "Testing insert(iterator, T&) single ");
+		Timer test;
 		vector.insert(vector.begin(), value);
 		test.getDiff();
 		printSizes();
 
-		Timer test2(std::string(STL) + "Testing insert(iterator, T&) with 1000 iterations ");
+		Timer test2;
 		typename ft::vector<T>::iterator it = vector.begin();
 		for (size_t i = 0; i < 10; i++)
 			it = vector.insert(it, value);
@@ -199,7 +200,7 @@ struct VectorTester {
 
 	void	testSizedInsert(size_t n, const T& val) {
 		printSizes();
-		Timer test(std::string(STL) + "Testing insert(iterator, size_t, const T&");
+		Timer test;
 		vector.insert(vector.end(), n, val);
 		test.getDiff();
 		printSizes();
@@ -209,7 +210,7 @@ struct VectorTester {
 	template<class InputIterator>
 	void	testIteratorsInsert(InputIterator first, InputIterator last) {
 		printSizes();
-		Timer test(std::string(STL) + "Testing insert(iterator, inputIterator, inputIterator)");
+		Timer test;
 		vector.insert(vector.begin(), first, last);
 		test.getDiff();
 		printSizes();
@@ -218,17 +219,17 @@ struct VectorTester {
 
 	void	testErase() {
 		printSizes();
-		Timer test(std::string(STL) + "Testing erase(iterator)");
+		Timer test;
 		vector.erase(vector.begin());
 //		vector.erase(vector.begin() + 10);
 		test.getDiff();
 		printSizes();
-//		printVector();
+		printVector();
 	}
 
 	void	testEraseIterators() {
 		printSizes();
-		Timer test(std::string(STL) + "Testing erase(iterator, iterator)");
+		Timer test;
 		vector.erase(vector.begin(), vector.begin() + 10);
 		test.getDiff();
 		printSizes();
@@ -237,7 +238,7 @@ struct VectorTester {
 
 	void	testSwap(ft::vector<T> second) {
 		printSizes();
-		Timer test(std::string(STL) + "Testing swap(ft::vector)");
+		Timer test;
 		vector.swap(second);
 		test.getDiff();
 		printSizes();
@@ -246,7 +247,7 @@ struct VectorTester {
 
 	void	testResize(size_t n) {
 		printSizes();
-		Timer test(std::string(STL) + "Testing resize(size_t)");
+		Timer test;
 		vector.resize(n);
 		test.getDiff();
 		printSizes();
@@ -255,7 +256,8 @@ struct VectorTester {
 
 	void	clearVector() {
 		printSizes();
-		Timer test("Testing clear() ");
+		Timer test;
+		vector.clear();
 		test.getDiff();
 		printSizes();
 	}
@@ -302,6 +304,7 @@ void	testFunctions(std::string  msg, ft::vector<T> &toTest)
 	tester.clearVector();
 	tester.testPushBack(*(vectorItTest.begin() + 6));
 	tester.testPopBack();
+	tester.testResize(1);
 	tester.testSingleInsert(generateVal<T>(4));
 	tester.testSizedInsert(10, generateVal<T>(5));
 	tester.testIteratorsInsert(vectorItTest.begin(), vectorItTest.end());
