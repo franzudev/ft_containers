@@ -8,11 +8,12 @@
 #include "iterator.hpp"
 #include "Timer.hpp"
 #include <cstring>
+#include <list>
 
 namespace ft {
 
 	template<class Pointer>
-	struct iter {
+	struct vector_iterator {
 		typedef Pointer                                                     iterator_type;
 		typedef typename iterator_traits<iterator_type>::iterator_category	iterator_category;
 		typedef typename iterator_traits<iterator_type>::value_type        	value_type;
@@ -20,45 +21,45 @@ namespace ft {
 		typedef typename iterator_traits<iterator_type>::pointer           	pointer;
 		typedef typename iterator_traits<iterator_type>::reference         	reference;
 
-		explicit iter(): m_ptr(nullptr){};
+		explicit vector_iterator(): m_ptr(nullptr){};
 
-		explicit iter(iterator_type ptr): m_ptr(ptr) {}
+		explicit vector_iterator(iterator_type ptr): m_ptr(ptr) {}
 
-		// explicit iter(pointer ptr): m_ptr(ptr) {}
+		// explicit vector_iterator(pointer ptr): m_ptr(ptr) {}
 
-		iter(iter const & other) : m_ptr(other.m_ptr) {}
+		vector_iterator(vector_iterator const & other) : m_ptr(other.m_ptr) {}
 
 		reference operator*() const { return *m_ptr; }
 
 		pointer operator->() const { return m_ptr; }
 
 		// Prefix increment
-		iter operator++() { ++m_ptr; return *this; }
+		vector_iterator operator++() { ++m_ptr; return *this; }
 
 		// Postfix increment
-		iter operator++(int) { iter tmp = *this; ++m_ptr; return tmp; }
+		vector_iterator operator++(int) { vector_iterator tmp = *this; ++m_ptr; return tmp; }
 
 		// Prefix decrement
-		iter operator--() { --m_ptr; return *this; }
+		vector_iterator operator--() { --m_ptr; return *this; }
 
 		// Postfix decrement
-		iter operator--(int) { iter tmp = *this; --m_ptr; return tmp; }
+		vector_iterator operator--(int) { vector_iterator tmp = *this; --m_ptr; return tmp; }
 
-		iter operator-(difference_type val) {
-			return iter(m_ptr - val);
+		vector_iterator operator-(difference_type val) {
+			return vector_iterator(m_ptr - val);
 		}
 		difference_type operator-(reference val) {
 			return m_ptr - val.m_ptr;
 		}
-		size_t operator-(iter val) {
+		size_t operator-(vector_iterator val) {
 			return m_ptr - val.m_ptr;
 		}
 		reference	operator-=(difference_type n) {
 			m_ptr -= n;
 			return *m_ptr;
 		}
-		iter operator+(difference_type val) const {
-			return iter(m_ptr + val);
+		vector_iterator operator+(difference_type val) const {
+			return vector_iterator(m_ptr + val);
 		}
 		difference_type operator+(reference val) const {
 			return m_ptr + val.m_ptr;
@@ -73,38 +74,48 @@ namespace ft {
 		}
 
 		template <class Iter>
-				iter&	operator=(iter<Iter> const & other)
-						{
+		vector_iterator&	operator=(vector_iterator<Iter> const & other)
+		{
 			m_ptr = other.base();
 			return *this;
-						}
-
-
+		}
 	private:
 		iterator_type m_ptr;
 	};
 
+	template <class T, class U>
+	ptrdiff_t operator-(const vector_iterator<T> &lhs,const vector_iterator<U> &rhs) {
+		return lhs.base() - rhs.base();
+	}
 
+	template <class T, class U>
+	ptrdiff_t operator+(const vector_iterator<T> &lhs,const vector_iterator<U> &rhs) {
+		return lhs.base() + rhs.base();
+	}
+
+	template <class T, class U>
+	bool operator== (const vector_iterator<T> &lhs,const vector_iterator<U> &rhs) {
+		return (lhs.base() == rhs.base());
+	}
+
+	template <class T, class U>
+	bool operator!= (const vector_iterator<T> &lhs,const vector_iterator<U> &rhs) {
+		return !(lhs == rhs);
+	}
 
 
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
 	public:
-		 //iter<>
-
-		template <class T1, class T2>
-		friend bool operator== (const iter<T1>& a, const iter<T2>& b) { return a.base() == b.base(); };
-		template <class T1, class T2>
-		friend bool operator!= (const iter<T1>& a, const iter<T2>& b) { return a.base() != b.base(); };
-
+		 //vector_iterator<>
 		typedef T													value_type;
 		typedef Allocator											allocator_type;
 		typedef typename allocator_type::reference					reference;
 		typedef typename allocator_type::const_reference			const_reference;
 		typedef typename allocator_type::pointer					pointer;
 		typedef typename allocator_type::const_pointer				const_pointer;
-		typedef iter<pointer>										iterator;
-		typedef iter<const_pointer>									const_iterator;
+		typedef vector_iterator<pointer>										iterator;
+		typedef vector_iterator<const_pointer>									const_iterator;
 		// to implement
 		typedef reverse_iterator<const_iterator>					const_reverse_iterator;
 		typedef reverse_iterator<iterator>							reverse_iterator;
@@ -204,7 +215,9 @@ namespace ft {
 		//Modifiers
 		template <class InputIterator>
 		void	assign(InputIterator first, InputIterator last, typename enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0) {
-			size_t new_size = last - first;
+			size_t new_size = 0;
+			for (InputIterator i = first; i != last; i++)
+				new_size++;
 			clean_vector(new_size);
 			size_type i = 0;
 			for (InputIterator start = first; start != last; start++, i++) {
@@ -433,11 +446,6 @@ namespace ft {
 		size_type 	_capacity;	// Allocated Space
 		T*			_vec;
 	};
-
-	template <class Iter>
-	ptrdiff_t operator-(Iter t, Iter u) {
-		return t.base() - u.base();
-	}
 
 	template <class T, class Alloc>
 	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y){
