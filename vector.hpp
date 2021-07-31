@@ -50,8 +50,11 @@ namespace ft {
 		vector_iterator operator-(difference_type val) {
 			return vector_iterator(m_ptr - val);
 		}
-		difference_type operator-(reference val) {
-			return m_ptr - val.m_ptr;
+//		difference_type operator-(reference val) {
+//			return m_ptr - val.m_ptr;
+//		}
+		vector_iterator operator-(difference_type val) const {
+			return vector_iterator(m_ptr - val);
 		}
 //		size_t operator-(vector_iterator val) {
 //			return m_ptr - val.m_ptr;
@@ -217,29 +220,25 @@ namespace ft {
 			return iterator(_vec);
 		}
 		iterator end() {
-			return iterator(&_vec[_size]);
+			return iterator(_vec + _size);
 		}
 		const_iterator begin() const {
 			return const_iterator(_vec);
 		}
 		const_iterator end() const {
-			return const_iterator(&_vec[_size]);
+			return const_iterator(_vec + _size);
 		}
 		reverse_iterator rbegin() {
-			if (!_size)
-				return reverse_iterator(iterator(NULL));							// BUG_FIX
-			return reverse_iterator(iterator(&_vec[_size - 1]));					// BUG_FIX
+			return reverse_iterator(end());
 		}
 		reverse_iterator rend() {
-			if (!_size)
-				return reverse_iterator(iterator(NULL));							// BUG_FIX
-			return reverse_iterator(iterator(_vec - 1));							// BUG_FIX
+			return reverse_iterator(begin());
 		}
 		const_reverse_iterator	rbegin() const {
-			return const_reverse_iterator(const_iterator(&_vec[_size - 1]));		// BUG_FIX
+			return const_reverse_iterator(end());
 		}
 		const_reverse_iterator	rend() const {
-			return const_reverse_iterator(const_iterator(_vec - 1));				// BUG_FIX
+			return const_reverse_iterator(begin());
 		}
 
 		//Modifiers
