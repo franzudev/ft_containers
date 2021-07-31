@@ -18,7 +18,9 @@ namespace ft {
 		container_type c;
 
 	public:
-		stack() {c = container_type();}
+		stack (const container_type& c = container_type()) {
+			this->c = c;
+		}
 		~stack() {}
 
 		stack(const stack& q) {
@@ -32,29 +34,27 @@ namespace ft {
 			return *this;
 		}
 
-		explicit stack(const container_type& c): c(c) {}
-
 		bool empty() const {
-			return c.empty();
+			return this->c.empty();
 		}
 		size_type size() const {
-			return c.size();
+			return this->c.size();
 		}
 		reference top() {
-			return c.back();
+			return this->c.back();
 		}
 		const_reference top() const {
-			return c.back();
+			return this->c.back();
 		}
 
 		void push(const value_type& x) {
-			c.push_back(x);
+			this->c.push_back(x);
 		}
 		void push(value_type& x) {
-			c.push_back(x);
+			this->c.push_back(x);
 		}
 		void pop() {
-			c.pop_back();
+			this->c.pop_back();
 		}
 		friend
 		bool operator== (const stack<T,Container>& lhs, const stack<T,Container>& rhs) { return lhs.c == rhs.c; }
