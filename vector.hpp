@@ -151,8 +151,8 @@ namespace ft {
 		typedef vector_iterator<pointer>							iterator;
 		typedef vector_iterator<const_pointer>						const_iterator;
 		// to implement
-		typedef reverse_iter<iterator>								reverse_iterator;
-		typedef reverse_iter<const_iterator>						const_reverse_iterator;
+		typedef reverse_iterator<const_iterator>					const_reverse_iterator;
+		typedef reverse_iterator<iterator>							reverse_iterator;
 		typedef typename iterator_traits<iterator>::difference_type	difference_type;
 		typedef size_t												size_type;
 
@@ -196,13 +196,6 @@ namespace ft {
 				allocator.construct(_vec + i, *first);
 		}
 
-		// Exceptions
-		class out_of_range: public std::exception {
-			const char * what() const throw() {
-				return "Element out of bound";
-			}
-		};
-
 		// --- Operator Overloads
 		vector &operator=(vector<value_type> const &vec) {
 			if (_capacity <= vec.capacity()) {
@@ -214,6 +207,11 @@ namespace ft {
 			_size = vec._size;
 			return *this;
 		}
+
+		class out_of_range: public std::out_of_range {
+		public:
+			explicit out_of_range(std::string str): std::out_of_range(str) {}
+		};
 
 		// --- Iterators
 		iterator begin() {
@@ -319,10 +317,10 @@ namespace ft {
 			for (InputIterator beg = first; beg != last; beg++)
 				len++;
 			if (_size + len > _capacity) {
-				if (len >= size())
+				if (_size + len < _capacity || _size + len > capacity() * 2)
 					reserve(_size + len);
 				else
-					reserve(size() * 2);
+					reserve(capacity() * 2);
 			}
 			iterator newIt = iterator(_vec + index);
 			traslate(newIt, len);
@@ -387,8 +385,10 @@ namespace ft {
 				_size = n;
 			}
 			else if (n >= _size) {
-				if (n > _capacity)
+				if (n < _capacity || n > capacity() * 2)
 					reserve(n);
+				else
+					reserve(capacity() * 2);
 				for (size_type i = _size; i < n; i++)
 					allocator.construct(_vec + i, value);
 				_size = n;
@@ -398,8 +398,8 @@ namespace ft {
 		void			reserve(size_type n) {
 			if (!n)
 				_capacity = 1;
-			pointer tmp = allocator.allocate(n);
-			_capacity = n;
+			_capacity = n < _capacity ? _capacity : n;
+			pointer tmp = allocator.allocate(_capacity);
 			for (size_type i = 0; i < _size; ++i) {
 				tmp[i] = _vec[i];
 				allocator.destroy(&_vec[i]);
@@ -424,12 +424,12 @@ namespace ft {
 		}
 		reference		at(size_type index) {
 			if (index >= _size)
-				throw out_of_range();
+				throw out_of_range("Catch out_of_range exception!");
 			return _vec[index];
 		}
 		const_reference	at(size_type index) const {
 			if (index >= _size)
-				throw out_of_range();
+				throw out_of_range("Catch out_of_range exception!");
 			return _vec[index];
 		}
 		reference		front() {
