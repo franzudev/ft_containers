@@ -269,7 +269,9 @@ namespace ft {
 		void push_back(const_reference value) {
 			if (_size >= _capacity)
 				reserve(_capacity * 2);
-			_vec[_size++] = value;
+			// _vec[_size++] = value;
+			allocator.construct(_vec + _size, value);
+			_size++;
 		}
 
 		void	pop_back() {
@@ -401,7 +403,8 @@ namespace ft {
 			_capacity = n < _capacity ? _capacity : n;
 			pointer tmp = allocator.allocate(_capacity);
 			for (size_type i = 0; i < _size; ++i) {
-				tmp[i] = _vec[i];
+				allocator.construct(tmp + i, _vec[i]);
+				// tmp[i] = _vec[i];
 				allocator.destroy(&_vec[i]);
 			}
 			allocator.deallocate(_vec, _size);
