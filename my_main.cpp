@@ -4,29 +4,30 @@
 //#include <iostream>
 //#include <list>
 #include <stack>
-#include "common.hpp"
-
-#define TESTED_TYPE int
-
-void	is_empty(TESTED_NAMESPACE::vector<TESTED_TYPE> const &vct)
-{
-	std::cout << "is_empty: " << vct.empty() << std::endl;
-}
+//#include "common.hpp"
+#include "rb_tree.hpp"
 
 int main() {
-	TESTED_NAMESPACE::stack<TESTED_TYPE> stck;
+//	TESTED_NAMESPACE::stack<TESTED_TYPE> stck;
+//
+//	std::cout << "empty: " << stck.empty() << std::endl;
+//	std::cout << "size: " << stck.size() << std::endl;
+//
+//	stck.push(41);
+//	stck.push(29);
+//	stck.push(10);
+//	stck.push(42);
+//	std::cout << "Added some elements" << std::endl;
+//
+//	std::cout << "empty: " << stck.empty() << std::endl;
+//	printSize(stck);
+	ft::rb_tree<std::string, int> gisualdo;
 
-	std::cout << "empty: " << stck.empty() << std::endl;
-	std::cout << "size: " << stck.size() << std::endl;
+	gisualdo.insert(std::string("ciao"), 666);
+	gisualdo.insert(std::string("lmao"), 420);
 
-	stck.push(41);
-	stck.push(29);
-	stck.push(10);
-	stck.push(42);
-	std::cout << "Added some elements" << std::endl;
-
-	std::cout << "empty: " << stck.empty() << std::endl;
-	printSize(stck);
+	std::cout << gisualdo.find(std::string("lmao"))->value();
+	std::cout << gisualdo.find(std::string("ciao"))->value();
 
 	return (0);
 }
