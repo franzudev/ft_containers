@@ -19,8 +19,7 @@ namespace ft {
 
 					node() : _c(red) {};
 					~node() {};
-					node(key_type k, value_type v) : _pr(k, v), _parent(nullptr), _left(nullptr), _right(nullptr) {};
-					node(key_type k, value_type v, nodeptr * parent) : _pr(k, v), _parent(parent), _left(nullptr), _right(nullptr) {};
+					node(key_type k, value_type v) : _pr(k, v), _parent(nullptr), _left(nullptr), _right(nullptr), _c(red) {};
 					node(nodeptr n) {this = n;}
 
 					T&			value() {return _v;}
@@ -43,12 +42,34 @@ namespace ft {
 			rb_tree() : root(NULL) {};
 
 			node&		find(key_type const & _k) {
-				if (!root || root->key() == _k)
-					return root;
-				if (_k < root->key()) root = root->_left;
-				else if ()
+				nodeptr tmp = root;
+				while (tmp && tmp->key() != _k) {
+					if (_k < tmp->key()) tmp = tmp->_left;
+					if (_k > tmp->key()) tmp = tmp->_right;
+				}
+				if (tmp)
+					return tmp;
+				return nullptr;
 			}
-			void 		insert(key_type const & _k, value_type const & _v);
+
+			void 		insert(key_type const & _k, value_type const & _v) {
+				nodeptr ptr = new node(_k, _v);
+				nodeptr	head = root;
+				while (1) {
+					if (_k < root->key() && root->_left) root = root->_left;
+					else if (_k < root->key() && !root->_left) {
+						root->_left = ptr;
+						break ;
+					}
+					if (_k > root->key() && root->_right) root = root->_right;
+					else if (_k > root->key() && !root->_right) {
+						root->_right = ptr;
+						break ;
+					}
+				}
+				root = head;
+
+			}
 			void 		remove(key_type const & _k);
 
 	}; // rb_tree
