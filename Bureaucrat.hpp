@@ -20,6 +20,18 @@ public:
 	unsigned int getGrade() const {
 		return grade;
 	}
+	friend
+	bool operator== (const Bureaucrat lhs, const Bureaucrat rhs) { return lhs.getGrade() == rhs.getGrade(); }
+	friend
+	bool operator>  (const Bureaucrat lhs, const Bureaucrat rhs) { return lhs.getGrade() > rhs.getGrade(); }
+	friend
+	bool operator!= (const Bureaucrat& lhs, const Bureaucrat& rhs) {return !(lhs == rhs);}
+	friend
+	bool operator<  (const Bureaucrat& lhs, const Bureaucrat& rhs) {return !(lhs > rhs || lhs == rhs);}
+	friend
+	bool operator<= (const Bureaucrat& lhs, const Bureaucrat& rhs) {return !(lhs > rhs);}
+	friend
+	bool operator>= (const Bureaucrat& lhs, const Bureaucrat& rhs) {return !(lhs < rhs);}
 
 	friend
 	bool operator== (const Bureaucrat lhs, const Bureaucrat rhs) { return lhs.getGrade() == rhs.getGrade(); }

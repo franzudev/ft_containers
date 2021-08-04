@@ -8,7 +8,7 @@
 # include <vector>
 # include <array>
 # include <set>
-namespace ft = std;
+//namespace ft = std;
 #else
 # define STL "ft: "
 # include "Bureaucrat.hpp"
@@ -17,16 +17,14 @@ namespace ft = std;
 #endif
 #include <chrono>
 
-
-
 class Timer {
 	std::chrono::steady_clock::time_point start;
 	std::chrono::steady_clock::time_point end;
 	std::chrono::microseconds diff;
 
 public:
-	Timer(std::string msg) {
-		std::cout << STL << " < " << msg << " >" << std::endl;
+	Timer() {
+		std::cout << STL << std::endl;
 		start = std::chrono::steady_clock::now();
 	}
 	long long int getDiff() {

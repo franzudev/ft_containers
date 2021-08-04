@@ -13,13 +13,21 @@ stl		:
 ft		:
 	@$(CC) $(CF_FT) -o $(NAME_2) $(SRCS)
 
-test	:
-	./$(NAME_1) $(RND)
 
 
 fclean	:
 	rm -rf $(NAME_1) $(NAME_2)
 
 re		: fclean all
+
+test	:
+	./$(NAME_1) $(RND)
+
+diff	:
+	make re
+	./$(NAME_2) > logs/ftLog;
+	make re
+	./$(NAME_2) > logs/stdLog;
+	diff ./logs/ftLog ./logs/stdLog
 
 .phony: stl ft all fclean re test

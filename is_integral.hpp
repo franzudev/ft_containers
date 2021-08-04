@@ -1,5 +1,6 @@
 #pragma once
 #include <type_traits>
+#include <string>
 
 namespace ft {
 	template<class Tp>
@@ -35,4 +36,3 @@ namespace ft {
 	template<>
 	struct is_integral<unsigned long long int> : public std::true_type {};
 }
-
