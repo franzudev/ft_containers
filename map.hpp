@@ -7,9 +7,17 @@
 
 namespace ft {
 
-	template<class Pointer>
+	template <class Pair>
+	struct keyLess {
+		bool operator ()(const Pair& p1, const Pair& p2) const {
+			return p1.first < p2.first;
+		}
+	};
+
+	template<class Pointer, class Value>
 	struct map_iterator {
 		typedef Pointer                                                     iterator_type;
+		typedef Value														value;
 		typedef typename iterator_traits<iterator_type>::iterator_category	iterator_category;
 		typedef typename iterator_traits<iterator_type>::value_type			value_type;
 		typedef typename iterator_traits<iterator_type>::difference_type	difference_type;
@@ -21,13 +29,13 @@ namespace ft {
 		explicit map_iterator(iterator_type ptr): m_ptr(ptr) {}
 
 		template<class Iter>
-		map_iterator(map_iterator<Iter> const & other) {
+		map_iterator(map_iterator<Iter, Value> const & other) {
 			*this = other;
 		}
 
-		value_type* operator*() const { return m_ptr->key; }
+		value operator*() const { return m_ptr->key; }
 
-		value_type* operator->() const { return m_ptr->key; }
+		value *operator->() const { return &m_ptr->key; }
 
 		// Prefix increment
 		map_iterator &operator++() {
@@ -63,12 +71,13 @@ namespace ft {
 		// Postfix decrement
 		map_iterator operator--(int) { map_iterator tmp = *this; --*this; return tmp; }
 
-		pointer	base() const {
+		iterator_type	base() const {
 			return m_ptr;
 		}
 
 		template <class Iter>
-		map_iterator&	operator=(map_iterator<Iter> const & other) {
+		map_iterator&	operator=(map_iterator<Iter, Value> const & other) {
+			std::cout << "called" << std::endl;
 			m_ptr = other.base();
 			return *this;
 		}
@@ -76,28 +85,28 @@ namespace ft {
 		iterator_type m_ptr;
 	};
 
-	template < class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
+	template < class Key, class T, class Compare = keyLess<ft::pair<const Key,T> >, class Alloc = std::allocator<ft::pair<const Key,T> > >
 	class map {
 	public:
 		// --- Definitions
-		typedef Key												key_type;
-		typedef T												mapped_type;
-		typedef pair<const key_type, mapped_type>				value_type;
-		typedef rb_tree<value_type>								tree;
-		typedef Node<value_type>*								node_ptr;
-		typedef Compare											key_compare;
-		typedef Alloc											allocator_type;
-		typedef typename allocator_type::reference				reference;
-		typedef typename allocator_type::const_reference		const_reference;
-		typedef typename allocator_type::pointer				pointer;
-		typedef typename allocator_type::const_pointer			const_pointer;
-		typedef typename allocator_type::size_type				size_type;
-		typedef typename allocator_type::difference_type		difference_type;
+		typedef Key													key_type;
+		typedef T													mapped_type;
+		typedef Compare												key_compare;
+		typedef Alloc												allocator_type;
+		typedef typename allocator_type::reference					reference;
+		typedef typename allocator_type::const_reference			const_reference;
+		typedef typename allocator_type::pointer					pointer;
+		typedef typename allocator_type::value_type					value_type;
+		typedef typename allocator_type::const_pointer				const_pointer;
+		typedef typename allocator_type::size_type					size_type;
+		typedef typename allocator_type::difference_type			difference_type;
+		typedef rb_tree<value_type>									tree;
+		typedef Node<value_type>*									node_ptr;
 
-		typedef ft::map_iterator<node_ptr>						iterator;
-		typedef ft::map_iterator<const_pointer>					const_iterator;
-		typedef std::reverse_iterator<iterator>					reverse_iterator;
-		typedef std::reverse_iterator<const_iterator>			const_reverse_iterator;
+		typedef ft::map_iterator<node_ptr, value_type>				iterator;
+		typedef ft::map_iterator<const node_ptr, const value_type>	const_iterator;
+		typedef std::reverse_iterator<iterator>						reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>				const_reverse_iterator;
 		// definitions
 
 //		class value_compare: public binary_function<value_type, value_type, bool>

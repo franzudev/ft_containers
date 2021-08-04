@@ -83,16 +83,17 @@ namespace ft {
 			private:
 
 				ft::pair<node_ptr, bool> _insert(node_ptr start, T val) {
-					if (start->key == val)
-						return ft::make_pair(start, false);
-					if (val < start->key){
+					if (val < start->key) {
 						if (!start->left)
 							return _setLeftNode(start, new node(val));
 						return _insert(start->left, val);
 					}
-					if (!start->right)
-						return _setRightNode(start, new node(val));
-					return _insert(start->right, val);
+					if (val > start->key) {
+						if (!start->right)
+							return _setRightNode(start, new node(val));
+						return _insert(start->right, val);
+					}
+					return ft::make_pair(start, false);
 				}
 
 				node_ptr _find(node_ptr node, T val) {
