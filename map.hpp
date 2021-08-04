@@ -1,10 +1,8 @@
 #pragma once
 
-#include <map>
 #include "enable_if.hpp"
 #include "lexicographical_compare.hpp"
-// TODO remove
-#include "iterator.hpp"
+#include "rb_tree.hpp"
 #include "pair.hpp"
 
 namespace ft {
@@ -27,9 +25,9 @@ namespace ft {
 			*this = other;
 		}
 
-		reference operator*() const { return *m_ptr; }
+		value_type* operator*() const { return m_ptr->key; }
 
-		pointer operator->() const { return m_ptr; }
+		value_type* operator->() const { return m_ptr->key; }
 
 		// Prefix increment
 		map_iterator &operator++() {
@@ -78,13 +76,15 @@ namespace ft {
 		iterator_type m_ptr;
 	};
 
-	template < class Key, class T, class Compare = less<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
+	template < class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
 	class map {
 	public:
 		// --- Definitions
 		typedef Key												key_type;
 		typedef T												mapped_type;
 		typedef pair<const key_type, mapped_type>				value_type;
+		typedef rb_tree<value_type>								tree;
+		typedef Node<value_type>*								node_ptr;
 		typedef Compare											key_compare;
 		typedef Alloc											allocator_type;
 		typedef typename allocator_type::reference				reference;
@@ -94,27 +94,27 @@ namespace ft {
 		typedef typename allocator_type::size_type				size_type;
 		typedef typename allocator_type::difference_type		difference_type;
 
-		typedef ft::map_iterator<pointer>						iterator;
+		typedef ft::map_iterator<node_ptr>						iterator;
 		typedef ft::map_iterator<const_pointer>					const_iterator;
 		typedef std::reverse_iterator<iterator>					reverse_iterator;
 		typedef std::reverse_iterator<const_iterator>			const_reverse_iterator;
 		// definitions
 
-		class value_compare: public binary_function<value_type, value_type, bool>
-		{
-			friend class map;
-		protected:
-			key_compare comp;
-
-			value_compare(key_compare c);
-		public:
-			bool operator()(const value_type& x, const value_type& y) const;
-		};
+//		class value_compare: public binary_function<value_type, value_type, bool>
+//		{
+//			friend class map;
+//		protected:
+//			key_compare comp;
+//
+//			value_compare(key_compare c);
+//		public:
+//			bool operator()(const value_type& x, const value_type& y) const;
+//		};
 
 		// --- constructors
-		map();
-		explicit map( const Compare& comp, const Allocator& alloc = Allocator()) {}
-		template< class InputIt > map( InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator()) {}
+		map() {};
+		explicit map( const Compare& comp, const Alloc& alloc = Alloc()) {}
+		template< class InputIt > map( InputIt first, InputIt last, const Compare& comp = Compare(), const Alloc& alloc = Alloc()) {}
 		map( const map& other ){}
 		~map() {};
 		// constructors
@@ -140,10 +140,10 @@ namespace ft {
 		iterator end() {}
 		const_iterator end() const {}
 
-		reverse_iterator rbegin() noexcept;
-		const_reverse_iterator rbegin() const noexcept;
-		reverse_iterator rend() noexcept;
-		const_reverse_iterator rend()   const noexcept;
+		reverse_iterator rbegin() {}
+		const_reverse_iterator rbegin() const {}
+		reverse_iterator rend() {}
+		const_reverse_iterator rend()   const {}
 		// iterators
 
 		// --- Capacity
@@ -154,12 +154,19 @@ namespace ft {
 
 		// --- modifiers
 		void clear() {}
-		ft::pair<iterator, bool> insert( const value_type& value ) {}
+		ft::pair<iterator, bool> insert( const value_type& value ) {
+			ft::pair<node_ptr, bool> inserted = _tree.insert(value);
+			return ft::make_pair(iterator(inserted.first), inserted.second);
+		}
 		iterator insert( iterator hint, const value_type& value ) {
-			iterator(tree.insert(value));
+			ft::pair<node_ptr, bool> inserted = _tree.insert(hint, value);
+			return ft::make_pair(iterator(inserted.first), inserted.second);
 		}
 		template< class InputIt >
-		void insert( InputIt first, InputIt last );
+		void insert( InputIt first, InputIt last ) {
+			for (InputIt begin = first; begin != last; ++begin)
+				insert(begin);
+		}
 		void erase( iterator pos ) {}
 		void erase( iterator first, iterator last ) {}
 		size_type erase( const key_type& key ) {}
@@ -180,9 +187,9 @@ namespace ft {
 
 		// --- Observers
 		key_compare key_comp() const {}
-		map::value_compare value_comp() const {}
+//		map::value_compare value_comp() const {}
 
 	private:
-		Tree	_tree;
+		tree	_tree;
 	};
 }
