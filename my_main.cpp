@@ -25,6 +25,25 @@ int main() {
 	its++;
 	std::cout << its->first << std::endl;
 
+	mappa._tree.printTree();
+
+	ft::map<const int, int>::iterator it = mappa.begin();
+	for (; it != mappa.end(); ++it)
+		std::cout << it->first << '/' << it->second << '\n';
+
+	ft::map<int, int> mappa_copy(mappa.begin(), mappa.end());
+
+	it = mappa.begin();
+	for (ft::map<const int, int>::iterator it2 = mappa_copy.begin();
+		it != mappa.end();
+		++it, ++it2)
+		if (it->first != it2->first || it->second != it2->second){
+			std::cout << "Err" << std::endl;
+			break ;
+		}
+	if (it == mappa.end())
+		std::cout << "Iterator constructor works well" << std::endl;
+
 //	std::cout << ret.first << std::endl;
 //	ft::map<std::string, int>::iterator it = ret.first;
 //	std::cout << it.first << std::endl;

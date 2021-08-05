@@ -5,6 +5,8 @@
 #include "rb_tree.hpp"
 #include "pair.hpp"
 
+#include <map>
+
 namespace ft {
 
 	template <class Pair>
@@ -39,8 +41,11 @@ namespace ft {
 
 		// Prefix increment
 		map_iterator &operator++() {
-			if (m_ptr->right)
+			if (m_ptr->right) {
 				m_ptr = m_ptr->right;
+				while (m_ptr->left)
+					m_ptr = m_ptr->left;
+			}
 			else if (m_ptr->isLeft()) {
 				m_ptr = m_ptr->parent;
 			} else {
@@ -56,8 +61,11 @@ namespace ft {
 
 		// Prefix decrement
 		map_iterator &operator--() {
-			if (m_ptr->left)
+			if (m_ptr->left) {
 				m_ptr = m_ptr->left;
+				while (m_ptr->right)
+					m_ptr = m_ptr->right;
+			}
 			else if (m_ptr->isRight()) {
 				m_ptr = m_ptr->parent;
 			} else {
@@ -77,9 +85,15 @@ namespace ft {
 
 		template <class Iter>
 		map_iterator&	operator=(map_iterator<Iter, Value> const & other) {
-			std::cout << "called" << std::endl;
 			m_ptr = other.base();
 			return *this;
+		}
+
+		friend bool	operator==(const map_iterator& lhs, const map_iterator& rhs) {
+			return lhs.m_ptr == rhs.m_ptr;
+		}
+		friend bool	operator!=(const map_iterator& lhs, const map_iterator& rhs) {
+			return lhs.m_ptr != rhs.m_ptr;
 		}
 	private:
 		iterator_type m_ptr;
@@ -121,10 +135,14 @@ namespace ft {
 //		};
 
 		// --- constructors
-		map() {};
-		explicit map( const Compare& comp, const Alloc& alloc = Alloc()) {}
-		template< class InputIt > map( InputIt first, InputIt last, const Compare& comp = Compare(), const Alloc& alloc = Alloc()) {}
-		map( const map& other ){}
+		explicit map( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _comp(comp), _alloc(alloc) {}
+		template< class InputIt > map( InputIt first, InputIt last, const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _comp(comp), _alloc(alloc) {
+			for (; first != last; ++first)
+				insert(*first);
+		}
+		map( const map& other ) {
+
+		}
 		~map() {};
 		// constructors
 
@@ -144,10 +162,33 @@ namespace ft {
 		// element access
 
 		// --- iterators
-		iterator begin() {}
-		const_iterator begin() const {}
-		iterator end() {}
-		const_iterator end() const {}
+		iterator begin() {
+			node_ptr ret = _tree.root();
+
+			while (ret->left)
+				ret = ret->left;
+			return iterator(ret);
+		}
+
+		const_iterator begin() const {
+			node_ptr ret = _tree.root();
+
+			while (ret->left)
+				ret = ret->left;
+			return iterator(ret);
+		}
+
+		iterator end() {
+			node_ptr ret = _tree.root();
+
+			while (ret)
+				ret = ret->right;
+			return iterator(ret);
+		}
+
+		const_iterator end() const {
+			return nullptr;
+		}
 
 		reverse_iterator rbegin() {}
 		const_reverse_iterator rbegin() const {}
@@ -195,10 +236,14 @@ namespace ft {
 		//
 
 		// --- Observers
-		key_compare key_comp() const {}
+		key_compare key_comp() const {
+			return key_compare();
+		}
 //		map::value_compare value_comp() const {}
 
-	private:
 		tree	_tree;
+	private:
+		key_compare		_comp;
+		allocator_type	_alloc;
 	};
 }
