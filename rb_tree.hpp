@@ -45,11 +45,12 @@ namespace ft {
 		}
 	};
 
-	template <class T, class Alloc = std::allocator<Node<T> > >
+	template <class T, class Key, class Alloc = std::allocator<Node<T> > >
 	class rb_tree {
 	public:
 		typedef	Node<T>												node;
 		typedef node*												node_ptr;
+		typedef typename node::value_type							node_value;
 		typedef Alloc												allocator_type;
 		typedef typename allocator_type::reference					reference;
 		typedef typename allocator_type::const_reference			const_reference;
@@ -95,11 +96,14 @@ namespace ft {
 			return _insert(_root, val);
 		}
 
-		node_ptr find(T val) {
-			return _find(_root, val);
+		node_value *find(const Key val) {
+			node_ptr found = _find(_root, val);
+			if (!found)
+				return NULL;
+			return &found->key;
 		}
 
-		node_ptr deletion(T val) {
+		node_ptr deletion(Key val) {
 			node_ptr toDelete = find(_root, val);
 			if (!toDelete)
 				return nullptr;
@@ -130,12 +134,12 @@ namespace ft {
 		ft::pair<node_ptr, bool> _insert(node_ptr start, T val) {
 			if (start->key == val)
 				return ft::make_pair(start, false);
-			if (val < start->key) {
+			if (start->key > val) {
 				if (!start->left)
 					return _setLeftNode(start, createNode(val));
 				return _insert(start->left, val);
 			}
-			if (val > start->key) {
+			if (start->key < val) {
 				if (!start->right)
 					return _setRightNode(start, createNode(val));
 				return _insert(start->right, val);
@@ -143,14 +147,12 @@ namespace ft {
 			return ft::make_pair(start, false);
 		}
 
-		node_ptr _find(node_ptr node, T val) {
+		node_ptr _find(node_ptr node, const Key val) {
 			if (!node)
 				return nullptr;
-			if (node->key == val)
-				return node;
-			if (val > node->key)
+			if (node->key < val)
 				return _find(node->right, val);
-			if (val < node->key)
+			if (node->key > val)
 				return _find(node->left, val);
 			return node;
 		}

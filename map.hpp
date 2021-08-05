@@ -64,6 +64,7 @@ namespace ft {
 
 		// Prefix decrement
 		map_iterator &operator--() {
+			if(!m_ptr) return *this;
 			if (m_ptr->left) {
 				m_ptr = m_ptr->left;
 				while (m_ptr->right)
@@ -117,7 +118,7 @@ namespace ft {
 		typedef typename allocator_type::const_pointer				const_pointer;
 		typedef typename allocator_type::size_type					size_type;
 		typedef typename allocator_type::difference_type			difference_type;
-		typedef rb_tree<value_type>									tree;
+		typedef rb_tree<value_type, Key>							tree;
 		typedef Node<value_type>*									node_ptr;
 		typedef Node<value_type>									node;
 
@@ -147,7 +148,7 @@ namespace ft {
 		map( const map& other ) {
 			*this = other;
 		}
-		~map() {};
+		~map() {}
 		// constructors
 
 		// ---operators overload
@@ -164,9 +165,33 @@ namespace ft {
 		// getters
 
 		// --- element access
-//		mapped_type& operator[](const key_type& k) {}
-//		mapped_type& at(const key_type& k) {}
-//		const mapped_type& at(const key_type& k) const {}
+		class out_of_range: public std::out_of_range {
+		public:
+			explicit out_of_range(std::string str): std::out_of_range(str) {}
+		};
+
+		mapped_type& operator[](const key_type& k) {
+			value_type *found = _tree.find(k);
+			if (!found)
+				return insert(ft::make_pair(k, T())).first->second;
+			return found->second;
+//			return insert(std::make_pair(k, T())).first->second;
+//			if (!found)
+//				throw out_of_range("bella zio");
+//			return found->second;
+		}
+		mapped_type& at(const key_type& k) {
+			value_type *found = _tree.find(k);
+			if (!found)
+				throw out_of_range("bella zio");
+			return found->second;
+		}
+		const mapped_type& at(const key_type& k) const {
+			value_type *found = _tree.find(k);
+			if (!found)
+				throw out_of_range("bella zio");
+			return found->second;
+		}
 		// element access
 
 		// --- iterators
