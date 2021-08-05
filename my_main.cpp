@@ -1,63 +1,54 @@
-#include "VectorTester.hpp"
-#include "StackTester.hpp"
-#include "Bureaucrat.hpp"
-#include <iostream>
-//#include <list>
-#include <stack>
-//#include "common.hpp"
-#include <map>
-#include "map.hpp"
+#include "common.hpp"
 
-int main() {
-	ft::map<int, int> mappa;
+#define T1 int
+#define T2 std::string
+typedef TESTED_NAMESPACE::map<T1, T2>::value_type T3;
+typedef TESTED_NAMESPACE::map<T1, T2>::iterator iterator;
 
-	ft::pair<ft::map<int, int>::iterator, bool> ret = mappa.insert(ft::make_pair(5, 32));
-	mappa.insert(ft::make_pair(2, 32));
-	mappa.insert(ft::make_pair(2, 32));
-	mappa.insert(ft::make_pair(7, 32));
-	mappa.insert(ft::make_pair(6, 32));
-	mappa.insert(ft::make_pair(4, 32));
-	mappa.insert(ft::make_pair(9, 32));
+static int iter = 0;
 
-	ft::map<int, int>::iterator its = ret.first;
-	std::cout << its->first << ret.first->first << std::endl;
-	its++;
-	its++;
-	std::cout << its->first << std::endl;
+template <typename MAP, typename U>
+void	ft_insert(MAP &mp, U param)
+{
+	_pair<iterator, bool> tmp;
 
-	mappa._tree.printTree();
+	std::cout << "\t-- [" << iter++ << "] --" << std::endl;
+	tmp = mp.insert(param);
+	std::cout << "insert return: " << printPair(tmp.first);
+	std::cout << "Created new node: " << tmp.second << std::endl;
+	printSize(mp);
+}
 
-	ft::map<const int, int>::iterator it = mappa.begin();
-	for (; it != mappa.end(); ++it)
-		std::cout << it->first << '/' << it->second << '\n';
+template <typename MAP, typename U, typename V>
+void	ft_insert(MAP &mp, U param, V param2)
+{
+	iterator tmp;
 
-	ft::map<int, int> mappa_copy(mappa.begin(), mappa.end());
+	std::cout << "\t-- [" << iter++ << "] --" << std::endl;
+	tmp = mp.insert(param, param2);
+	std::cout << "insert return: " << printPair(tmp);
+	printSize(mp);
+}
 
-	it = mappa.begin();
-	for (ft::map<const int, int>::iterator it2 = mappa_copy.begin();
-		it != mappa.end();
-		++it, ++it2)
-		if (it->first != it2->first || it->second != it2->second){
-			std::cout << "Err" << std::endl;
-			break ;
-		}
-	if (it == mappa.end())
-		std::cout << "Iterator constructor works well" << std::endl;
+int		main(void)
+{
+	TESTED_NAMESPACE::map<T1, T2> mp, mp2;
 
-//	std::cout << ret.first << std::endl;
-//	ft::map<std::string, int>::iterator it = ret.first;
-//	std::cout << it.first << std::endl;
+	ft_insert(mp, T3(42, "lol"));
+	ft_insert(mp, T3(42, "mdr"));
 
-//	std::cout << (mappa.insert(ft::make_pair(std::string("ciao"), 32)).first)->first << std::endl;
-//	std::cout << mappa.insert(ft::make_pair(std::string("c45iao"), 32)).first->key.first << std::endl;
-//	std::cout << mappa.insert(ft::make_pair(std::string("cia4o"), 32)).first->key.first << std::endl;
-//	std::cout << mappa.insert(ft::make_pair(std::string("cia3o"), 32)).first->key.first << std::endl;
-//	std::cout << mappa.insert(ft::make_pair(std::string("ci2ao"), 32)).first->key.first << std::endl;
-//	std::map<std::string, int> mappa;
-//
-//	std::pair<std::map<std::string, int>::iterator, bool> ret = mappa.insert(std::make_pair(std::string("ciao"), 32));
-//	std::map<std::string, int>::iterator it = ret.first;
-//	std::cout << it->first << std::endl;
+	ft_insert(mp, T3(50, "mdr"));
+	ft_insert(mp, T3(35, "funny"));
+
+	ft_insert(mp, T3(45, "bunny"));
+	ft_insert(mp, T3(21, "fizz"));
+	ft_insert(mp, T3(38, "buzz"));
+
+	ft_insert(mp, mp.begin(), T3(55, "fuzzy"));
+
+	ft_insert(mp2, mp2.begin(), T3(1337, "beauty"));
+	ft_insert(mp2, mp2.end(), T3(1000, "Hello"));
+	ft_insert(mp2, mp2.end(), T3(1500, "World"));
 
 	return (0);
 }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "pair.hpp"
+#include <iostream>
+#include "iterator.hpp"
 
 namespace ft {
 
@@ -18,7 +20,11 @@ namespace ft {
 
 	template <class T>
 	struct Node {
-		typedef T		value_type;
+		typedef T				value_type;
+		typedef T*				pointer;
+		typedef T&				reference;
+		typedef bidirectional_iterator_tag	iterator_category;
+		typedef	ptrdiff_t					difference_type;
 
 		value_type	key;
 		bool		color;
@@ -28,9 +34,9 @@ namespace ft {
 
 		Node(T key): key(key), color(BLACK), parent(nullptr), left(nullptr), right(nullptr) {}
 
-		bool 		isLeft() {return parent && this == parent->left;}
-		bool 		isRight() {return parent && this == parent->right;}
-		Node		*uncle() {
+		bool 		isLeft() const {return parent && this == parent->left;}
+		bool 		isRight() const {return parent && this == parent->right;}
+		Node		*uncle() const {
 			if (parent->parent && parent->isLeft())
 				return parent->parent->right;
 			if (parent->parent && parent->isRight())
@@ -39,16 +45,26 @@ namespace ft {
 		}
 	};
 
-	template <class T>
+	template <class T, class Alloc = std::allocator<Node<T> > >
 	class rb_tree {
 		rb_tree(rb_tree<T>& tree): _root(nullptr) {(void)tree;}
 		rb_tree& operator=(rb_tree<T>& tree) {(void)tree; return *this;}
 	public:
 		typedef	Node<T>	node;
 		typedef node*	node_ptr;
+		typedef Alloc												allocator_type;
+		typedef typename allocator_type::reference					reference;
+		typedef typename allocator_type::const_reference			const_reference;
+		typedef typename allocator_type::pointer					pointer;
+		typedef typename allocator_type::value_type					value_type;
+		typedef typename allocator_type::const_pointer				const_pointer;
+		typedef typename allocator_type::size_type					size_type;
+		typedef typename allocator_type::difference_type			difference_type;
 
 	public:
 		rb_tree(): _root(nullptr) {}
+
+		size_type	max_size() const { return _allocator.max_size(); }
 
 		node_ptr	root() const {
 			return _root;
@@ -56,14 +72,21 @@ namespace ft {
 
 		ft::pair<node_ptr, bool> insert(T val) {
 			if (!_root) {
-				_root = new node(val);
+				_root = _allocator.allocate(1);
+				_allocator.construct(_root, val);
 				return ft::make_pair(_root, true);
 			}
 			return _insert(_root, val);
 		}
 
-		node_ptr insert(node_ptr hint, T val) {
-			return _insert(hint, val).first;
+		ft::pair<node_ptr, bool> insert(node_ptr hint, T val) {
+			(void)hint;
+			if (!_root) {
+
+				_root = new node(val);
+				return ft::make_pair(_root, true);
+			}
+			return _insert(_root, val);
 		}
 
 		node_ptr find(T val) {
@@ -92,6 +115,8 @@ namespace ft {
 	private:
 
 		ft::pair<node_ptr, bool> _insert(node_ptr start, T val) {
+			if (start->key == val)
+				return ft::make_pair(start, false);
 			if (val < start->key) {
 				if (!start->left)
 					return _setLeftNode(start, new node(val));
@@ -242,6 +267,7 @@ namespace ft {
 		}
 
 	private:
-		node_ptr	_root;
+		node_ptr		_root;
+		allocator_type	_allocator;
 	};
 }
