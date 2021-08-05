@@ -61,33 +61,21 @@ namespace ft {
 
 	public:
 		rb_tree(): _root(nullptr) {}
-		~rb_tree() {
-			node_ptr m_ptr = _root;
 
-			if (!m_ptr)
+		void	_cycle(node_ptr& p) {
+			if (!p)
 				return ;
-
-			while (m_ptr->left)
-				m_ptr = m_ptr->left;
-			while (m_ptr) {
-				if (m_ptr->right) {
-					m_ptr = m_ptr->right;
-					while (m_ptr->left)
-						m_ptr = m_ptr->left;
-				}
-				else if (m_ptr->isLeft()) {
-					m_ptr = m_ptr->parent;
-				} else {
-					while (m_ptr->parent && !m_ptr->isLeft())
-						m_ptr = m_ptr->parent;
-					m_ptr = m_ptr->parent;
-				}
-				if (!m_ptr) break;
-				_allocator.destroy(m_ptr);
-				_allocator.deallocate(m_ptr, 1);
-			}
+			if (p->left)
+				_cycle(p->left);
+			if (p->right)
+				_cycle(p->right);
+			_allocator.destroy(p);
+			_allocator.deallocate(p, 1);
+			p = nullptr;
 		}
-
+		~rb_tree() {
+			_cycle(_root);
+		}
 		size_type	max_size() const { return _allocator.max_size(); }
 
 		node_ptr	root() const {

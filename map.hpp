@@ -153,8 +153,8 @@ namespace ft {
 		// ---operators overload
 		map& operator=( const map& other ) {
 			_tree.~rb_tree();
-			for (const_iterator it = other.begin(); it != other.end(); ++it)
-				insert(it.base()->key);
+			_size = 0;
+			insert(other.begin(), other.end());
 			return *this;
 		}
 		// operators overload
@@ -222,7 +222,10 @@ namespace ft {
 		// capacity
 
 		// --- modifiers
-//		void clear() {}
+		void clear() {
+			_tree.~rb_tree();
+			_size = 0;
+		}
 
 		template< class InputIt>
 		void insert( InputIt first, InputIt last, typename enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = 0) {
