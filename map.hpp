@@ -121,8 +121,8 @@ namespace ft {
 		typedef Node<value_type>*									node_ptr;
 		typedef Node<value_type>									node;
 
-		typedef ft::map_iterator<node, value_type>				iterator;
-		typedef ft::map_iterator<const node, const value_type>	const_iterator;
+		typedef ft::map_iterator<node, value_type>					iterator;
+		typedef ft::map_iterator<const node, const value_type>		const_iterator;
 		typedef std::reverse_iterator<iterator>						reverse_iterator;
 		typedef std::reverse_iterator<const_iterator>				const_reverse_iterator;
 		// definitions
@@ -144,14 +144,19 @@ namespace ft {
 			for (; first != last; ++first)
 				insert(*first);
 		}
-//		map( const map& other ) {
-//
-//		}
+		map( const map& other ) {
+			*this = other;
+		}
 		~map() {};
 		// constructors
 
 		// ---operators overload
-//		map& operator=( const map& other ) {}
+		map& operator=( const map& other ) {
+			_tree.~rb_tree();
+			for (const_iterator it = other.begin(); it != other.end(); ++it)
+				insert(it.base()->key);
+			return *this;
+		}
 		// operators overload
 
 		// ---getters
@@ -261,8 +266,8 @@ namespace ft {
 		}
 //		map::value_compare value_comp() const {}
 
-		tree	_tree;
 	private:
+		tree			_tree;
 		key_compare		_comp;
 		allocator_type	_alloc;
 		size_type		_size;

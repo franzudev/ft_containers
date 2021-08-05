@@ -46,9 +46,7 @@ int		main(void)
 
 	ft_insert(mp, mp.begin(), T3(55, "fuzzy"));
 
-	ft_insert(mp2, mp2.begin(), T3(1337, "beauty"));
-	ft_insert(mp2, mp2.end(), T3(1000, "Hello"));
-	ft_insert(mp2, mp2.end(), T3(1500, "World"));
+	mp2 = mp;
 
 	return (0);
 }

@@ -20,9 +20,9 @@ namespace ft {
 
 	template <class T>
 	struct Node {
-		typedef T				value_type;
-		typedef T*				pointer;
-		typedef T&				reference;
+		typedef T							value_type;
+		typedef T*							pointer;
+		typedef T&							reference;
 		typedef bidirectional_iterator_tag	iterator_category;
 		typedef	ptrdiff_t					difference_type;
 
@@ -47,11 +47,9 @@ namespace ft {
 
 	template <class T, class Alloc = std::allocator<Node<T> > >
 	class rb_tree {
-		rb_tree(rb_tree<T>& tree): _root(nullptr) {(void)tree;}
-		rb_tree& operator=(rb_tree<T>& tree) {(void)tree; return *this;}
 	public:
-		typedef	Node<T>	node;
-		typedef node*	node_ptr;
+		typedef	Node<T>												node;
+		typedef node*												node_ptr;
 		typedef Alloc												allocator_type;
 		typedef typename allocator_type::reference					reference;
 		typedef typename allocator_type::const_reference			const_reference;
@@ -63,6 +61,32 @@ namespace ft {
 
 	public:
 		rb_tree(): _root(nullptr) {}
+		~rb_tree() {
+			node_ptr m_ptr = _root;
+
+			if (!m_ptr)
+				return ;
+
+			while (m_ptr->left)
+				m_ptr = m_ptr->left;
+			while (m_ptr) {
+				if (m_ptr->right) {
+					m_ptr = m_ptr->right;
+					while (m_ptr->left)
+						m_ptr = m_ptr->left;
+				}
+				else if (m_ptr->isLeft()) {
+					m_ptr = m_ptr->parent;
+				} else {
+					while (m_ptr->parent && !m_ptr->isLeft())
+						m_ptr = m_ptr->parent;
+					m_ptr = m_ptr->parent;
+				}
+				if (!m_ptr) break;
+				_allocator.destroy(m_ptr);
+				_allocator.deallocate(m_ptr, 1);
+			}
+		}
 
 		size_type	max_size() const { return _allocator.max_size(); }
 
@@ -71,21 +95,15 @@ namespace ft {
 		}
 
 		ft::pair<node_ptr, bool> insert(T val) {
-			if (!_root) {
-				_root = _allocator.allocate(1);
-				_allocator.construct(_root, val);
-				return ft::make_pair(_root, true);
-			}
+			if (!_root)
+				return ft::make_pair(_root = createNode(val), true);
 			return _insert(_root, val);
 		}
 
 		ft::pair<node_ptr, bool> insert(node_ptr hint, T val) {
 			(void)hint;
-			if (!_root) {
-
-				_root = new node(val);
-				return ft::make_pair(_root, true);
-			}
+			if (!_root)
+				return ft::make_pair(_root = createNode(val), true);
 			return _insert(_root, val);
 		}
 
@@ -114,17 +132,24 @@ namespace ft {
 
 	private:
 
+		node_ptr	createNode(value_type val) {
+			node_ptr	ptr;
+			ptr = _allocator.allocate(1);
+			_allocator.construct(ptr, val);
+			return ptr;
+		}
+
 		ft::pair<node_ptr, bool> _insert(node_ptr start, T val) {
 			if (start->key == val)
 				return ft::make_pair(start, false);
 			if (val < start->key) {
 				if (!start->left)
-					return _setLeftNode(start, new node(val));
+					return _setLeftNode(start, createNode(val));
 				return _insert(start->left, val);
 			}
 			if (val > start->key) {
 				if (!start->right)
-					return _setRightNode(start, new node(val));
+					return _setRightNode(start, createNode(val));
 				return _insert(start->right, val);
 			}
 			return ft::make_pair(start, false);
