@@ -1,26 +1,28 @@
 #include "common.hpp"
-#include <list>
 
 #define T1 int
-#define T2 int
-typedef _pair<const T1, T2> T3;
+#define T2 std::string
+
+struct ft_more {
+	bool	operator()(const T1 &first, const T1 &second) const {
+		return (first > second);
+	}
+};
+
+typedef TESTED_NAMESPACE::map<T1, T2, ft_more> ft_mp;
+typedef TESTED_NAMESPACE::map<T1, T2, ft_more>::iterator ft_mp_it;
 
 int		main(void)
 {
-	ft::map<std::string, int> mp;
+	ft_mp mp;
 
-	mp.insert(ft::make_pair<std::string, int>("toro", 5));
-	mp.insert(ft::make_pair<std::string, int>("toro1", 5));
-	mp.insert(ft::make_pair<std::string, int>("toro2", 5));
-	mp.insert(ft::make_pair<std::string, int>("toro3", 5));
+	mp[42] = "fgzgxfn";
+	mp[25] = "funny";
+	mp[80] = "hey";
+	mp[12] = "no";
+	mp[27] = "bee";
+	mp[90] = "8";
+	printSize(mp);
 
-	std::cout << mp.find("toro")->second << std::endl;
-	std::cout << mp.count("toro") << mp.count("torone") << std::endl;
-
-	try {
-		std::cout << mp.at("toro") << std::endl;
-	} catch (std::exception &e) {
-		std::cout << e.what() << std::endl;
-	}
 	return (0);
 }

@@ -45,13 +45,14 @@ namespace ft {
 		}
 	};
 
-	template <class T, class Key, class Alloc = std::allocator<Node<T> > >
+	template <class T, class Key, class Compare = std::less<Key>, class Alloc = std::allocator<Node<T> > >
 	class rb_tree {
 	public:
 		typedef	Node<T>												node;
 		typedef node*												node_ptr;
 		typedef typename node::value_type							node_value;
 		typedef Alloc												allocator_type;
+		typedef Compare												key_compare;
 		typedef typename allocator_type::reference					reference;
 		typedef typename allocator_type::const_reference			const_reference;
 		typedef typename allocator_type::pointer					pointer;
@@ -61,7 +62,22 @@ namespace ft {
 		typedef typename allocator_type::difference_type			difference_type;
 
 	public:
-		rb_tree(): _root(nullptr) {}
+
+		class value_compare: public std::binary_function<value_type, value_type, bool>
+		{
+			friend class rb_tree;
+		protected:
+			key_compare comp;
+
+			value_compare(key_compare c): comp(c) {}
+		public:
+			bool operator()(const value_type& x, const value_type& y) const {
+				return comp(x.key.first, y.key.first);
+			}
+		};
+
+		//		rb_tree(): _root(nullptr) {}
+		explicit rb_tree( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {}
 
 		void	_cycle(node_ptr& p) {
 			if (!p)
@@ -134,12 +150,12 @@ namespace ft {
 		ft::pair<node_ptr, bool> _insert(node_ptr start, T val) {
 			if (start->key == val)
 				return ft::make_pair(start, false);
-			if (start->key > val) {
+			if (!value_comp()(start->key, val)) {
 				if (!start->left)
 					return _setLeftNode(start, createNode(val));
 				return _insert(start->left, val);
 			}
-			if (start->key < val) {
+			if (value_comp()(start->key, val)) {
 				if (!start->right)
 					return _setRightNode(start, createNode(val));
 				return _insert(start->right, val);
@@ -281,8 +297,16 @@ namespace ft {
 			}
 		}
 
+		key_compare key_comp() const {
+			return Compare();
+		}
+		rb_tree::value_compare value_comp() const {
+			return value_compare(key_comp());
+		}
+
 	private:
 		node_ptr		_root;
+		key_compare 	_comp;
 		allocator_type	_allocator;
 	};
 }

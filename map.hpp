@@ -14,7 +14,7 @@ namespace ft {
 	template <class Pair>
 	struct keyLess {
 		bool operator ()(const Pair& p1, const Pair& p2) const {
-			return p1.first < p2.first;
+			return p1 < p2;
 		}
 	};
 
@@ -34,7 +34,7 @@ namespace ft {
 		explicit map_iterator(iterator ptr): m_ptr(ptr) {}
 
 		template<class Iter>
-		map_iterator(map_iterator<Iter, Value> const & other) {
+		map_iterator(Iter const & other) {
 			*this = other;
 		}
 
@@ -83,12 +83,16 @@ namespace ft {
 		// Postfix decrement
 		map_iterator operator--(int) { map_iterator tmp = *this; --*this; return tmp; }
 
-		iterator	base() const {
+		iterator	base() {
+			return m_ptr;
+		}
+
+		const iterator	base() const {
 			return m_ptr;
 		}
 
 		template <class Iter>
-		map_iterator&	operator=(map_iterator<Iter, Value> const & other) {
+		map_iterator&	operator=(Iter const & other) {
 			m_ptr = other.base();
 			return *this;
 		}
@@ -103,7 +107,7 @@ namespace ft {
 		iterator m_ptr;
 	};
 
-	template < class Key, class T, class Compare = keyLess<ft::pair<const Key,T> >, class Alloc = std::allocator<ft::pair<const Key,T> > >
+	template < class Key, class T, class Compare = ft::keyLess<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
 	class map {
 	public:
 		// --- Definitions
@@ -118,26 +122,28 @@ namespace ft {
 		typedef typename allocator_type::const_pointer				const_pointer;
 		typedef typename allocator_type::size_type					size_type;
 		typedef typename allocator_type::difference_type			difference_type;
-		typedef rb_tree<value_type, Key>							tree;
+		typedef rb_tree<value_type, Key, Compare>					tree;
 		typedef Node<value_type>*									node_ptr;
 		typedef Node<value_type>									node;
 
 		typedef ft::map_iterator<node, value_type>					iterator;
-		typedef ft::map_iterator<const node, const value_type>		const_iterator;
+		typedef ft::map_iterator<node, value_type>			const_iterator;
 		typedef std::reverse_iterator<iterator>						reverse_iterator;
 		typedef std::reverse_iterator<const_iterator>				const_reverse_iterator;
 		// definitions
 
-//		class value_compare: public binary_function<value_type, value_type, bool>
-//		{
-//			friend class map;
-//		protected:
-//			key_compare comp;
-//
-//			value_compare(key_compare c);
-//		public:
-//			bool operator()(const value_type& x, const value_type& y) const;
-//		};
+	class value_compare: public std::binary_function<value_type, value_type, bool>
+		{
+			friend class map;
+		protected:
+			key_compare comp;
+
+			value_compare(key_compare c): comp(c) {}
+		public:
+			bool operator()(const value_type& x, const value_type& y) const {
+				return comp(x.first, y.first);
+			}
+		};
 
 		// --- constructors
 		explicit map( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _comp(comp), _alloc(alloc), _size(0) {}
@@ -176,7 +182,7 @@ namespace ft {
 			node_ptr found = _tree.find(k);
 			if (!found)
 				return insert(ft::make_pair(k, T())).first->second;
-			return found->key->second;
+			return found->key.second;
 		}
 		mapped_type& at(const key_type& k) {
 			node_ptr found = _tree.find(k);
@@ -303,9 +309,11 @@ namespace ft {
 
 		// --- Observers
 		key_compare key_comp() const {
-			return key_compare();
+			return Compare();
 		}
-//		map::value_compare value_comp() const {}
+		map::value_compare value_comp() const {
+			return value_compare(key_comp());
+		}
 
 	private:
 		tree			_tree;
