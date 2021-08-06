@@ -96,11 +96,11 @@ namespace ft {
 			return _insert(_root, val);
 		}
 
-		node_value *find(const Key val) {
+		node_ptr find(const Key val) const {
 			node_ptr found = _find(_root, val);
 			if (!found)
 				return NULL;
-			return &found->key;
+			return found;
 		}
 
 		node_ptr deletion(Key val) {
@@ -147,7 +147,7 @@ namespace ft {
 			return ft::make_pair(start, false);
 		}
 
-		node_ptr _find(node_ptr node, const Key val) {
+		node_ptr _find(node_ptr node, const Key val) const {
 			if (!node)
 				return nullptr;
 			if (node->key < val)

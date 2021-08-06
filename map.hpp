@@ -161,7 +161,9 @@ namespace ft {
 		// operators overload
 
 		// ---getters
-//		allocator_type get_allocator() const {}
+		allocator_type get_allocator() const {
+			return _alloc;
+		}
 		// getters
 
 		// --- element access
@@ -171,26 +173,22 @@ namespace ft {
 		};
 
 		mapped_type& operator[](const key_type& k) {
-			value_type *found = _tree.find(k);
+			node_ptr found = _tree.find(k);
 			if (!found)
 				return insert(ft::make_pair(k, T())).first->second;
-			return found->second;
-//			return insert(std::make_pair(k, T())).first->second;
-//			if (!found)
-//				throw out_of_range("bella zio");
-//			return found->second;
+			return found->key->second;
 		}
 		mapped_type& at(const key_type& k) {
-			value_type *found = _tree.find(k);
+			node_ptr found = _tree.find(k);
 			if (!found)
-				throw out_of_range("bella zio");
-			return found->second;
+				throw out_of_range("map::at:  key not found");
+			return found->key.second;
 		}
 		const mapped_type& at(const key_type& k) const {
-			value_type *found = _tree.find(k);
+			node_ptr found = _tree.find(k);
 			if (!found)
-				throw out_of_range("bella zio");
-			return found->second;
+				throw out_of_range("map::at:  key not found");
+			return found->key.second;
 		}
 		// element access
 
@@ -277,9 +275,24 @@ namespace ft {
 		//
 
 		// --- Lookup
-//		size_type count( const Key& key ) const {}
-//		iterator find( const Key& key ) {}
-//		const_iterator find( const Key& key ) const {}
+		size_type count( const Key& key ) const {
+			node_ptr found = _tree.find(key);
+			if (!found)
+				return 0;
+			return 1;
+		}
+		iterator find( const Key& key ) {
+			node_ptr found = _tree.find(key);
+			if (!found)
+				return end();
+			return iterator(found);
+		}
+		const_iterator find( const Key& key ) const {
+			node_ptr found = _tree.find(key);
+			if (!found)
+				return end();
+			return const_iterator(found);
+		}
 //		std::pair<iterator,iterator> equal_range( const Key& key ) {}
 //		std::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {}
 //		iterator lower_bound( const Key& key ) {}
