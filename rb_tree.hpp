@@ -2,7 +2,7 @@
 
 #include "pair.hpp"
 #include <iostream>
-#include "iterator.hpp"
+#include "rb_tree_iterators.hpp"
 
 namespace ft {
 
@@ -14,7 +14,7 @@ namespace ft {
 	template <class T>
 	struct less {
 		bool operator ()(const T& lhs, const T& rhs) const {
-			return lhs < rhs;
+			return lhs < rhs && !(rhs < lhs);
 		}
 	};
 
@@ -26,13 +26,13 @@ namespace ft {
 		typedef bidirectional_iterator_tag	iterator_category;
 		typedef	ptrdiff_t					difference_type;
 
-		value_type	key;
+		value_type	data;
 		bool		color;
 		struct Node *parent;
 		struct Node *left;
 		struct Node *right;
 
-		Node(T key): key(key), color(BLACK), parent(nullptr), left(nullptr), right(nullptr) {}
+		Node(T data): data(data), color(BLACK), parent(nullptr), left(nullptr), right(nullptr) {}
 
 		bool 		isLeft() const {return parent && this == parent->left;}
 		bool 		isRight() const {return parent && this == parent->right;}
@@ -51,6 +51,7 @@ namespace ft {
 		typedef	Node<T>												node;
 		typedef node*												node_ptr;
 		typedef typename node::value_type							node_value;
+		typedef typename node_value::second_type							mapped_type;
 		typedef Alloc												allocator_type;
 		typedef Compare												key_compare;
 		typedef typename allocator_type::reference					reference;
@@ -72,27 +73,42 @@ namespace ft {
 			value_compare(key_compare c): comp(c) {}
 		public:
 			bool operator()(const value_type& x, const value_type& y) const {
-				return comp(x.key.first, y.key.first);
+				return comp(x.data.first, y.data.first);
 			}
 		};
 
 		//		rb_tree(): _root(nullptr) {}
 		explicit rb_tree( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {}
+		rb_tree( const rb_tree& tree){ *this = tree; }
 
-		void	_cycle(node_ptr& p) {
-			if (!p)
-				return ;
-			if (p->left)
-				_cycle(p->left);
-			if (p->right)
-				_cycle(p->right);
-			_allocator.destroy(p);
-			_allocator.deallocate(p, 1);
-			p = nullptr;
+		rb_tree& operator=(const rb_tree& tree) {
+			_root = tree.root();
+			_allocator = tree._allocator;
+			_comp = tree._comp;
+			return *this;
 		}
-		~rb_tree() {
+
+		/*node_ptr copy(node_ptr root) {
+			node_ptr new_root;
+			if(root!=NULL){
+				new_root = _createNode(root->data);
+				new_root->color = root->color;
+				new_root->left = copy(root->left);
+				if (new_root->left)
+					new_root->left->parent = new_root;
+				new_root->right = copy(root->right);
+				if (new_root->right)
+					new_root->right->parent = new_root;
+			} else return NULL;
+			return new_root;
+		}*/
+
+		~rb_tree() {}
+
+		void destroy() {
 			_cycle(_root);
 		}
+
 		size_type	max_size() const { return _allocator.max_size(); }
 
 		node_ptr	root() const {
@@ -101,18 +117,18 @@ namespace ft {
 
 		ft::pair<node_ptr, bool> insert(T val) {
 			if (!_root)
-				return ft::make_pair(_root = createNode(val), true);
+				return ft::make_pair(_root = _createNode(val), true);
 			return _insert(_root, val);
 		}
 
 		ft::pair<node_ptr, bool> insert(node_ptr hint, T val) {
 			(void)hint;
 			if (!_root)
-				return ft::make_pair(_root = createNode(val), true);
+				return ft::make_pair(_root = _createNode(val), true);
 			return _insert(_root, val);
 		}
 
-		node_ptr find(const Key val) const {
+		node_ptr find(const node_value val) const {
 			node_ptr found = _find(_root, val);
 			if (!found)
 				return NULL;
@@ -140,7 +156,19 @@ namespace ft {
 
 	private:
 
-		node_ptr	createNode(value_type val) {
+		void	_cycle(node_ptr& p) {
+			if (!p)
+				return ;
+			if (p->left)
+				_cycle(p->left);
+			if (p->right)
+				_cycle(p->right);
+			_allocator.destroy(p);
+			_allocator.deallocate(p, 1);
+			p = nullptr;
+		}
+
+		node_ptr	_createNode(value_type val) {
 			node_ptr	ptr;
 			ptr = _allocator.allocate(1);
 			_allocator.construct(ptr, val);
@@ -148,27 +176,27 @@ namespace ft {
 		}
 
 		ft::pair<node_ptr, bool> _insert(node_ptr start, T val) {
-			if (start->key == val)
+			if (start->data == val)
 				return ft::make_pair(start, false);
-			if (!value_comp()(start->key, val)) {
+			if (!value_comp()(start->data, val)) {
 				if (!start->left)
-					return _setLeftNode(start, createNode(val));
+					return _setLeftNode(start, _createNode(val));
 				return _insert(start->left, val);
 			}
-			if (value_comp()(start->key, val)) {
+			if (value_comp()(start->data, val)) {
 				if (!start->right)
-					return _setRightNode(start, createNode(val));
+					return _setRightNode(start, _createNode(val));
 				return _insert(start->right, val);
 			}
 			return ft::make_pair(start, false);
 		}
 
-		node_ptr _find(node_ptr node, const Key val) const {
+		node_ptr _find(node_ptr node, const node_value val) const {
 			if (!node)
 				return nullptr;
-			if (node->key < val)
+			if (value_comp()(node->data, val) && !value_comp()(val, node->data))
 				return _find(node->right, val);
-			if (node->key > val)
+			if (!value_comp()(node->data, val) && value_comp()(val, node->data))
 				return _find(node->left, val);
 			return node;
 		}
@@ -292,7 +320,7 @@ namespace ft {
 					std::cout << " ";
 				}
 				std::string color = root->color ? "" : "\e[31m";
-				std::cout << color << root->key.first << '/' << root->key.second << "\e[0m" << std::endl;
+				std::cout << color << root->data.first << '/' << root->data.second << "\e[0m" << std::endl;
 				_printTreeHelper(root->left, space);
 			}
 		}

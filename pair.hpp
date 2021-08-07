@@ -30,23 +30,14 @@ namespace ft {
 	template <class T1, class T2> bool operator==(const pair<T1,T2>& x, const pair<T1,T2>& y) {
 		return x.first == y.first;
 	}
-	template <class T1, class T2> bool operator==(const pair<T1,T2>& x, const T1& y) {
-		return x.first == y;
-	}
 	template <class T1, class T2> bool operator!=(const pair<T1,T2>& x, const pair<T1,T2>& y) {
 		return !(x == y);
 	}
 	template <class T1, class T2> bool operator< (const pair<T1,T2>& x, const pair<T1,T2>& y) {
-		return x.first < y.first || !(y.first < x.first);
-	}
-	template <class T1, class T2> bool operator< (const pair<T1,T2>& x, T1& y) {
-		return x.first < y;
+		return x.first < y.first || (!(y.first < x.first) && x.second < y.second);
 	}
 	template <class T1, class T2> bool operator> (const pair<T1,T2>& x, const pair<T1,T2>& y) {
 		return y < x;
-	}
-	template <class T1, class T2> bool operator> (const pair<T1,T2>& x, T1& y) {
-		return x.first > y;
 	}
 	template <class T1, class T2> bool operator>=(const pair<T1,T2>& x, const pair<T1,T2>& y) {
 		return !(x < y);
