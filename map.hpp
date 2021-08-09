@@ -32,9 +32,6 @@ namespace ft {
 		typedef typename allocator_type::const_pointer				const_pointer;
 		typedef typename allocator_type::size_type					size_type;
 		typedef typename allocator_type::difference_type			difference_type;
-		typedef rb_tree<value_type, Key, Compare>					tree;
-		typedef Node<value_type>*									node_ptr;
-		typedef Node<value_type>									node;
 
 		typedef ft::rb_tree_iterator<Node<value_type> >				iterator;
 		typedef ft::const_rb_tree_iterator<Node<value_type> >		const_iterator;
@@ -55,13 +52,19 @@ namespace ft {
 			}
 		};
 
+		typedef rb_tree<value_type, Key, value_compare>					tree;
+		typedef Node<value_type>*									node_ptr;
+		typedef Node<value_type>									node;
+
 		// --- constructors
-		explicit map( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _comp(comp), _alloc(alloc), _size(0) {}
-		template< class InputIt > map( InputIt first, InputIt last, const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _comp(comp), _alloc(alloc), _size(0) {
+		explicit map( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _tree(tree(value_compare(key_comp()))), _comp(comp), _alloc(alloc), _size(0) {
+			;
+		}
+		template< class InputIt > map( InputIt first, InputIt last, const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _tree(tree(value_compare(key_comp()))), _comp(comp), _alloc(alloc), _size(0) {
 			for (; first != last; ++first)
 				insert(*first);
 		}
-		map( const map& other ) {
+		map( const map& other ): _tree(tree(value_compare(key_comp()))) {
 			*this = other;
 		}
 		~map() {
