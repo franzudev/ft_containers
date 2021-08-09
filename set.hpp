@@ -34,7 +34,7 @@ namespace ft {
 		typedef typename allocator_type::difference_type			difference_type;
 
 		typedef ft::rb_tree_iterator<Node<value_type> >				iterator;
-		typedef ft::const_rb_tree_iterator<Node<value_type> >		const_iterator;
+		typedef ft::rb_tree_iterator<Node<value_type> >				const_iterator;
 		typedef ft::reverse_iterator<iterator>						reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;
 		// definitions
@@ -267,41 +267,41 @@ namespace ft {
 		return (rit == rend);
 	}
 
-	template <typename Key, typename T, typename Compare>
-	void swap(set<Key, T, Compare> &x, set<Key, T, Compare> &y)
+	template <typename Key, typename Compare>
+	void swap(set<Key, Compare> &x, set<Key, Compare> &y)
 	{
 		x.swap(y);
 	}
-	template <class Key, class T, class Compare, class Alloc>
+	template <class Key, class Compare, class Alloc>
 	bool operator== (const set<Key,Compare,Alloc> & lhs, const set<Key,Compare,Alloc> & rhs)
 	{
 		return (ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
 
-	template <class Key, class T, class Compare, class Alloc>
+	template <class Key, class Compare, class Alloc>
 	bool operator!= (const set<Key,Compare,Alloc> & lhs, const set<Key,Compare,Alloc> & rhs)
 	{
 		return (!(lhs == rhs));
 	}
 
-	template <class Key, class T, class Compare, class Alloc>
+	template <class Key, class Compare, class Alloc>
 	bool operator<  (const set<Key,Compare,Alloc> & lhs, const set<Key,Compare,Alloc> & rhs)
 	{
 		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 
-	template <class Key, class T, class Compare, class Alloc>
+	template <class Key, class Compare, class Alloc>
 	bool operator<= (const set<Key,Compare,Alloc> & lhs, const set<Key,Compare,Alloc> & rhs)
 	{
 		return !(rhs < lhs);
 	}
-	template <class Key, class T, class Compare, class Alloc>
+	template <class Key, class Compare, class Alloc>
 	bool operator>  (const set<Key,Compare,Alloc> & lhs, const set<Key,Compare,Alloc> & rhs)
 	{
 		return (rhs < lhs);
 	}
 
-	template <class Key, class T, class Compare, class Alloc>
+	template <class Key, class Compare, class Alloc>
 	bool operator>= (const set<Key,Compare,Alloc> & lhs, const set<Key,Compare,Alloc> & rhs)
 	{
 		return (!(lhs < rhs));
