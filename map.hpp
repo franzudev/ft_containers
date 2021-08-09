@@ -195,34 +195,34 @@ namespace ft {
 
 		// --- Lookup
 		size_type count( const Key& key ) const {
-			node_ptr found = _tree.find(ft::make_pair(key, mapped_type()));
+			node_ptr found = _tree.find(_filter_object(key));
 			if (!found)
 				return 0;
 			return 1;
 		}
 		iterator find( const Key& key ) {
-			node_ptr found = _tree.find(ft::make_pair(key, mapped_type()));
+			node_ptr found = _tree.find(_filter_object(key));
 			if (!found)
 				return end();
 			return iterator(found);
 		}
 		const_iterator find( const Key& key ) const {
-			node_ptr found = _tree.find(ft::make_pair(key, mapped_type()));
+			node_ptr found = _tree.find(_filter_object(key));
 			if (!found)
 				return end();
 			return const_iterator(found);
 		}
 		iterator lower_bound( const Key& key ) {
-			return iterator(_tree.lower_bound(ft::make_pair(key, mapped_type())));
+			return iterator(_tree.lower_bound(_filter_object(key)));
 		}
 		const_iterator lower_bound( const Key& key ) const {
-			return iterator(_tree.lower_bound(ft::make_pair(key, mapped_type())));
+			return iterator(_tree.lower_bound(_filter_object(key)));
 		}
 		iterator upper_bound( const Key& key ) {
-			return iterator(_tree.upper_bound(ft::make_pair(key, mapped_type())));
+			return iterator(_tree.upper_bound(_filter_object(key)));
 		}
 		const_iterator upper_bound( const Key& key ) const {
-			return iterator(_tree.upper_bound(ft::make_pair(key, mapped_type())));
+			return iterator(_tree.upper_bound(_filter_object(key)));
 		}
 		//
 
@@ -249,6 +249,9 @@ namespace ft {
 		key_compare		_comp;
 		allocator_type	_alloc;
 		size_type		_size;
+		
+		value_type _filter_object(const Key& key) { return ft::make_pair(key, mapped_type()); }
+		value_type _filter_object(const Key& key) const { return ft::make_pair(key, mapped_type()); }
 	};
 
 	template <class InputIterator1, class InputIterator2>
