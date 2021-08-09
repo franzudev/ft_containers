@@ -94,19 +94,19 @@ namespace ft {
 		};
 
 		mapped_type& operator[](const key_type& k) {
-			node_ptr found = _tree.find(ft::make_pair(k, mapped_type()));
+			node_ptr found = _tree.find(_filter_object(k));
 			if (!found)
-				return insert(ft::make_pair(k, T())).first->second;
+				return insert(_filter_object(k)).first->second;
 			return found->data.second;
 		}
 		mapped_type& at(const key_type& k) {
-			node_ptr found = _tree.find(ft::make_pair(k, mapped_type()));
+			node_ptr found = _tree.find(_filter_object(k));
 			if (!found)
 				throw out_of_range("map::at:  key not found");
 			return found->data.second;
 		}
 		const mapped_type& at(const key_type& k) const {
-			node_ptr found = _tree.find(ft::make_pair(k, mapped_type()));
+			node_ptr found = _tree.find(_filter_object(k));
 			if (!found)
 				throw out_of_range("map::at:  key not found");
 			return found->data.second;
