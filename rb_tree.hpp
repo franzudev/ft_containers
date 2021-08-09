@@ -335,6 +335,18 @@ namespace ft {
 
 		// Robk
 
+		node_ptr climb(node_ptr node, const int &key) const
+		{
+			if (node->parent)
+			{
+				if (key < node->parent->data.first)
+					return node->parent;
+				else 
+					return (climb(node->parent, key));
+			}
+			return (nullptr);
+		}
+
 		node_ptr find_lower(node_ptr node, const int &key) const
 		{
 			if (!node)
@@ -345,31 +357,34 @@ namespace ft {
 					return(find_lower(node->left, key));
 				return node;
 			}
-			else // >=
-			{
-				if (node->right)
-					return(find_lower(node->right, key));
+			else if (!(node->data.first < key) && !(key < node->data.first))
 				return node;
-			}
+			else if (node->right)
+				return(find_lower(node->right, key));
+			else if (node_ptr ret = climb(node, key))
+				return ret;
+			std::cout << "END" << std::endl;
+			return nullptr;
 		}
 
 		node_ptr find_upper(node_ptr node, const int &key) const
 		{
 			if (!node)
 				throw (std::exception());
-			if (key >= node->data.first)
-			{
-				if (node->right)
-					return(find_upper(node->right, key));
-				return node;
-			}
-			else // <
+			if (key < node->data.first)
 			{
 				if (node->left)
 					return(find_upper(node->left, key));
 				return node;
 			}
+			else if (node->right)
+				return(find_upper(node->right, key));
+			else if (node_ptr ret = climb(node, key))
+				return ret;
+			std::cout << "END" << std::endl;
+			return nullptr;
 		}
+
 		public:
 		node_ptr lower_bound( const int& key ) const
 		{
@@ -378,18 +393,8 @@ namespace ft {
 
 		node_ptr upper_bound( const int& key ) const
 		{
-			return(find_lower(_root, key));		
+			return(find_upper(_root, key));		
 		}
-
-		// node_ptr lower_bound( const int& key )
-		// {
-		// 	return(find_lower(_root, key));		
-		// }
-
-		// node_ptr upper_bound( const int& key )
-		// {
-		// 	return(find_lower(_root, key));		
-		// }
 
 	private:
 		node_ptr		_root;
