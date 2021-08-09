@@ -21,6 +21,7 @@ namespace ft {
 	template <class T>
 	struct Node {
 		typedef T							value_type;
+		typedef value_type					second_type;
 		typedef T*							pointer;
 		typedef T&							reference;
 		typedef bidirectional_iterator_tag	iterator_category;
@@ -51,9 +52,10 @@ namespace ft {
 		typedef	Node<T>												node;
 		typedef node*												node_ptr;
 		typedef typename node::value_type							node_value;
-		typedef typename node_value::second_type							mapped_type;
+		typedef typename node::second_type							mapped_type;
 		typedef Alloc												allocator_type;
 		typedef Compare												key_compare;
+		typedef key_compare											value_compare;
 		typedef typename allocator_type::reference					reference;
 		typedef typename allocator_type::const_reference			const_reference;
 		typedef typename allocator_type::pointer					pointer;
@@ -64,22 +66,22 @@ namespace ft {
 
 	public:
 
-		class value_compare: public std::binary_function<value_type, value_type, bool>
-		{
-			friend class rb_tree;
-		protected:
-			key_compare comp;
-
-			value_compare(key_compare c): comp(c) {}
-		public:
-			bool operator()(const value_type& x, const value_type& y) const {
-				return comp(x.data.first, y.data.first);
-			}
-		};
+//		class value_compare: public std::binary_function<value_type, value_type, bool>
+//		{
+//			friend class rb_tree;
+//		protected:
+//			key_compare comp;
+//
+//			value_compare(key_compare c): comp(c) {}
+//		public:
+//			bool operator()(const value_type& x, const value_type& y) const {
+//				return comp(x.data.first, y.data.first);
+//			}
+//		};
 
 		//		rb_tree(): _root(nullptr) {}
-		explicit rb_tree( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {}
-		rb_tree( const rb_tree& tree){ *this = tree; }
+		explicit rb_tree( const Compare& comp, const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {}
+		rb_tree( const rb_tree& tree): _comp(tree._comp){ *this = tree; }
 
 		rb_tree& operator=(const rb_tree& tree) {
 			_root = tree.root();
@@ -325,11 +327,8 @@ namespace ft {
 			}
 		}
 
-		key_compare key_comp() const {
-			return Compare();
-		}
-		rb_tree::value_compare value_comp() const {
-			return value_compare(key_comp());
+		value_compare value_comp() const {
+			return _comp;
 		}
 
 	private:
