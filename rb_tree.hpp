@@ -81,7 +81,7 @@ namespace ft {
 //		};
 
 		//		rb_tree(): _root(nullptr) {}
-		explicit rb_tree( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {
+		explicit rb_tree( const Compare& comp, const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {
 			_sentinel = _allocator.allocate(1);
 			_sentinel->bound = true;
 		}

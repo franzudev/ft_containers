@@ -6,8 +6,9 @@ namespace ft {
 
 	template<class Node>
 	struct rb_tree_iterator: ft::iterator<ft::bidirectional_iterator_tag, Node> {
-		typedef Node 						*iterator_type;
-		typedef typename Node::value_type	value_type;
+		typedef Node 								*iterator_type;
+		typedef Node								iterator_value;
+		typedef typename iterator_value::value_type	value_type;
 
 	private:
 		iterator_type m_ptr;

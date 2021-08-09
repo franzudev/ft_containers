@@ -58,6 +58,7 @@ namespace ft {
 		Iterator current;
 	public:
 		typedef Iterator                                            iterator_type;
+		typedef typename iterator_type::value_type					value_type;
 		typedef typename iterator_traits<Iterator>::difference_type difference_type;
 		typedef typename iterator_traits<Iterator>::reference       reference;
 		typedef typename iterator_traits<Iterator>::pointer         pointer;
