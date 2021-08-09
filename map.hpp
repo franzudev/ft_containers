@@ -233,11 +233,20 @@ namespace ft {
 		}
 //		std::pair<iterator,iterator> equal_range( const Key& key ) {}
 //		std::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {}
-//		iterator lower_bound( const Key& key ) {}
-//		const_iterator lower_bound( const Key& key ) const {}
-//		iterator upper_bound( const Key& key ) {}
-//		const_iterator upper_bound( const Key& key ) const {}
+		iterator lower_bound( const Key& key ) {
+			return iterator(_tree.lower_bound(key));
+		}
+		const_iterator lower_bound( const Key& key ) const {
+			return iterator(_tree.lower_bound(key));
+		}
+		iterator upper_bound( const Key& key ) {
+			return iterator(_tree.upper_bound(key));
+		}
+		const_iterator upper_bound( const Key& key ) const {
+			return iterator(_tree.upper_bound(key));
+		}
 		//
+
 
 		// --- Observers
 		key_compare key_comp() const {
