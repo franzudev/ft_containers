@@ -212,22 +212,26 @@ namespace ft {
 				return end();
 			return const_iterator(found);
 		}
-//		std::pair<iterator,iterator> equal_range( const Key& key ) {}
-//		std::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {}
 		iterator lower_bound( const Key& key ) {
-			return iterator(_tree.lower_bound(key));
+			return iterator(_tree.lower_bound(ft::make_pair(key, mapped_type())));
 		}
 		const_iterator lower_bound( const Key& key ) const {
-			return iterator(_tree.lower_bound(key));
+			return iterator(_tree.lower_bound(ft::make_pair(key, mapped_type())));
 		}
 		iterator upper_bound( const Key& key ) {
-			return iterator(_tree.upper_bound(key));
+			return iterator(_tree.upper_bound(ft::make_pair(key, mapped_type())));
 		}
 		const_iterator upper_bound( const Key& key ) const {
-			return iterator(_tree.upper_bound(key));
+			return iterator(_tree.upper_bound(ft::make_pair(key, mapped_type())));
 		}
 		//
 
+		ft::pair<iterator,iterator> equal_range( const Key& key ) {
+			return (ft::make_pair<iterator, iterator>(this->lower_bound(key), this->upper_bound(key)));
+		}
+		ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {
+			return (ft::make_pair<const_iterator, const_iterator>(this->lower_bound(key), this->upper_bound(key)));
+		}
 
 		// --- Observers
 		key_compare key_comp() const {
@@ -236,7 +240,10 @@ namespace ft {
 		map::value_compare value_comp() const {
 			return value_compare(key_comp());
 		}
-
+		void ft_print()
+		{
+			_tree.printTree();
+		}
 	private:
 		tree			_tree;
 		key_compare		_comp;
