@@ -52,9 +52,8 @@ namespace ft {
 			}
 		};
 
-		typedef rb_tree<value_type, Key, value_compare>					tree;
+		typedef rb_tree<value_type, Key, value_compare>				tree;
 		typedef Node<value_type>*									node_ptr;
-		typedef Node<value_type>									node;
 
 		// --- constructors
 		explicit set( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _tree(tree(value_compare(key_comp()))), _comp(comp), _alloc(alloc), _size(0) {
