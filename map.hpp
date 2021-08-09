@@ -112,19 +112,23 @@ namespace ft {
 
 		// --- iterators
 		iterator begin() {
+			if (!_tree.root())
+				return end();
 			return iterator(_tree.left());
 		}
 
 		const_iterator begin() const {
+			if (!_tree.root())
+				return end();
 			return const_iterator(_tree.left());
 		}
 
 		iterator end() {
-			return _size ? iterator(_tree.bound()) : begin();
+			return iterator(_tree.bound());
 		}
 
 		const_iterator end() const {
-			return _size ? iterator(_tree.bound()) : begin();
+			return iterator(_tree.bound());
 		}
 
 //		reverse_iterator rbegin() {}
