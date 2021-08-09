@@ -1,46 +1,57 @@
 #include "common.hpp"
-#include <list>
 
-#define T1 char
-#define T2 int
-typedef _pair<const T1, T2> T3;
+#define T1 int
+#define T2 std::string
 
-int main (void)
+TESTED_NAMESPACE::map<T1, T2> mp;
+TESTED_NAMESPACE::map<T1, T2>::iterator it = mp.end();
+
+void	ft_find(T1 const &k)
 {
-	std::list<T3> lst;
+	TESTED_NAMESPACE::map<T1, T2>::iterator ret = mp.find(k);
 
-	unsigned int lst_size = 7;
-	for (unsigned int i = 0; i < lst_size; ++i)
-		lst.push_back(T3('a' + i, lst_size - i));
-	TESTED_NAMESPACE::map<T1, T2> foo(lst.begin(), lst.end());
+	if (ret != it)
+		printPair(ret);
+	else
+		std::cout << "map::find(" << k << ") returned end()" << std::endl;
+}
 
-	lst.clear(); lst_size = 4;
-	for (unsigned int i = 0; i < lst_size; ++i)
-		lst.push_back(T3('z' - i, i * 5));
-	TESTED_NAMESPACE::map<T1, T2> bar(lst.begin(), lst.end());
+void	ft_count(T1 const &k)
+{
+	std::cout << "map::count(" << k << ")\treturned [" << mp.count(k) << "]" << std::endl;
+}
 
-	TESTED_NAMESPACE::map<T1, T2>::const_iterator it_foo = foo.begin();
-	TESTED_NAMESPACE::map<T1, T2>::const_iterator it_bar = bar.begin();
+int		main(void)
+{
+	mp[42] = "fgzgxfn";
+	mp[25] = "funny";
+	mp[80] = "hey";
+	mp[12] = "no";
+	mp[27] = "bee";
+	mp[90] = "8";
+	printSize(mp);
 
-	std::cout << "BEFORE SWAP" << std::endl;
+	std::cout << "\t-- FIND --" << std::endl;
+	ft_find(12);
+	ft_find(3);
+	ft_find(35);
+	ft_find(90);
+	ft_find(100);
 
-	std::cout << "foo contains:" << std::endl;
-	printSize(foo);
-	std::cout << "bar contains:" << std::endl;
-	printSize(bar);
+	std::cout << "\t-- COUNT --" << std::endl;
+	ft_count(-3);
+	ft_count(12);
+	ft_count(3);
+	ft_count(35);
+	ft_count(90);
+	ft_count(100);
 
-	foo.swap(bar);
+	mp.find(27)->second = "newly inserted mapped_value";
 
-	std::cout << "AFTER SWAP" << std::endl;
+	printSize(mp);
 
-	std::cout << "foo contains:" << std::endl;
-	printSize(foo);
-	std::cout << "bar contains:" << std::endl;
-	printSize(bar);
-
-	std::cout << "Iterator validity:" << std::endl;
-	std::cout << (it_foo == bar.begin()) << std::endl;
-	std::cout << (it_bar == foo.begin()) << std::endl;
-
+	TESTED_NAMESPACE::map<T1, T2> const c_map(mp.begin(), mp.end());
+	std::cout << "const map.find(" << 42 << ")->second: [" << c_map.find(42)->second << "]" << std::endl;
+	std::cout << "const map.count(" << 80 << "): [" << c_map.count(80) << "]" << std::endl;
 	return (0);
 }
