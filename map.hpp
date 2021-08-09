@@ -213,24 +213,24 @@ namespace ft {
 			return const_iterator(found);
 		}
 		iterator lower_bound( const Key& key ) {
-			return iterator(_tree.lower_bound(key));
+			return iterator(_tree.lower_bound(ft::make_pair(key, mapped_type())));
 		}
 		const_iterator lower_bound( const Key& key ) const {
-			return iterator(_tree.lower_bound(key));
+			return iterator(_tree.lower_bound(ft::make_pair(key, mapped_type())));
 		}
 		iterator upper_bound( const Key& key ) {
-			return iterator(_tree.upper_bound(key));
+			return iterator(_tree.upper_bound(ft::make_pair(key, mapped_type())));
 		}
 		const_iterator upper_bound( const Key& key ) const {
-			return iterator(_tree.upper_bound(key));
+			return iterator(_tree.upper_bound(ft::make_pair(key, mapped_type())));
 		}
 		//
 
 		ft::pair<iterator,iterator> equal_range( const Key& key ) {
-			return (ft::make_pair<iterator, iterator>(lower_bound(key), upper_bound(key)));
+			return (ft::make_pair<iterator, iterator>(this->lower_bound(key), this->upper_bound(key)));
 		}
 		ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {
-			return (ft::make_pair<const_iterator, const_iterator>(lower_bound(key), upper_bound(key)));
+			return (ft::make_pair<const_iterator, const_iterator>(this->lower_bound(key), this->upper_bound(key)));
 		}
 
 		// --- Observers

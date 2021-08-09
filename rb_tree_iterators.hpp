@@ -6,8 +6,9 @@ namespace ft {
 
 	template<class Node>
 	struct rb_tree_iterator: ft::iterator<ft::bidirectional_iterator_tag, Node> {
-		typedef Node 						*iterator_type;
-		typedef typename Node::value_type	value_type;
+		typedef Node 								*iterator_type;
+		typedef Node								iterator_value;
+		typedef typename iterator_value::value_type	value_type;
 
 	private:
 		iterator_type m_ptr;
@@ -26,12 +27,12 @@ namespace ft {
 			return *this;
 		}
 
-		value_type operator*() const {
-			return m_ptr->data;
+		value_type &operator*() const {
+			return (*m_ptr).data;
 		}
 
 		value_type *operator->() const {
-			return &m_ptr->data;
+			return &(m_ptr->data);
 		}
 
 		// Prefix increment
@@ -113,8 +114,8 @@ namespace ft {
 
 	template<class Node>
 	struct const_rb_tree_iterator: ft::iterator<ft::bidirectional_iterator_tag, Node> {
-		typedef Node 						*iterator_type;
-		typedef typename Node::value_type	value_type;
+		typedef Node 							*iterator_type;
+		typedef const typename Node::value_type	value_type;
 
 		explicit const_rb_tree_iterator() : m_ptr(nullptr) {};
 
@@ -126,12 +127,12 @@ namespace ft {
 			*this = other;
 		}
 
-		const value_type operator*() const {
-			return m_ptr->data;
+		value_type &operator*() const {
+			return (*m_ptr).data;
 		}
 
-		const value_type *operator->() const {
-			return &m_ptr->data;
+		value_type *operator->() const {
+			return &(m_ptr->data);
 		}
 
 		// Prefix increment
@@ -150,7 +151,7 @@ namespace ft {
 			}
 			else
 			{
-				while (m_ptr->parent && !m_ptr->bound && !m_ptr->isLeft())
+				while (m_ptr->parent && !m_ptr->parent->bound && !m_ptr->isLeft())
 					m_ptr = m_ptr->parent;
 				m_ptr = m_ptr->parent;
 			}

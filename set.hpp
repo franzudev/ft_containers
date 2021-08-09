@@ -59,13 +59,16 @@ namespace ft {
 		explicit set( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _tree(tree(value_compare(key_comp()))), _comp(comp), _alloc(alloc), _size(0) {
 			;
 		}
+
 		template< class InputIt > set( InputIt first, InputIt last, const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _tree(tree(value_compare(key_comp()))), _comp(comp), _alloc(alloc), _size(0) {
 			for (; first != last; ++first)
 				insert(*first);
 		}
+
 		set( const set& other ): _tree(tree(value_compare(key_comp()))) {
 			*this = other;
 		}
+
 		~set() {
 			_tree.destroy();
 		}
@@ -73,9 +76,9 @@ namespace ft {
 
 		// ---operators overload
 		set& operator=( const set& other ) {
-			_tree.~rb_tree();
-			_size = 0;
+			_tree.destroy();
 			insert(other.begin(), other.end());
+			_size = other._size;
 			return *this;
 		}
 		// operators overload
@@ -98,12 +101,14 @@ namespace ft {
 				return insert(k).first;
 			return found->data.second;
 		}
+
 		mapped_type& at(const key_type& k) {
 			node_ptr found = _tree.find(ft::make_pair(k, mapped_type()));
 			if (!found)
 				throw out_of_range("set::at:  key not found");
 			return found->data.second;
 		}
+
 		const mapped_type& at(const key_type& k) const {
 			node_ptr found = _tree.find(ft::make_pair(k, mapped_type()));
 			if (!found)
@@ -114,53 +119,37 @@ namespace ft {
 
 		// --- iterators
 		iterator begin() {
-			node_ptr ret = _tree.root();
-			if (!ret)
-				return iterator(ret);
-			while (ret->left)
-				ret = ret->left;
-			return iterator(ret);
+			if (!_tree.root())
+				return end();
+			return iterator(_tree.left());
 		}
 
 		const_iterator begin() const {
-			node_ptr ret = _tree.root();
-			if (!ret)
-				return const_iterator(ret);
-
-			while (ret->left)
-				ret = ret->left;
-			return const_iterator(ret);
+			if (!_tree.root())
+				return end();
+			return const_iterator(_tree.left());
 		}
 
 		iterator end() {
-			node_ptr ret = _tree.root();
-			if (!ret)
-				return iterator(ret);
-
-			while (ret)
-				ret = ret->right;
-			return iterator(ret);
+			return iterator(_tree.bound());
 		}
 
 		const_iterator end() const {
-			node_ptr ret = _tree.root();
-			if (!ret)
-				return const_iterator(ret);
-
-			while (ret)
-				ret = ret->right;
-			return const_iterator(ret);
+			return iterator(_tree.bound());
 		}
 
 		reverse_iterator rbegin() {
 			return reverse_iterator(end());
 		}
+
 		const_reverse_iterator rbegin() const {
 			return reverse_iterator(end());
 		}
+
 		reverse_iterator rend() {
 			return reverse_iterator(begin());
 		}
+
 		const_reverse_iterator rend()   const {
 			return reverse_iterator(begin());
 		}
@@ -168,7 +157,9 @@ namespace ft {
 
 		// --- Capacity
 		bool empty() const {return !_size;}
+
 		size_type size() const { return _size; }
+
 		size_type max_size() const {return _tree.max_size();}
 		// capacity
 
@@ -197,8 +188,11 @@ namespace ft {
 		}
 
 		void erase( iterator pos ) {(void)pos;}
+
 //		void erase( iterator first, iterator last ) {}
+
 //		size_type erase( const key_type& key ) {}
+
 		void swap( set& other ) {
 			tree tmp = other._tree;
 			size_type size = other._size;
@@ -218,24 +212,43 @@ namespace ft {
 				return 0;
 			return 1;
 		}
+
 		iterator find( const Key& key ) {
 			node_ptr found = _tree.find(key);
 			if (!found)
 				return end();
 			return iterator(found);
 		}
+
 		const_iterator find( const Key& key ) const {
 			node_ptr found = _tree.find(key);
 			if (!found)
 				return end();
 			return const_iterator(found);
 		}
-//		std::pair<iterator,iterator> equal_range( const Key& key ) {}
-//		std::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {}
-//		iterator lower_bound( const Key& key ) {}
-//		const_iterator lower_bound( const Key& key ) const {}
-//		iterator upper_bound( const Key& key ) {}
-//		const_iterator upper_bound( const Key& key ) const {}
+
+		iterator lower_bound( const Key& key ) {
+			return iterator(_tree.lower_bound(key));
+		}
+
+		const_iterator lower_bound( const Key& key ) const {
+			return iterator(_tree.lower_bound(key));
+		}
+
+		iterator upper_bound( const Key& key ) {
+			return iterator(_tree.upper_bound(key));
+		}
+
+		const_iterator upper_bound( const Key& key ) const {
+			return iterator(_tree.upper_bound(key));
+		}
+
+		ft::pair<iterator,iterator> equal_range( const Key& key ) {
+			return (ft::make_pair<iterator, iterator>(lower_bound(key), upper_bound(key)));
+		}
+		ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const {
+			return (ft::make_pair<const_iterator, const_iterator>(lower_bound(key), upper_bound(key)));
+		}
 		//
 
 		// --- Observers

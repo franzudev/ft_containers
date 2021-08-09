@@ -81,7 +81,7 @@ namespace ft {
 //		};
 
 		//		rb_tree(): _root(nullptr) {}
-		explicit rb_tree( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {
+		explicit rb_tree( const Compare& comp, const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {
 			_sentinel = _allocator.allocate(1);
 			_sentinel->bound = true;
 		}
@@ -402,66 +402,66 @@ namespace ft {
 		//robk
 
 		// Robk
-		node_ptr climb(node_ptr node, const Key &key) const
+		node_ptr climb(node_ptr node, const node_value &val) const
 		{
 			if (node->parent != _sentinel)
 			{
-				if (key < node->parent->data.first)
+				if (value_comp()(val, node->parent->data))
 					return node->parent;
 				else 
-					return (climb(node->parent, key));
+					return (climb(node->parent, val));
 			}
 			return (nullptr);
 		}
 
-		node_ptr find_lower(node_ptr node, const Key &key) const
+		node_ptr find_lower(node_ptr node, const node_value &val) const
 		{
 			// std::cout << "key"<< key << "node" << node->data.first << "val" << node->data.second << std::endl;
 			if (!node)
 				throw (std::exception());
-			if (key < node->data.first)
+			if (value_comp()(val, node->data))
 			{
 				if (node->left != _sentinel && node->left)
-					return(find_lower(node->left, key));
+					return(find_lower(node->left, val));
 				return node;
 			}
-			else if (!(node->data.first < key) && !(key < node->data.first))
+			else if (!(value_comp()(node->data, val) && !value_comp()(val, node->data)))
 				return node;
 			else if (node->right != _sentinel && node->right)
-				return(find_lower(node->right, key));
-			else if (node_ptr ret = climb(node, key))
+				return(find_lower(node->right, val));
+			else if (node_ptr ret = climb(node, val))
 				return ret;
 			return _sentinel;
 		}
 
 
-		node_ptr find_upper(node_ptr node, const Key &key) const
+		node_ptr find_upper(node_ptr node, const node_value &val) const
 		{
 			if (!node)
 				throw (std::exception());
-			if (key < node->data.first)
+			if (value_comp()(val, node->data))
 			{
 				if (node->left != _sentinel && node->left)
-					return(find_upper(node->left, key));
+					return(find_upper(node->left, val));
 				return node;
 			}
 			else if (node->right != _sentinel && node->right)
-				return(find_upper(node->right, key));
-			else if (node_ptr ret = climb(node, key))
+				return(find_upper(node->right, val));
+			else if (node_ptr ret = climb(node, val))
 				return ret;
 			return _sentinel;
 		}
 
 		public:
 
-		node_ptr lower_bound( const Key& key ) const
+		node_ptr lower_bound( const node_value &val ) const
 		{
-			return(find_lower(_root, key));		
+			return(find_lower(_root, val));
 		}
 
-		node_ptr upper_bound( const Key& key ) const
+		node_ptr upper_bound( const node_value &val ) const
 		{
-			return(find_upper(_root, key));		
+			return(find_upper(_root, val));
 		}
 
 	private:

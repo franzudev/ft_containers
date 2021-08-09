@@ -59,6 +59,7 @@ namespace ft {
 	public:
 		typedef Iterator                                            iterator_type;
 		typedef typename iterator_traits<Iterator>::difference_type difference_type;
+		typedef typename iterator_traits<Iterator>::value_type		value_type;
 		typedef typename iterator_traits<Iterator>::reference       reference;
 		typedef typename iterator_traits<Iterator>::pointer         pointer;
 
@@ -74,9 +75,9 @@ namespace ft {
 		Iterator base() const {return ++Iterator(current);}
 		Iterator getCurrent() const {return current;}
 
-		reference operator*() const {return *current;}
+		value_type	&operator*() const {return *current;}
 
-		pointer   operator->() const {return &(*current);}
+		value_type *operator->() const {return &(*current.operator->());}
 
 		reverse_iterator& operator++() {
 			--current;
@@ -111,7 +112,7 @@ namespace ft {
 			return *this;
 		}
 		reference         operator[](difference_type n) const {
-			return *(*this + n);
+			return *(current - n);
 		}
 	};
 
