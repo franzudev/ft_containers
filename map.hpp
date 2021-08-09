@@ -36,13 +36,13 @@ namespace ft {
 		typedef Node<value_type>*									node_ptr;
 		typedef Node<value_type>									node;
 
-		typedef ft::rb_tree_iterator<node>							iterator;
-		typedef ft::const_rb_tree_iterator<node>					const_iterator;
-		typedef std::reverse_iterator<iterator>						reverse_iterator;
-		typedef std::reverse_iterator<const_iterator>				const_reverse_iterator;
+		typedef ft::rb_tree_iterator<Node<value_type> >				iterator;
+		typedef ft::const_rb_tree_iterator<Node<value_type> >		const_iterator;
+		typedef ft::reverse_iterator<iterator>						reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;
 		// definitions
 
-	class value_compare: public std::binary_function<value_type, value_type, bool>
+		class value_compare: public std::binary_function<value_type, value_type, bool>
 		{
 			friend class map;
 		protected:
@@ -150,10 +150,18 @@ namespace ft {
 			return const_iterator(ret);
 		}
 
-//		reverse_iterator rbegin() {}
-//		const_reverse_iterator rbegin() const {}
-//		reverse_iterator rend() {}
-//		const_reverse_iterator rend()   const {}
+		reverse_iterator rbegin() {
+			return reverse_iterator(end());
+		}
+		const_reverse_iterator rbegin() const {
+			return reverse_iterator(end());
+		}
+		reverse_iterator rend() {
+			return reverse_iterator(begin());
+		}
+		const_reverse_iterator rend()   const {
+			return reverse_iterator(begin());
+		}
 		// iterators
 
 		// --- Capacity
