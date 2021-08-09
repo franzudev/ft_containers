@@ -24,7 +24,6 @@ class Timer {
 
 public:
 	Timer() {
-		std::cout << STL << std::endl;
 		start = std::chrono::steady_clock::now();
 	}
 	long long int getDiff() {
