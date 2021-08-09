@@ -402,10 +402,9 @@ namespace ft {
 		//robk
 
 		// Robk
-
-		node_ptr climb(node_ptr node, const int &key) const
+		node_ptr climb(node_ptr node, const Key &key) const
 		{
-			if (node->parent)
+			if (node->parent != _sentinel)
 			{
 				if (key < node->parent->data.first)
 					return node->parent;
@@ -415,51 +414,52 @@ namespace ft {
 			return (nullptr);
 		}
 
-		node_ptr find_lower(node_ptr node, const int &key) const
+		node_ptr find_lower(node_ptr node, const Key &key) const
 		{
+			// std::cout << "key"<< key << "node" << node->data.first << "val" << node->data.second << std::endl;
 			if (!node)
 				throw (std::exception());
 			if (key < node->data.first)
 			{
-				if (node->left)
+				if (node->left != _sentinel && node->left)
 					return(find_lower(node->left, key));
 				return node;
 			}
 			else if (!(node->data.first < key) && !(key < node->data.first))
 				return node;
-			else if (node->right)
+			else if (node->right != _sentinel && node->right)
 				return(find_lower(node->right, key));
 			else if (node_ptr ret = climb(node, key))
 				return ret;
-			std::cout << "END" << std::endl;
-			return nullptr;
+			return _sentinel;
 		}
 
-		node_ptr find_upper(node_ptr node, const int &key) const
+
+		node_ptr find_upper(node_ptr node, const Key &key) const
 		{
 			if (!node)
 				throw (std::exception());
 			if (key < node->data.first)
 			{
-				if (node->left)
+				if (node->left != _sentinel && node->left)
 					return(find_upper(node->left, key));
 				return node;
 			}
-			else if (node->right)
+			else if (node->right != _sentinel && node->right)
 				return(find_upper(node->right, key));
 			else if (node_ptr ret = climb(node, key))
 				return ret;
-			std::cout << "END" << std::endl;
-			return nullptr;
+			return _sentinel;
 		}
 
 		public:
-		node_ptr lower_bound( const int& key ) const
+
+		node_ptr lower_bound( const Key& key ) const
 		{
 			return(find_lower(_root, key));		
 		}
 
-		node_ptr upper_bound( const int& key ) const
+		node_ptr upper_bound( const Key& key ) const
 		{
 			return(find_upper(_root, key));		
 		}
