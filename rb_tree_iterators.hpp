@@ -39,6 +39,8 @@ namespace ft {
 			if (m_ptr->right)
 			{
 				m_ptr = m_ptr->right;
+				if (m_ptr->bound || (m_ptr->left && m_ptr->left->bound))
+					return *this;
 				while (m_ptr->left)
 					m_ptr = m_ptr->left;
 			}
@@ -48,7 +50,7 @@ namespace ft {
 			}
 			else
 			{
-				while (m_ptr->parent && !m_ptr->isLeft())
+				while (m_ptr->parent && !m_ptr->parent->bound && !m_ptr->isLeft())
 					m_ptr = m_ptr->parent;
 				m_ptr = m_ptr->parent;
 			}
@@ -64,10 +66,11 @@ namespace ft {
 
 		// Prefix decrement
 		rb_tree_iterator &operator--() {
-			if (!m_ptr) return *this;
 			if (m_ptr->left)
 			{
 				m_ptr = m_ptr->left;
+				if (m_ptr->bound || (m_ptr->right && m_ptr->right->bound))
+					return *this;
 				while (m_ptr->right)
 					m_ptr = m_ptr->right;
 			}
@@ -77,7 +80,7 @@ namespace ft {
 			}
 			else
 			{
-				while (m_ptr->parent && !m_ptr->isRight())
+				while (m_ptr->parent && !m_ptr->parent->bound && !m_ptr->isRight())
 					m_ptr = m_ptr->parent;
 				m_ptr = m_ptr->parent;
 			}
@@ -136,6 +139,8 @@ namespace ft {
 			if (m_ptr->right)
 			{
 				m_ptr = m_ptr->right;
+				if (m_ptr->bound || (m_ptr->left && m_ptr->left->bound))
+					return *this;
 				while (m_ptr->left)
 					m_ptr = m_ptr->left;
 			}
@@ -145,7 +150,7 @@ namespace ft {
 			}
 			else
 			{
-				while (m_ptr->parent && !m_ptr->isLeft())
+				while (m_ptr->parent && !m_ptr->bound && !m_ptr->isLeft())
 					m_ptr = m_ptr->parent;
 				m_ptr = m_ptr->parent;
 			}
@@ -161,10 +166,11 @@ namespace ft {
 
 		// Prefix decrement
 		const_rb_tree_iterator &operator--() {
-			if (!m_ptr) return *this;
 			if (m_ptr->left)
 			{
 				m_ptr = m_ptr->left;
+				if (m_ptr->bound || (m_ptr->right && m_ptr->right->bound))
+					return *this;
 				while (m_ptr->right)
 					m_ptr = m_ptr->right;
 			}
@@ -174,7 +180,7 @@ namespace ft {
 			}
 			else
 			{
-				while (m_ptr->parent && !m_ptr->isRight())
+				while (m_ptr->parent && !m_ptr->parent->bound && !m_ptr->isRight())
 					m_ptr = m_ptr->parent;
 				m_ptr = m_ptr->parent;
 			}

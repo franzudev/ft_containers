@@ -29,11 +29,12 @@ namespace ft {
 
 		value_type	data;
 		bool		color;
+		bool 		bound;
 		struct Node *parent;
 		struct Node *left;
 		struct Node *right;
 
-		Node(T data): data(data), color(BLACK), parent(nullptr), left(nullptr), right(nullptr) {}
+		Node(T data): data(data), color(BLACK), bound(false), parent(nullptr), left(nullptr), right(nullptr) {}
 
 		bool 		isLeft() const {return parent && this == parent->left;}
 		bool 		isRight() const {return parent && this == parent->right;}
@@ -80,11 +81,15 @@ namespace ft {
 //		};
 
 		//		rb_tree(): _root(nullptr) {}
-		explicit rb_tree( const Compare& comp, const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {}
+		explicit rb_tree( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {
+			_sentinel = _allocator.allocate(1);
+			_sentinel->bound = true;
+		}
 		rb_tree( const rb_tree& tree): _comp(tree._comp){ *this = tree; }
 
 		rb_tree& operator=(const rb_tree& tree) {
 			_root = tree.root();
+			_sentinel = tree._sentinel;
 			_allocator = tree._allocator;
 			_comp = tree._comp;
 			return *this;
@@ -118,16 +123,28 @@ namespace ft {
 		}
 
 		ft::pair<node_ptr, bool> insert(T val) {
-			if (!_root)
-				return ft::make_pair(_root = _createNode(val), true);
-			return _insert(_root, val);
+			if (!_root) {
+				_root = _createNode(val);
+				add_sentinel();
+				return ft::make_pair(_root, true);
+			}
+			remove_sentinel();
+			ft::pair<node_ptr, bool> ret = _insert(_root, val);
+			add_sentinel();
+			return ret;
 		}
 
 		ft::pair<node_ptr, bool> insert(node_ptr hint, T val) {
 			(void)hint;
-			if (!_root)
-				return ft::make_pair(_root = _createNode(val), true);
-			return _insert(_root, val);
+			if (!_root) {
+				_root = _createNode(val);
+				add_sentinel();
+				return ft::make_pair(_root, true);
+			}
+			remove_sentinel();
+			ft::pair<node_ptr, bool> ret = _insert(_root, val);
+			add_sentinel();
+			return ret;
 		}
 
 		node_ptr find(const node_value val) const {
@@ -156,10 +173,61 @@ namespace ft {
 			_printTreeHelper(_root,0);
 		}
 
+		node_ptr	bound() const {
+			return _sentinel;
+		}
+
+		node_ptr	right() {
+			node_ptr	ptr = _root;
+			if (!ptr)
+				return ptr;
+			while (ptr->right && ptr->right != _sentinel)
+				ptr = ptr->right;
+			return (ptr);
+		}
+
+		node_ptr	left() {
+			node_ptr	ptr = _root;
+			if (!ptr)
+				return ptr;
+			while (ptr->left && ptr->left != _sentinel)
+				ptr = ptr->left;
+			return (ptr);
+		}
+		node_ptr	right() const {
+			node_ptr	ptr = _root;
+			if (!ptr)
+				return ptr;
+			while (ptr->right && ptr->right != _sentinel)
+				ptr = ptr->right;
+			return (ptr);
+		}
+
+		node_ptr	left() const {
+			node_ptr	ptr = _root;
+			if (!ptr)
+				return ptr;
+			while (ptr->left && ptr->left != _sentinel)
+				ptr = ptr->left;
+			return (ptr);
+		}
+
 	private:
 
+		void	add_sentinel() {
+			right()->right = _sentinel;
+			_sentinel->left = right();
+			left()->left = _sentinel;
+			_sentinel->right = left();
+			_root->parent = _sentinel;
+		}
+		void	remove_sentinel() {
+			right()->right = nullptr;
+			left()->left = nullptr;
+			_root->parent = nullptr;
+		}
 		void	_cycle(node_ptr& p) {
-			if (!p)
+			if (!p || p->bound)
 				return ;
 			if (p->left)
 				_cycle(p->left);
@@ -194,7 +262,7 @@ namespace ft {
 		}
 
 		node_ptr _find(node_ptr node, const node_value val) const {
-			if (!node)
+			if (!node || node->bound)
 				return nullptr;
 			if (value_comp()(node->data, val) && !value_comp()(val, node->data))
 				return _find(node->right, val);
@@ -400,5 +468,6 @@ namespace ft {
 		node_ptr		_root;
 		key_compare 	_comp;
 		allocator_type	_allocator;
+		node_ptr		_sentinel;
 	};
 }
