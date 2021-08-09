@@ -73,9 +73,9 @@ namespace ft {
 
 		// ---operators overload
 		set& operator=( const set& other ) {
-			_tree.~rb_tree();
-			_size = 0;
+			_tree.destroy();
 			insert(other.begin(), other.end());
+			_size = other._size;
 			return *this;
 		}
 		// operators overload
@@ -114,42 +114,23 @@ namespace ft {
 
 		// --- iterators
 		iterator begin() {
-			node_ptr ret = _tree.root();
-			if (!ret)
-				return iterator(ret);
-			while (ret->left)
-				ret = ret->left;
-			return iterator(ret);
+			if (!_tree.root())
+				return end();
+			return iterator(_tree.left());
 		}
 
 		const_iterator begin() const {
-			node_ptr ret = _tree.root();
-			if (!ret)
-				return const_iterator(ret);
-
-			while (ret->left)
-				ret = ret->left;
-			return const_iterator(ret);
+			if (!_tree.root())
+				return end();
+			return const_iterator(_tree.left());
 		}
 
 		iterator end() {
-			node_ptr ret = _tree.root();
-			if (!ret)
-				return iterator(ret);
-
-			while (ret)
-				ret = ret->right;
-			return iterator(ret);
+			return iterator(_tree.bound());
 		}
 
 		const_iterator end() const {
-			node_ptr ret = _tree.root();
-			if (!ret)
-				return const_iterator(ret);
-
-			while (ret)
-				ret = ret->right;
-			return const_iterator(ret);
+			return iterator(_tree.bound());
 		}
 
 		reverse_iterator rbegin() {
