@@ -178,9 +178,16 @@ namespace ft {
 			return iterator(inserted.first);
 		}
 
-//		void erase( iterator pos ) {}
-//		void erase( iterator first, iterator last ) {}
-//		size_type erase( const key_type& key ) {}
+		void erase( iterator pos ) {
+			_tree.erase(pos.base());
+		}
+		void erase( iterator first, iterator last ) {
+			for (; first != last; ++first)
+				_tree.erase(first.base());
+		}
+		size_type erase( const key_type& key ) {
+			return _tree.erase(_filter_object(key));
+		}
 		void swap( map& other ) {
 			tree tmp = other._tree;
 			size_type size = other._size;
@@ -189,7 +196,6 @@ namespace ft {
 			_tree = tmp;
 			other._size = _size;
 			_size = size;
-
 		}
 		//
 

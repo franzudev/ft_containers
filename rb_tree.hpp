@@ -156,21 +156,6 @@ namespace ft {
 			return found;
 		}
 
-		node_ptr deletion(Key val) {
-			node_ptr toDelete = find(_root, val);
-			if (!toDelete)
-				return nullptr;
-			//case root
-			if (!toDelete->parent) {}
-			//case leaf
-			if (toDelete->parent && !toDelete->left && !toDelete->right) {
-
-			}
-			// case inside
-			if (toDelete->parent) {}
-
-		}
-
 		void printTree() {
 			_printTreeHelper(_root,0);
 		}
@@ -216,9 +201,14 @@ namespace ft {
 
 		size_type	erase(const node_value& val) {
 			remove_sentinel();
-			size_type ret = _remove(_root, val);
+			size_type ret = _remove(val);
 			add_sentinel();
 			return ret;
+		}
+		void	erase(node_ptr val) {
+			remove_sentinel();
+			_remove(val);
+			add_sentinel();
 		}
 
 	private:
@@ -475,72 +465,48 @@ namespace ft {
 
 		private:
 		// --- Deletion
-		void 	_balance_del(node_ptr child, bool color) {
-		}
+//		void 	_balance_del(node_ptr child, bool color) {
+//		}
 
-		void	_swap_nodes(node_ptr n1, node_ptr n2) {
-			node_ptr tmp;
-			if (n1->parent == n2) {
-				// swapping left
-				// swapping right
-				// swapping parent
-			} else if (n2->parent == n1) {
-
-			} else {
-				// swapping parent
-				if (n1->isLeft())
-					n1->parent->left = n2;
-				else
-					n1->parent->right = n2;
-				if (n2->isLeft())
-					n2->parent->left = n1;
-				else
-					n2->parent->right = n1;
-				if (n1 != _root && n2 != _root) {
-					tmp = n1->parent;
-					n1->parent = n2->parent;
-					n2->parent = tmp;
-				} else if (n1 == _root) {
-					n1->parent = n2->parent;
-					n2->parent = _sentinel;
-				} else {
-					n2->parent = n1->parent;
-					n1->parent = _sentinel;
-				}
-			}
-			// swapping left
-			tmp = n1->left;
-			n1->left = n2->left;
-			n2->left = tmp;
-			// swapping right
-			tmp = n1->right;
-			n1->right = n2->right;
-			n2->right = tmp;
-			if (n1->right)
-				n1->right->parent = n1;
-			if (n1->left)
-				n1->left->parent = n1;
-			if (n2->right)
-				n2->right->parent = n2;
-			if (n2->left)
-				n2->left->parent = n2;
-		}
-
-		void	_sub_successor(node_ptr ptr) {
-		}
-		void	_sub_predecessor(node_ptr ptr) {
+		void	_swap_leaf(node_ptr rem, node_ptr leaf) {
+			if (leaf->right == _sentinel)
+				leaf->parent->right = _sentinel;
+			if (leaf->left == _sentinel)
+				leaf->parent->left = _sentinel;
+			if (rem->parent)
+				leaf->parent = rem->parent;
+			else
+				leaf->parent = nullptr;
+			leaf->left = rem->left;
+			leaf->right = rem->right;
+			if (leaf->right)
+				leaf->right->parent = leaf;
+			if (leaf->left)
+				leaf->left->parent = leaf;
 		}
 
 		void	_simple_remove(node_ptr ptr) {
-
+			if (ptr->right)
+				_swap_leaf(ptr,/*node after*/);
+			else
+				_swap_leaf(ptr,/*node before*/);
 		}
 
-		size_type _remove(node_ptr start, node_value val) {
-			if (start->data == val) {
-				_simple_remove(start);
+		size_type _remove(node_value val) {
+			node_ptr ptr = find(val);
+			if (ptr) {
+				_simple_remove(ptr);
+				_erase_one(ptr);
 				return 1;
 			}
 			return 0;
+		}
+
+		void _remove(node_ptr ptr) {
+			if (ptr) {
+				_simple_remove(ptr);
+				_erase_one(ptr);
+			}
 		}
 
 		void 	_erase_one(node_ptr ptr) {
