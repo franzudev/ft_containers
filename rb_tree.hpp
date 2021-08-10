@@ -84,6 +84,8 @@ namespace ft {
 		explicit rb_tree( const Compare& comp, const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {
 			_sentinel = _allocator.allocate(1);
 			_sentinel->bound = true;
+			_sentinel->right = _root;
+			_sentinel->left = _root;
 		}
 		rb_tree( const rb_tree& tree): _comp(tree._comp){ *this = tree; }
 
@@ -210,6 +212,13 @@ namespace ft {
 			while (ptr->left && ptr->left != _sentinel)
 				ptr = ptr->left;
 			return (ptr);
+		}
+
+		size_type	erase(const node_value& val) {
+			remove_sentinel();
+			size_type ret = _remove(_root, val);
+			add_sentinel();
+			return ret;
 		}
 
 	private:
@@ -464,6 +473,81 @@ namespace ft {
 			return(find_upper(_root, val));
 		}
 
+		private:
+		// --- Deletion
+		void 	_balance_del(node_ptr child, bool color) {
+		}
+
+		void	_swap_nodes(node_ptr n1, node_ptr n2) {
+			node_ptr tmp;
+			if (n1->parent == n2) {
+				// swapping left
+				// swapping right
+				// swapping parent
+			} else if (n2->parent == n1) {
+
+			} else {
+				// swapping parent
+				if (n1->isLeft())
+					n1->parent->left = n2;
+				else
+					n1->parent->right = n2;
+				if (n2->isLeft())
+					n2->parent->left = n1;
+				else
+					n2->parent->right = n1;
+				if (n1 != _root && n2 != _root) {
+					tmp = n1->parent;
+					n1->parent = n2->parent;
+					n2->parent = tmp;
+				} else if (n1 == _root) {
+					n1->parent = n2->parent;
+					n2->parent = _sentinel;
+				} else {
+					n2->parent = n1->parent;
+					n1->parent = _sentinel;
+				}
+			}
+			// swapping left
+			tmp = n1->left;
+			n1->left = n2->left;
+			n2->left = tmp;
+			// swapping right
+			tmp = n1->right;
+			n1->right = n2->right;
+			n2->right = tmp;
+			if (n1->right)
+				n1->right->parent = n1;
+			if (n1->left)
+				n1->left->parent = n1;
+			if (n2->right)
+				n2->right->parent = n2;
+			if (n2->left)
+				n2->left->parent = n2;
+		}
+
+		void	_sub_successor(node_ptr ptr) {
+		}
+		void	_sub_predecessor(node_ptr ptr) {
+		}
+
+		void	_simple_remove(node_ptr ptr) {
+
+		}
+
+		size_type _remove(node_ptr start, node_value val) {
+			if (start->data == val) {
+				_simple_remove(start);
+				return 1;
+			}
+			return 0;
+		}
+
+		void 	_erase_one(node_ptr ptr) {
+			_allocator.destroy(ptr);
+			_allocator.deallocate(ptr, 1);
+		}
+		// Deletion
 	private:
 		node_ptr		_root;
 		key_compare 	_comp;
