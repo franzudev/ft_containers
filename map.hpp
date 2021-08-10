@@ -20,7 +20,6 @@ namespace ft {
 	template < class Key, class T, class Compare = ft::keyLess<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
 	class map {
 	public:
-		// --- Definitions
 		typedef Key													key_type;
 		typedef T													mapped_type;
 		typedef Compare												key_compare;
@@ -37,7 +36,6 @@ namespace ft {
 		typedef ft::const_rb_tree_iterator<Node<value_type> >		const_iterator;
 		typedef ft::reverse_iterator<iterator>						reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;
-		// definitions
 
 		class value_compare: public std::binary_function<value_type, value_type, bool>
 		{
@@ -68,14 +66,12 @@ namespace ft {
 		~map() { _tree.destroy(); }
 		// constructors
 
-		// ---operators overload
 		map& operator=( const map& other ) {
 			_tree.destroy();
 			insert(other.begin(), other.end());
 			_size = other._size;
 			return *this;
 		}
-		// operators overload
 
 		// ---getters
 		allocator_type get_allocator() const { return _alloc; }
@@ -212,7 +208,6 @@ namespace ft {
 		const_iterator upper_bound( const Key& key ) const {
 			return const_iterator(_tree.upper_bound(_filter_object(key)));
 		}
-		//
 
 		ft::pair<iterator,iterator> equal_range( const Key& key ) {
 			return (ft::make_pair<iterator, iterator>(this->lower_bound(key), this->upper_bound(key)));
@@ -222,16 +217,9 @@ namespace ft {
 		}
 
 		// --- Observers
-		key_compare key_comp() const {
-			return Compare();
-		}
-		map::value_compare value_comp() const {
-			return value_compare(key_comp());
-		}
-		void ft_print()
-		{
-			_tree.printTree();
-		}
+		key_compare key_comp() const { return Compare(); }
+		map::value_compare value_comp() const { return value_compare(key_comp()); }
+		void ft_print() { _tree.printTree(); }
 	private:
 		tree			_tree;
 		key_compare		_comp;
