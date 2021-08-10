@@ -216,13 +216,13 @@ namespace ft {
 			return iterator(_tree.lower_bound(_filter_object(key)));
 		}
 		const_iterator lower_bound( const Key& key ) const {
-			return iterator(_tree.lower_bound(_filter_object(key)));
+			return const_iterator(_tree.lower_bound(_filter_object(key)));
 		}
 		iterator upper_bound( const Key& key ) {
 			return iterator(_tree.upper_bound(_filter_object(key)));
 		}
 		const_iterator upper_bound( const Key& key ) const {
-			return iterator(_tree.upper_bound(_filter_object(key)));
+			return const_iterator(_tree.upper_bound(_filter_object(key)));
 		}
 		//
 
