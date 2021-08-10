@@ -66,7 +66,7 @@ namespace ft {
 		reverse_iterator(): current() {}
 
 		reverse_iterator(typename Iterator::value_type * ptr) { current = Iterator(ptr); }
-		reverse_iterator(const Iterator & x) { current = x; --current; }
+		reverse_iterator(const Iterator & x) { current = x;--current; }
 
 		template <class U>reverse_iterator(const reverse_iterator<U>& u) {*this = u;}
 

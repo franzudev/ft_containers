@@ -66,24 +66,11 @@ namespace ft {
 		typedef typename allocator_type::difference_type			difference_type;
 
 	public:
-
-//		class value_compare: public std::binary_function<value_type, value_type, bool>
-//		{
-//			friend class rb_tree;
-//		protected:
-//			key_compare comp;
-//
-//			value_compare(key_compare c): comp(c) {}
-//		public:
-//			bool operator()(const value_type& x, const value_type& y) const {
-//				return comp(x.data.first, y.data.first);
-//			}
-//		};
-
-		//		rb_tree(): _root(nullptr) {}
 		explicit rb_tree( const Compare& comp, const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {
-			_sentinel = _allocator.allocate(1);
+			_sentinel = _createNode(T());
 			_sentinel->bound = true;
+			_sentinel->right = _root;
+			_sentinel->left = _root;
 		}
 		rb_tree( const rb_tree& tree): _comp(tree._comp){ *this = tree; }
 
@@ -94,21 +81,6 @@ namespace ft {
 			_comp = tree._comp;
 			return *this;
 		}
-
-		/*node_ptr copy(node_ptr root) {
-			node_ptr new_root;
-			if(root!=NULL){
-				new_root = _createNode(root->data);
-				new_root->color = root->color;
-				new_root->left = copy(root->left);
-				if (new_root->left)
-					new_root->left->parent = new_root;
-				new_root->right = copy(root->right);
-				if (new_root->right)
-					new_root->right->parent = new_root;
-			} else return NULL;
-			return new_root;
-		}*/
 
 		~rb_tree() {}
 
@@ -154,21 +126,6 @@ namespace ft {
 			return found;
 		}
 
-		node_ptr deletion(Key val) {
-			node_ptr toDelete = find(_root, val);
-			if (!toDelete)
-				return nullptr;
-			//case root
-			if (!toDelete->parent) {}
-			//case leaf
-			if (toDelete->parent && !toDelete->left && !toDelete->right) {
-
-			}
-			// case inside
-			if (toDelete->parent) {}
-
-		}
-
 		void printTree() {
 			_printTreeHelper(_root,0);
 		}
@@ -210,6 +167,18 @@ namespace ft {
 			while (ptr->left && ptr->left != _sentinel)
 				ptr = ptr->left;
 			return (ptr);
+		}
+
+		size_type	erase(const node_value& val) {
+			remove_sentinel();
+			size_type ret = _remove(val);
+			add_sentinel();
+			return ret;
+		}
+		void	erase(node_ptr val) {
+			remove_sentinel();
+			_remove(val);
+			add_sentinel();
 		}
 
 	private:
@@ -408,7 +377,7 @@ namespace ft {
 			{
 				if (value_comp()(val, node->parent->data))
 					return node->parent;
-				else 
+				else
 					return (climb(node->parent, val));
 			}
 			return (nullptr);
@@ -464,6 +433,57 @@ namespace ft {
 			return(find_upper(_root, val));
 		}
 
+		private:
+		// --- Deletion
+//		void 	_balance_del(node_ptr child, bool color) {
+//		}
+
+		void	_swap_leaf(node_ptr rem, node_ptr leaf) {
+			if (leaf->right == _sentinel)
+				leaf->parent->right = _sentinel;
+			if (leaf->left == _sentinel)
+				leaf->parent->left = _sentinel;
+			if (rem->parent)
+				leaf->parent = rem->parent;
+			else
+				leaf->parent = nullptr;
+			leaf->left = rem->left;
+			leaf->right = rem->right;
+			if (leaf->right)
+				leaf->right->parent = leaf;
+			if (leaf->left)
+				leaf->left->parent = leaf;
+		}
+
+		/*void	_simple_remove(node_ptr ptr) {
+			if (ptr->right)
+				_swap_leaf(ptr,*//*node after*//*);
+			else
+				_swap_leaf(ptr,*//*node before*//*);
+		}*/
+
+		size_type _remove(node_value val) {
+			node_ptr ptr = find(val);
+			if (ptr) {
+				_simple_remove(ptr);
+				_erase_one(ptr);
+				return 1;
+			}
+			return 0;
+		}
+
+		void _remove(node_ptr ptr) {
+			if (ptr) {
+				_simple_remove(ptr);
+				_erase_one(ptr);
+			}
+		}
+
+		void 	_erase_one(node_ptr ptr) {
+			_allocator.destroy(ptr);
+			_allocator.deallocate(ptr, 1);
+		}
+		// Deletion
 	private:
 		node_ptr		_root;
 		key_compare 	_comp;

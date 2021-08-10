@@ -53,13 +53,11 @@ namespace ft {
 		};
 
 		typedef rb_tree<value_type, Key, value_compare>					tree;
-		typedef Node<value_type>*									node_ptr;
-		typedef Node<value_type>									node;
+		typedef Node<value_type>*										node_ptr;
+		typedef Node<value_type>										node;
 
 		// --- constructors
-		explicit map( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _tree(tree(value_compare(key_comp()))), _comp(comp), _alloc(alloc), _size(0) {
-			;
-		}
+		explicit map( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _tree(tree(value_compare(key_comp()))), _comp(comp), _alloc(alloc), _size(0) {}
 		template< class InputIt > map( InputIt first, InputIt last, const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _tree(tree(value_compare(key_comp()))), _comp(comp), _alloc(alloc), _size(0) {
 			for (; first != last; ++first)
 				insert(*first);
@@ -67,9 +65,7 @@ namespace ft {
 		map( const map& other ): _tree(tree(value_compare(key_comp()))) {
 			*this = other;
 		}
-		~map() {
-			_tree.destroy();
-		}
+		~map() { _tree.destroy(); }
 		// constructors
 
 		// ---operators overload
@@ -82,9 +78,7 @@ namespace ft {
 		// operators overload
 
 		// ---getters
-		allocator_type get_allocator() const {
-			return _alloc;
-		}
+		allocator_type get_allocator() const { return _alloc; }
 		// getters
 
 		// --- element access
@@ -99,12 +93,14 @@ namespace ft {
 				return insert(_filter_object(k)).first->second;
 			return found->data.second;
 		}
+
 		mapped_type& at(const key_type& k) {
 			node_ptr found = _tree.find(_filter_object(k));
 			if (!found)
 				throw out_of_range("map::at:  key not found");
 			return found->data.second;
 		}
+
 		const mapped_type& at(const key_type& k) const {
 			node_ptr found = _tree.find(_filter_object(k));
 			if (!found)
@@ -126,26 +122,12 @@ namespace ft {
 			return const_iterator(_tree.left());
 		}
 
-		iterator end() {
-			return iterator(_tree.bound());
-		}
-
-		const_iterator end() const {
-			return iterator(_tree.bound());
-		}
-
-		reverse_iterator rbegin() {
-			return reverse_iterator(end());
-		}
-		const_reverse_iterator rbegin() const {
-			return reverse_iterator(end());
-		}
-		reverse_iterator rend() {
-			return reverse_iterator(begin());
-		}
-		const_reverse_iterator rend()   const {
-			return reverse_iterator(begin());
-		}
+		iterator end() { return iterator(_tree.bound()); }
+		const_iterator end() const { return iterator(_tree.bound()); }
+		reverse_iterator rbegin() { return reverse_iterator(end()); }
+		const_reverse_iterator rbegin() const { return reverse_iterator(end()); }
+		reverse_iterator rend() { return reverse_iterator(begin()); }
+		const_reverse_iterator rend()   const { return reverse_iterator(begin()); }
 		// iterators
 
 		// --- Capacity
@@ -178,9 +160,16 @@ namespace ft {
 			return iterator(inserted.first);
 		}
 
-//		void erase( iterator pos ) {}
-//		void erase( iterator first, iterator last ) {}
-//		size_type erase( const key_type& key ) {}
+		void erase( iterator pos ) {
+			_tree.erase(pos.base());
+		}
+		void erase( iterator first, iterator last ) {
+			for (; first != last; ++first)
+				_tree.erase(first.base());
+		}
+		size_type erase( const key_type& key ) {
+			return _tree.erase(_filter_object(key));
+		}
 		void swap( map& other ) {
 			tree tmp = other._tree;
 			size_type size = other._size;
@@ -189,7 +178,6 @@ namespace ft {
 			_tree = tmp;
 			other._size = _size;
 			_size = size;
-
 		}
 		//
 
@@ -216,13 +204,13 @@ namespace ft {
 			return iterator(_tree.lower_bound(_filter_object(key)));
 		}
 		const_iterator lower_bound( const Key& key ) const {
-			return iterator(_tree.lower_bound(_filter_object(key)));
+			return const_iterator(_tree.lower_bound(_filter_object(key)));
 		}
 		iterator upper_bound( const Key& key ) {
 			return iterator(_tree.upper_bound(_filter_object(key)));
 		}
 		const_iterator upper_bound( const Key& key ) const {
-			return iterator(_tree.upper_bound(_filter_object(key)));
+			return const_iterator(_tree.upper_bound(_filter_object(key)));
 		}
 		//
 
@@ -249,7 +237,7 @@ namespace ft {
 		key_compare		_comp;
 		allocator_type	_alloc;
 		size_type		_size;
-		
+
 		value_type _filter_object(const Key& key) { return ft::make_pair(key, mapped_type()); }
 		value_type _filter_object(const Key& key) const { return ft::make_pair(key, mapped_type()); }
 	};
