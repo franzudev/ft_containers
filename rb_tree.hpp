@@ -66,23 +66,8 @@ namespace ft {
 		typedef typename allocator_type::difference_type			difference_type;
 
 	public:
-
-//		class value_compare: public std::binary_function<value_type, value_type, bool>
-//		{
-//			friend class rb_tree;
-//		protected:
-//			key_compare comp;
-//
-//			value_compare(key_compare c): comp(c) {}
-//		public:
-//			bool operator()(const value_type& x, const value_type& y) const {
-//				return comp(x.data.first, y.data.first);
-//			}
-//		};
-
-		//		rb_tree(): _root(nullptr) {}
 		explicit rb_tree( const Compare& comp, const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {
-			_sentinel = _allocator.allocate(1);
+			_sentinel = _createNode(T());
 			_sentinel->bound = true;
 			_sentinel->right = _root;
 			_sentinel->left = _root;
@@ -96,21 +81,6 @@ namespace ft {
 			_comp = tree._comp;
 			return *this;
 		}
-
-		/*node_ptr copy(node_ptr root) {
-			node_ptr new_root;
-			if(root!=NULL){
-				new_root = _createNode(root->data);
-				new_root->color = root->color;
-				new_root->left = copy(root->left);
-				if (new_root->left)
-					new_root->left->parent = new_root;
-				new_root->right = copy(root->right);
-				if (new_root->right)
-					new_root->right->parent = new_root;
-			} else return NULL;
-			return new_root;
-		}*/
 
 		~rb_tree() {}
 
@@ -407,7 +377,7 @@ namespace ft {
 			{
 				if (value_comp()(val, node->parent->data))
 					return node->parent;
-				else 
+				else
 					return (climb(node->parent, val));
 			}
 			return (nullptr);
@@ -485,12 +455,12 @@ namespace ft {
 				leaf->left->parent = leaf;
 		}
 
-		void	_simple_remove(node_ptr ptr) {
+		/*void	_simple_remove(node_ptr ptr) {
 			if (ptr->right)
-				_swap_leaf(ptr,/*node after*/);
+				_swap_leaf(ptr,*//*node after*//*);
 			else
-				_swap_leaf(ptr,/*node before*/);
-		}
+				_swap_leaf(ptr,*//*node before*//*);
+		}*/
 
 		size_type _remove(node_value val) {
 			node_ptr ptr = find(val);
