@@ -158,12 +158,15 @@ namespace ft {
 
 		void erase( iterator pos ) {
 			_tree.erase(pos.base());
+			_size--;
 		}
 		void erase( iterator first, iterator last ) {
-			for (; first != last; ++first)
+			for (; first != last; ++first) {
 				_tree.erase(first.base());
+			}
 		}
 		size_type erase( const key_type& key ) {
+			_size--;
 			return _tree.erase(_filter_object(key));
 		}
 		void swap( map& other ) {

@@ -184,7 +184,8 @@ namespace ft {
 		}
 		void	erase(node_ptr val) {
 			remove_sentinel();
-			_remove(val);
+			_deleteNode(val);
+//			_remove(val);
 			add_sentinel();
 		}
 
@@ -491,13 +492,22 @@ namespace ft {
 			_deleteNode(node);
 		}
 
+		node_ptr successor(node_ptr x) {
+			node_ptr temp = x;
+
+			while (temp->left != NULL)
+				temp = temp->left;
+
+			return temp;
+		}
+
 		node_ptr BSTreplace(node_ptr x) {
 			// when node have 2 children
-			if (x->left != NULL and x->right != NULL)
-				return successor(x->right);
+			if (x->left != NULL && x->right != NULL)
+				return upper_bound(x->data);
 
 			// when leaf
-			if (x->left == NULL and x->right == NULL)
+			if (x->left == NULL && x->right == NULL)
 				return NULL;
 
 			// when single child
@@ -511,7 +521,7 @@ namespace ft {
 			if (x == _root)
 				return;
 
-			node_ptr sibling = x->sibling(), *parent = x->parent;
+			node_ptr sibling = x->sibling(), parent = x->parent;
 			if (sibling == NULL) {
 				// No sibiling, double black pushed up
 				fixDoubleBlack(parent);
@@ -522,10 +532,10 @@ namespace ft {
 					sibling->color = BLACK;
 					if (sibling->isLeft()) {
 						// left case
-						_rightRotate(parent, parent->parent);
+						_rightRotate(parent->left, parent);
 					} else {
 						// right case
-						_leftRotate(parent, parent->parent);
+						_leftRotate(parent->right, parent);
 					}
 					fixDoubleBlack(x);
 				} else {
@@ -537,24 +547,24 @@ namespace ft {
 								// left left
 								sibling->left->color = sibling->color;
 								sibling->color = parent->color;
-								_rightRotate(parent, parent->parent);
+								_rightRotate(parent->left, parent);
 							} else {
 								// right left
 								sibling->left->color = parent->color;
-								_rightRotate(sibling, sibling->parent);
-								_leftRotate(parent, parent->parent);
+								_rightRotate(parent->left, parent);
+								_leftRotate(parent->right, parent);
 							}
 						} else {
 							if (sibling->isLeft()) {
 								// left right
 								sibling->right->color = parent->color;
-								_leftRotate(sibling, sibling->parent);
-								_rightRotate(parent, parent->parent);
+								_leftRotate(parent->right, parent);
+								_rightRotate(parent->left, parent);
 							} else {
 								// right right
 								sibling->right->color = sibling->color;
 								sibling->color = parent->color;
-								_leftRotate(parent, parent->parent);
+								_leftRotate(parent->right, parent);
 							}
 						}
 						parent->color = BLACK;
@@ -570,7 +580,7 @@ namespace ft {
 			}
 		}
 
-		void deleteNode(node_ptr v) {
+		void _deleteNode(node_ptr v) {
 			node_ptr u = BSTreplace(v);
 
 			// True when u and v are both black
@@ -634,8 +644,27 @@ namespace ft {
 
 			// v has 2 children, swap values with successor and recurse
 			//TODO https://www.geeksforgeeks.org/red-black-tree-set-3-delete-2/
-			swapValues(u, v);
-			deleteNode(u);
+			_swapValues(u, v);
+			_deleteNode(u);
+		}
+
+		void _swapValues(node_ptr &u, node_ptr &v) {
+			node_ptr temp = _createNode(u->data);
+			temp->color = v->color;
+			temp->right = v->right;
+			if (temp->right)
+				temp->right->parent = temp;
+			temp->parent = v->parent;
+			if (v->isLeft())
+				temp->parent->left = temp;
+			if (v->isRight())
+				temp->parent->right = temp;
+			temp->left = v->left;
+			if (temp->left)
+				temp->left->parent = temp;
+			temp->bound = v->bound;
+			u = v;
+			v = temp;
 		}
 
 		void _remove(node_ptr ptr) {
