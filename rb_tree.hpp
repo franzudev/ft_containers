@@ -93,6 +93,7 @@ namespace ft {
 
 		void destroy() {
 			_cycle(_root);
+			_erase_one(_sentinel);
 		}
 
 		size_type	max_size() const { return _allocator.max_size(); }
@@ -178,16 +179,19 @@ namespace ft {
 
 		size_type	erase(const node_value& val) {
 			remove_sentinel();
-			size_type ret = _remove(val);
+			node_ptr found = _find(_root, val);
+			if (!found)
+				return 0;
+			_deleteNode(found);
 			add_sentinel();
-			return ret;
+			return 1;
 		}
-		void	erase(node_ptr val) {
-			remove_sentinel();
-			_deleteNode(val);
-//			_remove(val);
-			add_sentinel();
-		}
+//		void	erase(node_ptr val) {
+//			remove_sentinel();
+//			_deleteNode(val);
+////			_remove(val);
+//			add_sentinel();
+//		}
 
 	private:
 
@@ -443,54 +447,6 @@ namespace ft {
 
 		private:
 		// --- Deletion
-//		void 	_balance_del(node_ptr child, bool color) {
-//		}
-
-		void	_swap_leaf(node_ptr rem, node_ptr leaf) {
-			if (leaf->right == _sentinel)
-				leaf->parent->right = _sentinel;
-			if (leaf->left == _sentinel)
-				leaf->parent->left = _sentinel;
-			if (rem->parent)
-				leaf->parent = rem->parent;
-			else
-				leaf->parent = nullptr;
-			leaf->left = rem->left;
-			leaf->right = rem->right;
-			if (leaf->right)
-				leaf->right->parent = leaf;
-			if (leaf->left)
-				leaf->left->parent = leaf;
-		}
-
-		/*void	_simple_remove(node_ptr ptr) {
-			if (ptr->right)
-				_swap_leaf(ptr,*//*node after*//*);
-			else
-				_swap_leaf(ptr,*//*node before*//*);
-		}*/
-
-		size_type _remove(node_value val) {
-			node_ptr ptr = find(val);
-			if (ptr) {
-				_simple_remove(ptr);
-				_erase_one(ptr);
-				return 1;
-			}
-			return 0;
-		}
-
-		void _deleteByVal(const node_value n) {
-			if (_root == NULL)
-				return;
-
-			node_ptr node = find(n), *u;
-			if (!node) {
-				return;
-			}
-
-			_deleteNode(node);
-		}
 
 		node_ptr successor(node_ptr x) {
 			node_ptr temp = x;
@@ -663,16 +619,10 @@ namespace ft {
 			if (temp->left)
 				temp->left->parent = temp;
 			temp->bound = v->bound;
-			u = v;
+			_erase_one(v);
 			v = temp;
 		}
 
-		void _remove(node_ptr ptr) {
-			if (ptr) {
-				_simple_remove(ptr);
-				_erase_one(ptr);
-			}
-		}
 
 		void 	_erase_one(node_ptr ptr) {
 			_allocator.destroy(ptr);
