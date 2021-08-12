@@ -124,18 +124,51 @@ struct SetTester {
 	}
 
 	void	testCount() {
-
+		for (size_t i = 0; i < TEST_ARR_SIZE; ++i) {
+			set.count(i);
+		}
 	}
 
 	void	testFind() {
-
+		for (size_t i = 0; i < TEST_ARR_SIZE; ++i) {
+			if (set.find(i) != set.end())
+				std::cout << "found " << i << std::endl;
+		}
 	}
 
 	void 	testBounds() {
-
+		typename ft::set<T>::iterator it;
+		for (size_t i = 0; i < TEST_ARR_SIZE - 1; ++i) {
+			try {
+				it = set.lower_bound(i);
+				std::cout << *it << std::endl;
+			} catch(std::exception &e) {
+				std::cout << e.what() << std::endl;
+			}
+		}
+		for (size_t i = 0; i < TEST_ARR_SIZE - 1; ++i) {
+			try {
+				it = set.upper_bound(i);
+				std::cout << *it << std::endl;
+			} catch(std::exception &e) {
+				std::cout << e.what() << std::endl;
+			}
+		}
 	}
 
-	void 	testEqualRange
+	void 	testEqualRange() {
+
+		for (size_t i = 0; i < TEST_ARR_SIZE; ++i) {
+			ft::pair<typename ft::set<T>::iterator,typename ft::set<T>::iterator> pair;
+			try {
+				pair = set.equal_range(i);
+				if (pair.first == pair.second)
+					std::cout << pair.first << std::endl;
+			} catch(std::exception &e) {
+				std::cout << e.what() << std::endl;
+			}
+		}
+	}
 
 	void	testErase() {
 		printSizes();
@@ -190,6 +223,10 @@ void	setTestFunctions(std::string  msg, ft::set<T> &toTest)
 	std::cout << "Is <= " << (toTest <= setItTest) << std::endl;
 	std::cout << "Is >  " << (toTest > setItTest) << std::endl;
 	std::cout << "Is >= " << (toTest >= setItTest) << std::endl;
+	tester.testCount();
+	tester.testFind();
+	tester.testBounds();
+	tester.testErase();
 	tester.testSwap(setItTest);
 	tester.testErase();
 	tester.testEraseIterators();
