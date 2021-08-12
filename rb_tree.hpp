@@ -45,6 +45,13 @@ namespace ft {
 				return parent->parent->left;
 			return nullptr;
 		}
+		Node		*sibling() const {
+			if (isLeft() && parent->right != NULL)
+				return parent->right;
+			if (isRight() && parent->left != NULL)
+				return parent->left;
+			return NULL;
+		}
 	};
 
 	template <class T, class Key, class Compare = std::less<Key>, class Alloc = std::allocator<Node<T> > >
@@ -84,8 +91,10 @@ namespace ft {
 
 		~rb_tree() {}
 
-		void destroy() {
+		void destroy(bool sentinel) {
 			_cycle(_root);
+			if (sentinel)
+				_erase_one(_sentinel);
 		}
 
 		size_type	max_size() const { return _allocator.max_size(); }
@@ -171,15 +180,21 @@ namespace ft {
 
 		size_type	erase(const node_value& val) {
 			remove_sentinel();
-			size_type ret = _remove(val);
+			node_ptr found = _find(_root, val);
+			if (!found) {
+				add_sentinel();
+				return 0;
+			}
+			_deleteNode(found);
 			add_sentinel();
-			return ret;
+			return 1;
 		}
-		void	erase(node_ptr val) {
-			remove_sentinel();
-			_remove(val);
-			add_sentinel();
-		}
+//		void	erase(node_ptr val) {
+//			remove_sentinel();
+//			_deleteNode(val);
+////			_remove(val);
+//			add_sentinel();
+//		}
 
 	private:
 
@@ -435,49 +450,186 @@ namespace ft {
 
 		private:
 		// --- Deletion
-//		void 	_balance_del(node_ptr child, bool color) {
-//		}
 
-		void	_swap_leaf(node_ptr rem, node_ptr leaf) {
-			if (leaf->right == _sentinel)
-				leaf->parent->right = _sentinel;
-			if (leaf->left == _sentinel)
-				leaf->parent->left = _sentinel;
-			if (rem->parent)
-				leaf->parent = rem->parent;
+		node_ptr successor(node_ptr x) {
+			node_ptr temp = x;
+
+			while (temp->left != NULL)
+				temp = temp->left;
+
+			return temp;
+		}
+
+		node_ptr BSTreplace(node_ptr x) {
+			// when node have 2 children
+			if (x->left != NULL && x->right != NULL)
+				return upper_bound(x->data);
+
+			// when leaf
+			if (x->left == NULL && x->right == NULL)
+				return NULL;
+
+			// when single child
+			if (x->left != NULL)
+				return x->left;
 			else
-				leaf->parent = nullptr;
-			leaf->left = rem->left;
-			leaf->right = rem->right;
-			if (leaf->right)
-				leaf->right->parent = leaf;
-			if (leaf->left)
-				leaf->left->parent = leaf;
+				return x->right;
 		}
 
-		/*void	_simple_remove(node_ptr ptr) {
-			if (ptr->right)
-				_swap_leaf(ptr,*//*node after*//*);
-			else
-				_swap_leaf(ptr,*//*node before*//*);
-		}*/
+		void fixDoubleBlack(node_ptr x) {
+			if (x == _root)
+				return;
 
-		size_type _remove(node_value val) {
-			node_ptr ptr = find(val);
-			if (ptr) {
-				_simple_remove(ptr);
-				_erase_one(ptr);
-				return 1;
+			node_ptr sibling = x->sibling(), parent = x->parent;
+			if (sibling == NULL) {
+				// No sibiling, double black pushed up
+				if (parent)
+					fixDoubleBlack(parent);
+			} else {
+				if (sibling->color == RED) {
+					// Sibling red
+					parent->color = RED;
+					sibling->color = BLACK;
+					if (sibling->isLeft()) {
+						// left case
+						_rightRotate(parent->left, parent);
+					} else {
+						// right case
+						_leftRotate(parent->right, parent);
+					}
+					fixDoubleBlack(x);
+				} else {
+					// Sibling black
+					if ((sibling->left && sibling->left->color == RED) || (sibling->right && sibling->right->color == RED)) {
+						// at least 1 red children
+						if (sibling->left != NULL && sibling->left->color == RED) {
+							if (sibling->isLeft()) {
+								// left left
+								sibling->left->color = sibling->color;
+								sibling->color = parent->color;
+								_rightRotate(parent->left, parent);
+							} else {
+								// right left
+								sibling->left->color = parent->color;
+								_rightRotate(parent->left, parent);
+								_leftRotate(parent->right, parent);
+							}
+						} else {
+							if (sibling->isLeft()) {
+								// left right
+								sibling->right->color = parent->color;
+								_leftRotate(parent->right, parent);
+								_rightRotate(parent->left, parent);
+							} else {
+								// right right
+								sibling->right->color = sibling->color;
+								sibling->color = parent->color;
+								_leftRotate(parent->right, parent);
+							}
+						}
+						parent->color = BLACK;
+					} else {
+						// 2 black children
+						sibling->color = RED;
+						if (parent->color == BLACK)
+							fixDoubleBlack(parent);
+						else
+							parent->color = BLACK;
+					}
+				}
 			}
-			return 0;
 		}
 
-		void _remove(node_ptr ptr) {
-			if (ptr) {
-				_simple_remove(ptr);
-				_erase_one(ptr);
+		void _deleteNode(node_ptr v) {
+			node_ptr u = BSTreplace(v);
+
+			// True when u and v are both black
+			bool uvBlack = ((u == NULL || u->color == BLACK) && (v->color == BLACK));
+			node_ptr parent = v->parent;
+
+			if (u == NULL) {
+				// u is NULL therefore v is leaf
+				if (v == _root) {
+					// v is root, making root null
+					_root = NULL;
+				} else {
+					if (uvBlack) {
+						// u and v both black
+						// v is leaf, fix double black at v
+						fixDoubleBlack(v);
+					} else {
+						// u or v is red
+						if (v->sibling() != NULL)
+							// sibling is not null, make it red"
+							v->sibling()->color = RED;
+					}
+
+					// delete v from the tree
+					if (v->isLeft()) {
+						parent->left = NULL;
+					} else {
+						parent->right = NULL;
+					}
+				}
+				_erase_one(v);
+				return;
 			}
+
+			if (v->left == NULL || v->right == NULL) {
+				// v has 1 child
+				if (v == _root) {
+					// v is root, assign the value of u to v, and delete u
+					_swapValues(u, v);
+//					v->data = u->data;
+					v->left = v->right = NULL;
+					_erase_one(u);
+				} else {
+					// Detach v from tree and move u up
+					if (v->isLeft()) {
+						parent->left = u;
+					} else {
+						parent->right = u;
+					}
+					_erase_one(v);
+					u->parent = parent;
+					if (uvBlack) {
+						// u and v both black, fix double black at u
+						fixDoubleBlack(u);
+					} else {
+						// u or v red, color u black
+						u->color = BLACK;
+					}
+				}
+				return;
+			}
+
+			// v has 2 children, swap values with successor and recurse
+			//TODO https://www.geeksforgeeks.org/red-black-tree-set-3-delete-2/
+			_swapValues(u, v);
+			_deleteNode(u);
 		}
+
+		void _swapValues(node_ptr &u, node_ptr &v) {
+			node_ptr temp = _createNode(u->data);
+			temp->color = v->color;
+			temp->right = v->right;
+			if (temp->right)
+				temp->right->parent = temp;
+			temp->parent = v->parent;
+			if (v->isLeft())
+				temp->parent->left = temp;
+			if (v->isRight())
+				temp->parent->right = temp;
+			temp->left = v->left;
+			if (temp->left)
+				temp->left->parent = temp;
+			temp->bound = v->bound;
+			if (v == _root)
+				_root = temp;
+			_erase_one(v);
+			v = temp;
+		}
+
 
 		void 	_erase_one(node_ptr ptr) {
 			_allocator.destroy(ptr);

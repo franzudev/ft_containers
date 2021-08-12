@@ -20,7 +20,6 @@ namespace ft {
 	template < class Key, class T, class Compare = ft::keyLess<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
 	class map {
 	public:
-		// --- Definitions
 		typedef Key													key_type;
 		typedef T													mapped_type;
 		typedef Compare												key_compare;
@@ -37,7 +36,6 @@ namespace ft {
 		typedef ft::const_rb_tree_iterator<Node<value_type> >		const_iterator;
 		typedef ft::reverse_iterator<iterator>						reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;
-		// definitions
 
 		class value_compare: public std::binary_function<value_type, value_type, bool>
 		{
@@ -65,17 +63,15 @@ namespace ft {
 		map( const map& other ): _tree(tree(value_compare(key_comp()))) {
 			*this = other;
 		}
-		~map() { _tree.destroy(); }
+		~map() { _tree.destroy(true); }
 		// constructors
 
-		// ---operators overload
 		map& operator=( const map& other ) {
-			_tree.destroy();
+			_tree.destroy(false);
 			insert(other.begin(), other.end());
 			_size = other._size;
 			return *this;
 		}
-		// operators overload
 
 		// ---getters
 		allocator_type get_allocator() const { return _alloc; }
@@ -138,7 +134,7 @@ namespace ft {
 
 		// --- modifiers
 		void clear() {
-			_tree.destroy();
+			_tree.destroy(false);
 			_size = 0;
 		}
 
@@ -161,14 +157,21 @@ namespace ft {
 		}
 
 		void erase( iterator pos ) {
-			_tree.erase(pos.base());
+			erase(pos->first);
 		}
 		void erase( iterator first, iterator last ) {
-			for (; first != last; ++first)
-				_tree.erase(first.base());
+			iterator begin;
+			while (begin != last) {
+				begin = first;
+				++begin;
+				erase(first->first);
+				first = begin;
+			}
 		}
 		size_type erase( const key_type& key ) {
-			return _tree.erase(_filter_object(key));
+			size_type ret;
+			_size -= (ret = _tree.erase(_filter_object(key)));
+			return ret;
 		}
 		void swap( map& other ) {
 			tree tmp = other._tree;
@@ -212,7 +215,6 @@ namespace ft {
 		const_iterator upper_bound( const Key& key ) const {
 			return const_iterator(_tree.upper_bound(_filter_object(key)));
 		}
-		//
 
 		ft::pair<iterator,iterator> equal_range( const Key& key ) {
 			return (ft::make_pair<iterator, iterator>(this->lower_bound(key), this->upper_bound(key)));
@@ -222,16 +224,9 @@ namespace ft {
 		}
 
 		// --- Observers
-		key_compare key_comp() const {
-			return Compare();
-		}
-		map::value_compare value_comp() const {
-			return value_compare(key_comp());
-		}
-		void ft_print()
-		{
-			_tree.printTree();
-		}
+		key_compare key_comp() const { return Compare(); }
+		map::value_compare value_comp() const { return value_compare(key_comp()); }
+		void ft_print() { _tree.printTree(); }
 	private:
 		tree			_tree;
 		key_compare		_comp;

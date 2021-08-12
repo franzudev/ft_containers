@@ -24,8 +24,6 @@ namespace ft {
 
 		explicit vector_iterator(iterator_type ptr): m_ptr(ptr) {}
 
-		// explicit vector_iterator(pointer ptr): m_ptr(ptr) {}
-
 		template<class Itter>
 		vector_iterator(vector_iterator<Itter> const & other) {
 			*this = other;
@@ -50,15 +48,9 @@ namespace ft {
 		vector_iterator operator-(difference_type val) {
 			return vector_iterator(m_ptr - val);
 		}
-//		difference_type operator-(reference val) {
-//			return m_ptr - val.m_ptr;
-//		}
 		vector_iterator operator-(difference_type val) const {
 			return vector_iterator(m_ptr - val);
 		}
-//		size_t operator-(vector_iterator val) {
-//			return m_ptr - val.m_ptr;
-//		}
 		pointer	operator-=(difference_type n) {
 			m_ptr -= n;
 			return m_ptr;
@@ -141,16 +133,15 @@ namespace ft {
 	template <class T, class Allocator = std::allocator<T> >
 	class vector {
 	public:
-		 //vector_iterator<>
 		typedef T													value_type;
 		typedef Allocator											allocator_type;
 		typedef typename allocator_type::reference					reference;
 		typedef typename allocator_type::const_reference			const_reference;
 		typedef typename allocator_type::pointer					pointer;
 		typedef typename allocator_type::const_pointer				const_pointer;
+
 		typedef vector_iterator<pointer>							iterator;
 		typedef vector_iterator<const_pointer>						const_iterator;
-		// to implement
 		typedef reverse_iterator<const_iterator>					const_reverse_iterator;
 		typedef reverse_iterator<iterator>							reverse_iterator;
 		typedef typename iterator_traits<iterator>::difference_type	difference_type;
@@ -341,7 +332,6 @@ namespace ft {
 
 		iterator erase (iterator first, iterator last) {
 			size_type diff = last - first;
-			// pointer it = end().operator->();
 			pointer nBegin = first.operator->() + diff;
 			pointer lastP = last.operator->();
 			for (pointer i = first.operator->(); i != lastP; i++)
@@ -404,7 +394,6 @@ namespace ft {
 			pointer tmp = allocator.allocate(_capacity);
 			for (size_type i = 0; i < _size; ++i) {
 				allocator.construct(tmp + i, _vec[i]);
-				// tmp[i] = _vec[i];
 				allocator.destroy(&_vec[i]);
 			}
 			allocator.deallocate(_vec, _size);
@@ -482,8 +471,8 @@ namespace ft {
 		}
 
 	protected:
-		size_type 	_size;		// Elements
-		size_type 	_capacity;	// Allocated Space
+		size_type 	_size;
+		size_type 	_capacity;
 		T*			_vec;
 	};
 
