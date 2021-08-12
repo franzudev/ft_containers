@@ -1,24 +1,6 @@
 #pragma once
 
-#define TEST_ARR_SIZE 10
-
-#ifdef USE_STL
-# define STL "std: "
-# include <iterator>
-# include <vector>
-# include <array>
-# include <set>
-namespace ft = std;
-#else
-# define STL "ft: "
-# include "Bureaucrat.hpp"
-# include "iterator.hpp"
-# include "vector.hpp"
-# include "is_integral.hpp"
-#endif
-
-#include <iostream>
-#include "Timer.hpp"
+#include "TestHelper.hpp"
 
 template <class T>
 struct VectorTester {
@@ -45,7 +27,6 @@ struct VectorTester {
 
 	void testIterators()
 	{
-		Timer	test;
 		typename ft::vector<T>::iterator			it;
 		typename ft::vector<T>::reverse_iterator	rit;
 
@@ -125,15 +106,12 @@ struct VectorTester {
 				rcit++;
 			}
 		}
-		test.getDiff();
 	}
 	template<class InputIterator>
 	void	testTemplatedAssign(InputIterator first, InputIterator last) {
 		printSizes();
-		Timer test;
 		std::cout << "Testing templated assign(InputIterator, InputIterator) " << std::endl;
 		vector.assign(first, last);
-		test.getDiff();
 		for (InputIterator start = first; start != last; start++)
 			std::cout << *start << std::endl;
 		printSizes();
@@ -142,67 +120,51 @@ struct VectorTester {
 
 	void	testSizedAssign(size_t n, const T& val) {
 		printSizes();
-		Timer test;
 		std::cout << "Testing assign(size_t, const T&) " << std::endl;
 		vector.assign(n, val);
-		test.getDiff();
 		printSizes();
 		printVector();
 	}
 
 	void	testPushBack(T &value) {
 		printSizes();
-		Timer test;
 		vector.push_back(value);
-		test.getDiff();
 		printSizes();
 		printVector();
 
-		Timer test2;
 		for (size_t i = 0; i < 5; i++)
 			vector.push_back(value);
-		test2.getDiff();
 		printSizes();
 		printVector();
 	}
 
 	void	testPopBack() {
 		printSizes();
-		Timer test;
 		vector.pop_back();
-		test.getDiff();
 		printSizes();
 		printVector();
 
-		Timer test2;
 		for (size_t i = 0; i < 5; i++)
 			vector.pop_back();
-		test2.getDiff();
 		printSizes();
 		printVector();
 	}
 
 	void	testSingleInsert(const T& value) {
 		printSizes();
-		Timer test;
 		vector.insert(vector.begin(), value);
-		test.getDiff();
 		printSizes();
 
-		Timer test2;
 		typename ft::vector<T>::iterator it = vector.begin();
 		for (size_t i = 0; i < 10; i++)
 			it = vector.insert(it, value);
-		test2.getDiff();
 		printSizes();
 		printVector();
 	}
 
 	void	testSizedInsert(size_t n, const T& val) {
 		printSizes();
-		Timer test;
 		vector.insert(vector.end(), n, val);
-		test.getDiff();
 		printSizes();
 		printVector();
 	}
@@ -210,55 +172,43 @@ struct VectorTester {
 	template<class InputIterator>
 	void	testIteratorsInsert(InputIterator first, InputIterator last) {
 		printSizes();
-		Timer test;
 		vector.insert(vector.begin(), first, last);
-		test.getDiff();
 		printSizes();
 		printVector();
 	}
 
 	void	testErase() {
 		printSizes();
-		Timer test;
 		vector.erase(vector.begin());
 //		vector.erase(vector.begin() + 10);
-		test.getDiff();
 		printSizes();
 		printVector();
 	}
 
 	void	testEraseIterators() {
 		printSizes();
-		Timer test;
 		vector.erase(vector.begin(), vector.begin() + 10);
-		test.getDiff();
 		printSizes();
 		printVector();
 	}
 
 	void	testSwap(ft::vector<T> second) {
 		printSizes();
-		Timer test;
 		vector.swap(second);
-		test.getDiff();
 		printSizes();
 		printVector();
 	}
 
 	void	testResize(size_t n) {
 		printSizes();
-		Timer test;
 		vector.resize(n);
-		test.getDiff();
 		printSizes();
 		printVector();
 	}
 
 	void	clearVector() {
 		printSizes();
-		Timer test;
 		vector.clear();
-		test.getDiff();
 		printSizes();
 	}
 
@@ -290,7 +240,7 @@ std::string	generateVal(unsigned int index, typename ft::enable_if<is_string<T>:
 template <typename T>
 void	testFunctions(std::string  msg, ft::vector<T> &toTest)
 {
-	VectorTester<T>	tester(std::string(STL) + msg, toTest);
+	VectorTester<T>	tester(msg, toTest);
 	tester.testIterators();
 	T randArray[TEST_ARR_SIZE];
 	for (unsigned int i = 0; i < TEST_ARR_SIZE; ++i)
@@ -348,7 +298,7 @@ template <class T>
 void	testConstructors(std::string msg)
  {
  	ft::vector<T> toTest;
- 	VectorTester<T>	tester(std::string(STL) + msg, toTest);
+ 	VectorTester<T>	tester(msg, toTest);
  	T randArray[TEST_ARR_SIZE];
  	for (unsigned int i = 0; i < TEST_ARR_SIZE; ++i)
  		randArray[i] = generateVal<T>(i);

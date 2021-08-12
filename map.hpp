@@ -5,17 +5,12 @@
 #include "rb_tree.hpp"
 #include "pair.hpp"
 #include "is_integral.hpp"
+#include "less.hpp"
 
 #include <map>
 
 namespace ft {
 
-	template <class Pair>
-	struct keyLess {
-		bool operator ()(const Pair& p1, const Pair& p2) const {
-			return p1 < p2;
-		}
-	};
 
 	template < class Key, class T, class Compare = ft::keyLess<Key>, class Alloc = std::allocator<ft::pair<const Key,T> > >
 	class map {
@@ -236,19 +231,6 @@ namespace ft {
 		value_type _filter_object(const Key& key) { return ft::make_pair(key, mapped_type()); }
 		value_type _filter_object(const Key& key) const { return ft::make_pair(key, mapped_type()); }
 	};
-
-	template <class InputIterator1, class InputIterator2>
-	bool equal (InputIterator1 lit, InputIterator1 lend, InputIterator2 rit, InputIterator2 rend)
-	{
-		while (lit != lend)
-		{
-			if (rit == rend || *rit != *lit)
-				return (false);
-			++lit, ++rit;
-		}
-
-		return (rit == rend);
-	}
 
 	template <typename Key, typename T, typename Compare>
 	void swap(map<Key, T, Compare> &x, map<Key, T, Compare> &y)

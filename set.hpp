@@ -1,21 +1,16 @@
 #pragma once
 
+#ifndef USE_STL
 #include "enable_if.hpp"
+#endif
 #include "lexicographical_compare.hpp"
 #include "rb_tree.hpp"
 #include "pair.hpp"
 #include "is_integral.hpp"
+#include "less.hpp"
 
-#include <set>
 
 namespace ft {
-
-	template <class Pair>
-	struct keyLess {
-		bool operator ()(const Pair& p1, const Pair& p2) const {
-			return p1 < p2;
-		}
-	};
 
 	template < class Key, class Compare = ft::keyLess<Key>, class Alloc = std::allocator<const Key> >
 	class set {
@@ -87,32 +82,6 @@ namespace ft {
 		}
 		// getters
 
-		// --- element access
-		class out_of_range: public std::out_of_range {
-		public:
-			explicit out_of_range(std::string str): std::out_of_range(str) {}
-		};
-
-		mapped_type& operator[](const key_type& k) {
-			node_ptr found = _tree.find(ft::make_pair(k, mapped_type()));
-			if (!found)
-				return insert(k).first;
-			return found->data.second;
-		}
-
-		mapped_type& at(const key_type& k) {
-			node_ptr found = _tree.find(ft::make_pair(k, mapped_type()));
-			if (!found)
-				throw out_of_range("set::at:  key not found");
-			return found->data.second;
-		}
-
-		const mapped_type& at(const key_type& k) const {
-			node_ptr found = _tree.find(ft::make_pair(k, mapped_type()));
-			if (!found)
-				throw out_of_range("set::at:  key not found");
-			return found->data.second;
-		}
 		// element access
 
 		// --- iterators
@@ -283,19 +252,6 @@ namespace ft {
 		allocator_type	_alloc;
 		size_type		_size;
 	};
-
-	template <class InputIterator1, class InputIterator2>
-	bool equal (InputIterator1 lit, InputIterator1 lend, InputIterator2 rit, InputIterator2 rend)
-	{
-		while (lit != lend)
-		{
-			if (rit == rend || *rit != *lit)
-				return (false);
-			++lit, ++rit;
-		}
-
-		return (rit == rend);
-	}
 
 	template <typename Key, typename Compare>
 	void swap(set<Key, Compare> &x, set<Key, Compare> &y)
