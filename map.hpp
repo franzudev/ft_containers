@@ -63,11 +63,11 @@ namespace ft {
 		map( const map& other ): _tree(tree(value_compare(key_comp()))) {
 			*this = other;
 		}
-		~map() { _tree.destroy(); }
+		~map() { _tree.destroy(true); }
 		// constructors
 
 		map& operator=( const map& other ) {
-			_tree.destroy();
+			_tree.destroy(false);
 			insert(other.begin(), other.end());
 			_size = other._size;
 			return *this;
@@ -134,7 +134,7 @@ namespace ft {
 
 		// --- modifiers
 		void clear() {
-			_tree.destroy();
+			_tree.destroy(false);
 			_size = 0;
 		}
 
@@ -158,14 +158,16 @@ namespace ft {
 
 		void erase( iterator pos ) {
 			_size -= erase(pos->first);
-//			_tree.erase(pos.base());
-//			_size--;
 		}
 		void erase( iterator first, iterator last ) {
-			iterator begin = first;
+			iterator begin;
+//			_size -= erase(first);
+//			begin++;
 			while (begin != last) {
-				_size -= erase(begin->first);
+				begin = first;
 				++begin;
+				_size -= erase(first->first);
+				first = begin;
 			}
 		}
 		size_type erase( const key_type& key ) {

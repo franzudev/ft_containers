@@ -91,9 +91,10 @@ namespace ft {
 
 		~rb_tree() {}
 
-		void destroy() {
+		void destroy(bool sentinel) {
 			_cycle(_root);
-			_erase_one(_sentinel);
+			if (sentinel)
+				_erase_one(_sentinel);
 		}
 
 		size_type	max_size() const { return _allocator.max_size(); }
@@ -180,8 +181,10 @@ namespace ft {
 		size_type	erase(const node_value& val) {
 			remove_sentinel();
 			node_ptr found = _find(_root, val);
-			if (!found)
+			if (!found) {
+				add_sentinel();
 				return 0;
+			}
 			_deleteNode(found);
 			add_sentinel();
 			return 1;
@@ -480,7 +483,8 @@ namespace ft {
 			node_ptr sibling = x->sibling(), parent = x->parent;
 			if (sibling == NULL) {
 				// No sibiling, double black pushed up
-				fixDoubleBlack(parent);
+				if (parent)
+					fixDoubleBlack(parent);
 			} else {
 				if (sibling->color == RED) {
 					// Sibling red
@@ -575,7 +579,8 @@ namespace ft {
 				// v has 1 child
 				if (v == _root) {
 					// v is root, assign the value of u to v, and delete u
-					v->data = u->data;
+					_swapValues(u, v);
+//					v->data = u->data;
 					v->left = v->right = NULL;
 					_erase_one(u);
 				} else {
@@ -619,6 +624,8 @@ namespace ft {
 			if (temp->left)
 				temp->left->parent = temp;
 			temp->bound = v->bound;
+			if (v == _root)
+				_root = temp;
 			_erase_one(v);
 			v = temp;
 		}

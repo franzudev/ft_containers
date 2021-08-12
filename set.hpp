@@ -56,9 +56,7 @@ namespace ft {
 		typedef Node<value_type>*									node_ptr;
 
 		// --- constructors
-		explicit set( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _tree(tree(value_compare(key_comp()))), _comp(comp), _alloc(alloc), _size(0) {
-			;
-		}
+		explicit set( const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _tree(tree(value_compare(key_comp()))), _comp(comp), _alloc(alloc), _size(0) {}
 
 		template< class InputIt > set( InputIt first, InputIt last, const Compare& comp = Compare(), const Alloc& alloc = Alloc()) : _tree(tree(value_compare(key_comp()))), _comp(comp), _alloc(alloc), _size(0) {
 			for (; first != last; ++first)
@@ -70,13 +68,13 @@ namespace ft {
 		}
 
 		~set() {
-			_tree.destroy();
+			_tree.destroy(true);
 		}
 		// constructors
 
 		// ---operators overload
 		set& operator=( const set& other ) {
-			_tree.destroy();
+			_tree.destroy(false);
 			insert(other.begin(), other.end());
 			_size = other._size;
 			return *this;
@@ -165,7 +163,7 @@ namespace ft {
 
 		// --- modifiers
 		void clear() {
-			_tree.destroy();
+			_tree.destroy(false);
 			_size = 0;
 		}
 
@@ -187,11 +185,31 @@ namespace ft {
 			return iterator(inserted.first);
 		}
 
-		void erase( iterator pos ) {(void)pos;}
-
-//		void erase( iterator first, iterator last ) {}
-
-//		size_type erase( const key_type& key ) {}
+		void erase( iterator pos ) {
+			erase(pos.operator*());
+		}
+		void erase( iterator first, iterator last ) {
+			if (first == begin() && last == end())
+				return clear();
+			size_type len = 0;
+			for (iterator begin = first; begin != last; ++begin)
+				len++;
+			key_type toRem[len];
+			iterator begin = first;
+			size_type i = 0;
+			for (; begin != last; ++begin, ++i)
+				toRem[i] = begin.operator*();
+			i = 0;
+			while (i < len) {
+				erase(toRem[i]);
+				++i;
+			}
+		}
+		size_type erase( const key_type& key ) {
+			size_type ret;
+			_size -= (ret = _tree.erase(key));
+			return ret;
+		}
 
 		void swap( set& other ) {
 			tree tmp = other._tree;
