@@ -9,9 +9,9 @@ CC		=	clang++
 all		:	ft
 
 stl		:
-	@$(CC) $(CF_STL) -o $(NAME_1) $(SRCS)
+	@$(CC) $(CF_STL) -I includes -o $(NAME_1) $(SRCS)
 ft		:
-	@$(CC) $(CF_FT) -o $(NAME_2) $(SRCS)
+	@$(CC) $(CF_FT) -I includes -o $(NAME_2) $(SRCS)
 
 fclean	:
 	rm -rf $(NAME_1) $(NAME_2)
