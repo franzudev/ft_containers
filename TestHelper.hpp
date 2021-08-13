@@ -19,6 +19,7 @@ namespace ft = std;
 # include "map.hpp"
 # include "set.hpp"
 # include "is_integral.hpp"
+# include "pair.hpp"
 #endif
 
 #include "Bureaucrat.hpp"

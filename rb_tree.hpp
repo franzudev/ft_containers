@@ -193,6 +193,8 @@ namespace ft {
 	private:
 
 		void	add_sentinel() {
+			if (!_root)
+				return;
 			right()->right = _sentinel;
 			_sentinel->left = right();
 			left()->left = _sentinel;
