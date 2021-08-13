@@ -34,7 +34,7 @@ namespace ft {
 		struct Node *left;
 		struct Node *right;
 
-		Node(T data): data(data), color(BLACK), bound(false), parent(nullptr), left(nullptr), right(nullptr) {}
+		Node(T data): data(data), color(BLACK), bound(false), parent(NULL), left(NULL), right(NULL) {}
 
 		bool 		isLeft() const {return parent && this == parent->left;}
 		bool 		isRight() const {return parent && this == parent->right;}
@@ -43,7 +43,7 @@ namespace ft {
 				return parent->parent->right;
 			if (parent->parent && parent->isRight())
 				return parent->parent->left;
-			return nullptr;
+			return NULL;
 		}
 		Node		*sibling() const {
 			if (isLeft() && parent->right != NULL)
@@ -73,7 +73,7 @@ namespace ft {
 		typedef typename allocator_type::difference_type			difference_type;
 
 	public:
-		explicit rb_tree( const Compare& comp, const Alloc& alloc = Alloc()) : _root(nullptr), _comp(comp), _allocator(alloc) {
+		explicit rb_tree( const Compare& comp, const Alloc& alloc = Alloc()) : _root(NULL), _comp(comp), _allocator(alloc) {
 			_sentinel = _createNode(T());
 			_sentinel->bound = true;
 			_sentinel->right = _root;
@@ -202,9 +202,9 @@ namespace ft {
 			_root->parent = _sentinel;
 		}
 		void	remove_sentinel() {
-			right()->right = nullptr;
-			left()->left = nullptr;
-			_root->parent = nullptr;
+			right()->right = NULL;
+			left()->left = NULL;
+			_root->parent = NULL;
 		}
 		void	_cycle(node_ptr& p) {
 			if (!p || p->bound)
@@ -215,7 +215,7 @@ namespace ft {
 				_cycle(p->right);
 			_allocator.destroy(p);
 			_allocator.deallocate(p, 1);
-			p = nullptr;
+			p = NULL;
 		}
 
 		node_ptr	_createNode(value_type val) {
@@ -243,7 +243,7 @@ namespace ft {
 
 		node_ptr _find(node_ptr node, const node_value val) const {
 			if (!node || node->bound)
-				return nullptr;
+				return NULL;
 			if (value_comp()(node->data, val) && !value_comp()(val, node->data))
 				return _find(node->right, val);
 			if (!value_comp()(node->data, val) && value_comp()(val, node->data))
@@ -321,7 +321,7 @@ namespace ft {
 				parent->right = child->left;
 				child->left->parent = parent;
 			} else
-				parent->right = nullptr;
+				parent->right = NULL;
 			child->left = parent;
 			parent->parent = child;
 			_rightRotate(child, gparent);
@@ -334,7 +334,7 @@ namespace ft {
 				parent->left = child->right;
 				child->right->parent = parent;
 			} else
-				parent->left = nullptr;
+				parent->left = NULL;
 			child->right = parent;
 			parent->parent = child;
 			_leftRotate(child, gparent);
@@ -360,7 +360,7 @@ namespace ft {
 		void _printTreeHelper(node_ptr root, int space)
 		{
 			int i;
-			if(root != nullptr)
+			if(root != NULL)
 			{
 				space = space + 10;
 				_printTreeHelper(root->right, space);
@@ -391,7 +391,7 @@ namespace ft {
 				else
 					return (climb(node->parent, val));
 			}
-			return (nullptr);
+			return (NULL);
 		}
 
 		node_ptr find_lower(node_ptr node, const node_value &val) const

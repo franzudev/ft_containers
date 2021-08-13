@@ -20,7 +20,7 @@ namespace ft {
 		typedef typename iterator_traits<iterator_type>::pointer           	pointer;
 		typedef typename iterator_traits<iterator_type>::reference         	reference;
 
-		explicit vector_iterator(): m_ptr(nullptr){};
+		explicit vector_iterator(): m_ptr(NULL){};
 
 		explicit vector_iterator(iterator_type ptr): m_ptr(ptr) {}
 
@@ -153,7 +153,7 @@ namespace ft {
 				allocator(alloc),
 				_size(0),
 				_capacity(0),
-				_vec(nullptr) {}
+				_vec(NULL) {}
 
 		~vector() {
 			 for (size_type i = 0; i < _size; i++)
@@ -162,7 +162,7 @@ namespace ft {
 			 	allocator.deallocate(_vec, _capacity);
 		}
 
-		vector(vector &vec): allocator(vec.get_allocator()), _size(0), _capacity(0), _vec(nullptr){
+		vector(vector &vec): allocator(vec.get_allocator()), _size(0), _capacity(0), _vec(NULL){
 			*this = vec;
 		}
 		explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):

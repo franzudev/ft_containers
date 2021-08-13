@@ -15,7 +15,7 @@ namespace ft {
 
 	public:
 
-		explicit rb_tree_iterator() : m_ptr(nullptr) {};
+		explicit rb_tree_iterator() : m_ptr(NULL) {};
 
 		explicit rb_tree_iterator(iterator_type ptr) : m_ptr(ptr) {}
 
@@ -117,7 +117,7 @@ namespace ft {
 		typedef Node 							*iterator_type;
 		typedef const typename Node::value_type	value_type;
 
-		explicit const_rb_tree_iterator() : m_ptr(nullptr) {};
+		explicit const_rb_tree_iterator() : m_ptr(NULL) {};
 
 		explicit const_rb_tree_iterator(iterator_type ptr) : m_ptr(ptr) {
 		}
