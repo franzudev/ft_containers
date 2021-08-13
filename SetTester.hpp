@@ -19,7 +19,6 @@ struct SetTester {
 	void	printSizes() {
 		std::cout << std::endl;
 		std::cout << "Size: 	" << set.size() << std::endl;
-//		std::cout << "Capacity: " << set.capacity() << std::endl;
 		std::cout << "Max_size: " << set.max_size() << std::endl;
 		std::cout << "Empty: " << set.empty() << std::endl;
 		std::cout << std::endl;
@@ -163,7 +162,7 @@ struct SetTester {
 			try {
 				pair = set.equal_range(i);
 				if (pair.first == pair.second)
-					std::cout << pair.first << std::endl;
+					std::cout << pair.first.operator*() << std::endl;
 			} catch(std::exception &e) {
 				std::cout << e.what() << std::endl;
 			}
@@ -226,6 +225,7 @@ void	setTestFunctions(std::string  msg, ft::set<T> &toTest)
 	tester.testCount();
 	tester.testFind();
 	tester.testBounds();
+	tester.testEqualRange();
 	tester.testErase();
 	tester.testSwap(setItTest);
 	tester.testErase();
