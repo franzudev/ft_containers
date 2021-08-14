@@ -1,8 +1,8 @@
-#include "VectorTester.hpp"
-#include "StackTester.hpp"
-#include "MapTester.hpp"
-#include "SetTester.hpp"
-#include "Timer.hpp"
+#include "includes/testers/VectorTester.hpp"
+#include "includes/testers/StackTester.hpp"
+#include "includes/testers/MapTester.hpp"
+#include "includes/testers/SetTester.hpp"
+#include "includes/testers/Timer.hpp"
 
 int		main(void)
 {

@@ -1,13 +1,13 @@
 #pragma once
 
 #ifndef USE_STL
-#include "enable_if.hpp"
+#include "../utils/enable_if.hpp"
 #endif
-#include "lexicographical_compare.hpp"
-#include "rb_tree.hpp"
-#include "pair.hpp"
-#include "is_integral.hpp"
-#include "less.hpp"
+#include "../utils/lexicographical_compare.hpp"
+#include "../rb_tree/rb_tree.hpp"
+#include "../utils/pair.hpp"
+#include "../utils/is_integral.hpp"
+#include "../utils/less.hpp"
 
 
 namespace ft {
