@@ -107,7 +107,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 [forks-shield]: https://img.shields.io/github/forks/franzudev/ft_containers.svg?style=for-the-badge
 [forks-url]: https://github.com/franzudev/ft_containers/network/members
 [stars-shield]: https://img.shields.io/github/stars/franzudev/ft_containers.svg?style=for-the-badge
-[stars-url]: https://github.com/franzudev/ft_containers/network/members
+[stars-url]: https://github.com/franzudev/ft_containers/stargazers
 [issues-shield]: https://img.shields.io/github/issues/franzudev/ft_containers.svg?style=for-the-badge
 [issues-url]: https://github.com/franzudev/ft_containers/issues
 [license-shield]: https://img.shields.io/github/license/franzudev/ft_containers.svg?style=for-the-badge
